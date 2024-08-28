@@ -29,7 +29,10 @@
                     <div>SELECT ALL</div>
                     <div>DELETE</div>
                 </div>
-                <div class="yellow-slate-300">TABLE</div>
+                <div>
+                    <div class="bg-yellow-200">THEAD</div>
+                    <div id="dataSlide" class="flex flex-wrap justify-center gap-x-6"></div>
+                </div>
                 <div class="flex justify-between items-center  bg-slate-300">
                     <div>ADD</div>
                     <div>PAGINATION</div>
@@ -39,5 +42,54 @@
         <div class="bg-rose-200">FOOTER</div>
     </div>
 </body>
+
+<script>
+    const dataSlide = {
+        "result": true,
+        "data": {
+            "total": 3,
+            "info": [{
+                    "id": 112,
+                    "sequent": 1,
+                    "filename": null,
+                    "link": "55fgfdgdgdfg",
+                    "dateAdd": "2024-08-21 14:34:31"
+                },
+                {
+                    "id": 114,
+                    "sequent": 2,
+                    "filename": "1724225851_114_sld.jpg",
+                    "link": null,
+                    "dateAdd": "2024-08-21 14:37:31"
+                },
+                {
+                    "id": 113,
+                    "sequent": 3,
+                    "filename": "1724225801_113_sld.jpg",
+                    "link": null,
+                    "dateAdd": "2024-08-21 14:36:41"
+                }
+            ]
+        },
+        "csrf": "4ea0101bec1f804e906168f4a727a34abe0981d0551c427aab791de11d1ccfca",
+        "lastActivity": 1724826488
+    }
+
+    function displaySlide() {
+        const tbodyslide = document.getElementById('dataSlide');
+        const dataSlideJson = dataSlide.data.info;
+
+        dataSlideJson.forEach(item => {
+            const itemSlide = document.createElement('div');
+            itemSlide.innerHTML = `
+                    <p>Filename: ${item.filename ? item.filename : 'No Filename'}</p>
+                    <p>Link: ${item.link ? item.link : 'No Link'}</p>
+                    <p>Date Added: ${item.dateAdd}</p>
+                    <hr>`;
+            tbodyslide.appendChild(itemSlide);
+        })
+    }
+    displaySlide();
+</script>
 
 </html>
