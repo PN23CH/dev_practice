@@ -29,10 +29,18 @@
                     <div>SELECT ALL</div>
                     <div>DELETE</div>
                 </div>
-                <div>
-                    <div class="bg-yellow-200">THEAD</div>
-                    <div id="dataSlide" class="flex flex-wrap justify-center gap-x-6"></div>
-                </div>
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>FILENAME</th>
+                            <th>LINK</th>
+                            <th>DATE ADD</th>
+                        </tr>
+                    </thead>
+                    <tbody id="dataSlide" class="flex flex-wrap justify-center gap-x-6"></tbody>
+                    <tfoot>FOOTER TABLE</tfoot>
+                </table>
                 <div class="flex justify-between items-center  bg-slate-300">
                     <div>ADD</div>
                     <div>PAGINATION</div>
