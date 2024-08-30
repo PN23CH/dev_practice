@@ -38,7 +38,7 @@
                             <th>DATE ADD</th>
                         </tr>
                     </thead>
-                    <tbody id="dataSlide" class="flex flex-wrap justify-center gap-x-6"></tbody>
+                    <tbody dataSlideRow></tbody>
                     <tfoot>FOOTER TABLE</tfoot>
                 </table>
                 <div class="flex justify-between items-center  bg-slate-300">
@@ -52,6 +52,19 @@
 </body>
 
 <script>
+    fetch('../api/slide_api.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Data fetched:', data);
+            displaySlideData(data);
+        })
+        .catch(error => console.error('There was a problem with the fetch operation:', error));
+
     function trCell() {
         const table = document.querySelector('[data-practice="practice"]');
         const tableBody = table.querySelector(`tbody`);
@@ -98,6 +111,18 @@
     //     "lastActivity": 1724826488
     // }
 
+    function displaySlideData(data) {
+        const tbodyslide = document.querySelector('[dataSlideRow]');
+        data.data.info.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.filename ? item.filename : 'No Filename'}</td>
+            <td>${item.link ? item.link : 'No Link'}</td>
+            <td>${item.dateAdd}</td>`;
+            tbodyslide.appendChild(row);
+        });
+    }
     // function displaySlide() {
     //     const tbodyslide = document.getElementById('dataSlide');
     //     const dataSlideJson = dataSlide.data.info;
