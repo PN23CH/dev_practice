@@ -38,7 +38,7 @@
                             <th>DATE ADD</th>
                         </tr>
                     </thead>
-                    <tbody id="dataSlide" class="flex flex-wrap justify-center gap-x-6"></tbody>
+                    <tbody dataSlideRow></tbody>
                     <tfoot>FOOTER TABLE</tfoot>
                 </table>
                 <div class="flex justify-between items-center  bg-slate-300">
@@ -52,52 +52,31 @@
 </body>
 
 <script>
-    const dataSlide = {
-        "result": true,
-        "data": {
-            "total": 3,
-            "info": [{
-                    "id": 112,
-                    "sequent": 1,
-                    "filename": null,
-                    "link": "55fgfdgdgdfg",
-                    "dateAdd": "2024-08-21 14:34:31"
-                },
-                {
-                    "id": 114,
-                    "sequent": 2,
-                    "filename": "1724225851_114_sld.jpg",
-                    "link": null,
-                    "dateAdd": "2024-08-21 14:37:31"
-                },
-                {
-                    "id": 113,
-                    "sequent": 3,
-                    "filename": "1724225801_113_sld.jpg",
-                    "link": null,
-                    "dateAdd": "2024-08-21 14:36:41"
-                }
-            ]
-        },
-        "csrf": "4ea0101bec1f804e906168f4a727a34abe0981d0551c427aab791de11d1ccfca",
-        "lastActivity": 1724826488
-    }
-
-    function displaySlide() {
-        const tbodyslide = document.getElementById('dataSlide');
-        const dataSlideJson = dataSlide.data.info;
-
-        dataSlideJson.forEach(item => {
-            const itemSlide = document.createElement('div');
-            itemSlide.innerHTML = `
-                    <p>Filename: ${item.filename ? item.filename : 'No Filename'}</p>
-                    <p>Link: ${item.link ? item.link : 'No Link'}</p>
-                    <p>Date Added: ${item.dateAdd}</p>
-                    <hr>`;
-            tbodyslide.appendChild(itemSlide);
+    fetch('../api/slide_api.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
         })
+        .then(data => {
+            console.log('Data fetched:', data);
+            displaySlideData(data);
+        })
+        .catch(error => console.error('There was a problem with the fetch operation:', error));
+
+    function displaySlideData(data) {
+        const tbodyslide = document.querySelector('[dataSlideRow]');
+        data.data.info.forEach(item => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+            <td>${item.id}</td>
+            <td>${item.filename ? item.filename : 'No Filename'}</td>
+            <td>${item.link ? item.link : 'No Link'}</td>
+            <td>${item.dateAdd}</td>`;
+            tbodyslide.appendChild(row);
+        });
     }
-    displaySlide();
 </script>
 
 </html>
