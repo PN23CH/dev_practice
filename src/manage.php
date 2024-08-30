@@ -68,7 +68,7 @@
     function trCell() {
         const table = document.querySelector('[data-practice="practice"]');
         const tableBody = table.querySelector(`tbody`);
-        const rowCell = document.getElementById('dataSlide');
+        const rowCell = document.querySelector('[dataSlideRow]');
 
         for (let i = 0; i < 5; i++) {
             const row = document.createElement("tr");
