@@ -70,11 +70,12 @@
         const tableBody = table.querySelector(`tbody`);
         const rowCell = document.getElementById('dataSlide');
 
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < 5; i++) {
             const row = document.createElement("tr");
             const tdCell = document.createElement("td");
-            row.innerHTML = `<div>test test</div>`
-            row.appendChild(row);
+            tdCell.textContent = "test test"; // เพิ่มข้อความลงใน td
+            row.appendChild(tdCell); // เพิ่ม td ลงใน tr
+            tableBody.appendChild(row); // เพิ่ม tr ลงใน tbody
         }
     };
     trCell();
