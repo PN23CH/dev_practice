@@ -14,13 +14,52 @@
     body {
         font-family: "Sarabun", sans-serif;
     }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        border-spacing: 0;
+        overflow: hidden;
+        min-width: 28rem;
+        margin-top: 1.25rem;
+    }
+
+    thead {
+        background-color: #99F6E4;
+        text-align: center;
+        vertical-align: middle;
+        border-top-left-radius: 1.5rem;
+        border-top-right-radius: 1.5rem;
+        box-shadow: inset 0px 1px 0px #e5e7eb, inset 1px 0px 0px #e5e7eb,
+            inset 0px -1px 0px #e5e7eb, inset -1px 0px 0px #e5e7eb;
+    }
+
+    thead th:first-child {
+        border-top-left-radius: 1.5rem;
+    }
+
+    thead th:last-child {
+        border-top-right-radius: 1.5rem;
+    }
+
+    thead th {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    td {
+        text-align: center;
+        vertical-align: middle;
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
 </style>
 
 <body>
     <div class="w-full box-border mx-auto">
         <div class="bg-sky-200 h-16">NAVBAR</div>
         <div class="flex justify-between items-center w-full">
-            <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200">SIDEMENU</div>
+            <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200 hidden">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
                 <div class="flex justify-end items-center bg-orange-300 gap-x-5">
@@ -39,7 +78,11 @@
                         </tr>
                     </thead>
                     <tbody dataSlideRow></tbody>
-                    <tfoot>FOOTER TABLE</tfoot>
+                    <tfoot>
+                        <tr>
+                            <td>FOOTER TABLE</td>
+                        </tr>
+                    </tfoot>
                 </table>
                 <div class="flex justify-between items-center  bg-slate-300">
                     <div>ADD</div>
@@ -52,6 +95,9 @@
 </body>
 
 <script>
+    const tableSlide = document.querySelector('[dataSlideRow]');
+    const tableBody = document.querySelector('tbody');
+
     fetch('../api/slide_api.php')
         .then(response => {
             if (!response.ok) {
@@ -60,37 +106,38 @@
             return response.json();
         })
         .then(data => {
-            console.log('Data fetched:', data);
-            displaySlideData(data);
+            displaySlideData(data, tableBody);
         })
         .catch(error => console.error('There was a problem with the fetch operation:', error));
 
-    function trCell() {
-        const table = document.querySelector('[data-practice="practice"]');
-        const tableBody = table.querySelector(`tbody`);
-        const rowCell = document.querySelector('[dataSlideRow]');
+    function displaySlideData(data, table) {
 
-        for (let i = 0; i < 5; i++) {
-            const row = document.createElement("tr");
-            const tdCell = document.createElement("td");
-            tdCell.textContent = "test test";
-            row.appendChild(tdCell);
-            tableBody.appendChild(row);
-        }
-    };
-    trCell();
+        const infoArray = data.data.info;
 
-    function displaySlideData(data) {
-        const tbodyslide = document.querySelector('[dataSlideRow]');
-        data.data.info.forEach(item => {
+        for (let key in infoArray) {
+            const item = infoArray[key];
             const row = document.createElement('tr');
-            row.innerHTML = `
-            <td>${item.id}</td>
-            <td>${item.filename ? item.filename : 'No Filename'}</td>
-            <td>${item.link ? item.link : 'No Link'}</td>
-            <td>${item.dateAdd}</td>`;
-            tbodyslide.appendChild(row);
-        });
+
+            const idCell = document.createElement('td');
+            idCell.textContent = item.id;
+            row.appendChild(idCell);
+
+            const filenameCell = document.createElement('td');
+            filenameCell.textContent = item.filename ? item.filename : 'No filename';
+            row.appendChild(filenameCell);
+
+            const linkCell = document.createElement('td');
+            linkCell.textContent = item.link ? item.link : 'No link';
+            row.appendChild(linkCell);
+
+            const dateCell = document.createElement('td');
+            dateCell.textContent = item.dateAdd;
+            row.appendChild(dateCell);
+
+            tableBody.appendChild(row);
+
+        }
+
     }
 </script>
 
