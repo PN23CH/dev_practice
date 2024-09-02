@@ -84,7 +84,7 @@
                         </tr>
                     </tfoot>
                 </table>
-                <div class="flex justify-between items-center  bg-slate-300">
+                <div class="flex justify-between items-center bg-slate-300">
                     <div>ADD</div>
                     <div>PAGINATION</div>
                 </div>
@@ -98,32 +98,41 @@
     const tableSlide = document.querySelector('[dataSlideRow]');
     const tableBody = document.querySelector('tbody');
 
-    fetch('../api/slide_api.php')
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-            return response.json();
-        })
-        .then(data => {
-            displaySlideData(data, tableBody);
-        })
-        .catch(error => console.error('There was a problem with the fetch operation:', error));
+    function getData() {
+        fetch('../api/slide_api.php')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(result => {
+                displaySlideData(result.data.info, tableBody);
+            })
+            .catch(error => console.error('There was a problem with the fetch operation:', error));
+    }
+
+    const action = "edit";
+
+    if (action == "edit") {
+        getData();
+    }
 
     function displaySlideData(data, table) {
 
-        const infoArray = data.data.info;
+        const infoArray = data;
 
         for (let key in infoArray) {
             const item = infoArray[key];
             const row = document.createElement('tr');
 
             const idCell = document.createElement('td');
-            idCell.textContent = item.id;
+            // idCell.textContent = item.id;
+            idCell.innerHTML = `<div>My : ${item.id}</div>`;
             row.appendChild(idCell);
 
             const filenameCell = document.createElement('td');
-            filenameCell.textContent = item.filename ? item.filename : 'No filename';
+            filenameCell.textContent = item.filename ? item.filename : '';
             row.appendChild(filenameCell);
 
             const linkCell = document.createElement('td');
@@ -133,6 +142,8 @@
             const dateCell = document.createElement('td');
             dateCell.textContent = item.dateAdd;
             row.appendChild(dateCell);
+
+            //TODO SELECT AND SELECT ALL
 
             tableBody.appendChild(row);
 
