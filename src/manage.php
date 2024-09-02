@@ -62,11 +62,14 @@
             <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200 hidden">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
-                <div class="flex justify-end items-center bg-orange-300 gap-x-5">
+                <div class="flex justify-end items-center bg-yellow-50 gap-x-5">
                     <div>REFRESH</div>
                     <div>SAVE</div>
-                    <div>SELECT ALL</div>
-                    <div>DELETE</div>
+                    <div>
+                        <input type="checkbox" name="select-all" select-all>
+                        <label for="select-all">SELECT ALL</label>
+                    </div>
+                    <button type="button">DELETE</button>
                 </div>
                 <table data-practice="practice" class="w-full">
                     <thead>
@@ -75,9 +78,10 @@
                             <th>FILENAME</th>
                             <th>LINK</th>
                             <th>DATE ADD</th>
+                            <th>DELETE</th>
                         </tr>
                     </thead>
-                    <tbody dataSlideRow></tbody>
+                    <tbody data-table-slide></tbody>
                     <tfoot>
                         <tr>
                             <td>FOOTER TABLE</td>
@@ -95,61 +99,92 @@
 </body>
 
 <script>
-    const tableSlide = document.querySelector('[dataSlideRow]');
-    const tableBody = document.querySelector('tbody');
+    document.addEventListener('DOMContentLoaded', () => {
+        const selectAllcheckbox = document.querySelector('[select-all]');
+        const tableBody = document.querySelector('[data-table-slide]');
 
-    function getData() {
-        fetch('../api/slide_api.php')
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(result => {
-                displaySlideData(result.data.info, tableBody);
-            })
-            .catch(error => console.error('There was a problem with the fetch operation:', error));
-    }
+        function getData() {
+            fetch('../api/slide_api.php')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    displaySlideData(result.data.info, tableBody);
+                })
+                .catch(error => console.error('There was a problem with the fetch operation:', error));
+        }
 
-    const action = "edit";
+        const action = "edit";
 
-    if (action == "edit") {
-        getData();
-    }
+        if (action == "edit") {
+            getData();
+        }
 
-    function displaySlideData(data, table) {
+        function displaySlideData(data, table) {
 
-        const infoArray = data;
+            const infoArray = data;
 
-        for (let key in infoArray) {
-            const item = infoArray[key];
-            const row = document.createElement('tr');
+            for (let key in infoArray) {
+                const item = infoArray[key];
+                const row = document.createElement('tr');
 
-            const idCell = document.createElement('td');
-            // idCell.textContent = item.id;
-            idCell.innerHTML = `<div>My : ${item.id}</div>`;
-            row.appendChild(idCell);
+                const idCell = document.createElement('td');
+                // idCell.textContent = item.id;
+                idCell.innerHTML = `<div>My : ${item.id}</div>`;
+                row.appendChild(idCell);
 
-            const filenameCell = document.createElement('td');
-            filenameCell.textContent = item.filename ? item.filename : '';
-            row.appendChild(filenameCell);
+                const filenameCell = document.createElement('td');
+                filenameCell.textContent = item.filename ? item.filename : '';
+                row.appendChild(filenameCell);
 
-            const linkCell = document.createElement('td');
-            linkCell.textContent = item.link ? item.link : 'No link';
-            row.appendChild(linkCell);
+                const linkCell = document.createElement('td');
+                linkCell.textContent = item.link ? item.link : 'No link';
+                row.appendChild(linkCell);
 
-            const dateCell = document.createElement('td');
-            dateCell.textContent = item.dateAdd;
-            row.appendChild(dateCell);
+                const dateCell = document.createElement('td');
+                dateCell.textContent = item.dateAdd;
+                row.appendChild(dateCell);
 
-            //TODO SELECT AND SELECT ALL
+                //TODO SELECT AND SELECT ALL
+                const selectCell = document.createElement('td');
+                const checkbox = document.createElement('input');
 
-            tableBody.appendChild(row);
+                checkbox.type = 'checkbox';
+                checkbox.classList.add('slide-checkbox');
+
+                selectCell.appendChild(checkbox);
+                row.appendChild(selectCell);
+
+                tableBody.appendChild(row);
+
+            }
 
         }
 
-    }
+        function handleSelectAll() {
+            const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllcheckbox.checked;
+            });
+        }
+
+        function handleCheckboxClick() {
+            const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
+            const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+            selectAllcheckbox.checked = allChecked;
+        }
+
+        selectAllcheckbox.addEventListener('change', handleSelectAll);
+        tableBody.addEventListener('change', (event) => {
+            if (event.target.classList.contains('slide-checkbox')) {
+                handleCheckboxClick();
+            }
+        });
+
+    })
 </script>
 
 </html>
