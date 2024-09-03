@@ -148,7 +148,8 @@
                 dateCell.textContent = item.dateAdd;
                 row.appendChild(dateCell);
 
-                //TODO SELECT AND SELECT ALL
+                //TODO EDIT COLLUM
+
                 const selectCell = document.createElement('td');
                 const checkbox = document.createElement('input');
 
@@ -183,6 +184,8 @@
                 handleCheckboxClick();
             }
         });
+
+        //TODO TRASH HANDLE AND DELETE FUNCTION
 
     })
 </script>
