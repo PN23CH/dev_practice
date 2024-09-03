@@ -53,6 +53,14 @@
         padding-top: 0.5rem;
         padding-bottom: 0.5rem;
     }
+
+    .icon-edit {
+        background: url("../public/svg/icon-edit.svg");
+        width: 1.5rem;
+        height: 1.5rem;
+        margin-left: auto;
+        margin-right: auto;
+    }
 </style>
 
 <body>
@@ -62,14 +70,18 @@
             <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200 hidden">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
-                <div class="flex justify-end items-center bg-yellow-50 gap-x-5">
+                <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
                     <div>REFRESH</div>
                     <div>SAVE</div>
                     <div>
                         <input type="checkbox" name="select-all" select-all>
                         <label for="select-all">SELECT ALL</label>
                     </div>
-                    <button type="button">DELETE</button>
+                    <button type="button" class="bg-rose-700 hover:bg-rose-500 rounded-lg p-2 invisible" delete-slide>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6 text-white">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+                        </svg>
+                    </button>
                 </div>
                 <table data-practice="practice" class="w-full">
                     <thead>
@@ -78,6 +90,7 @@
                             <th>FILENAME</th>
                             <th>LINK</th>
                             <th>DATE ADD</th>
+                            <th>EDIT</th>
                             <th>DELETE</th>
                         </tr>
                     </thead>
@@ -132,7 +145,6 @@
                 const row = document.createElement('tr');
 
                 const idCell = document.createElement('td');
-                // idCell.textContent = item.id;
                 idCell.innerHTML = `<div>My : ${item.id}</div>`;
                 row.appendChild(idCell);
 
@@ -149,6 +161,17 @@
                 row.appendChild(dateCell);
 
                 //TODO EDIT COLLUM
+                const editCell = document.createElement('td');
+                const button = document.createElement('button');
+                const iconDiv = document.createElement('div');
+                iconDiv.classList.add('icon-edit');
+                button.appendChild(iconDiv);
+
+                button.addEventListener('click', () => {
+                    window.location.href = '/';
+                });
+                editCell.appendChild(button);
+                row.appendChild(editCell);
 
                 const selectCell = document.createElement('td');
                 const checkbox = document.createElement('input');
@@ -178,14 +201,42 @@
             selectAllcheckbox.checked = allChecked;
         }
 
-        selectAllcheckbox.addEventListener('change', handleSelectAll);
+        selectAllcheckbox.addEventListener('change', () => {
+            handleSelectAll();
+            toggleButtonDelete();
+        });
+
         tableBody.addEventListener('change', (event) => {
             if (event.target.classList.contains('slide-checkbox')) {
                 handleCheckboxClick();
+                toggleButtonDelete();
             }
         });
 
         //TODO TRASH HANDLE AND DELETE FUNCTION
+        function toggleButtonDelete() {
+            const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
+            const button = document.querySelector("button[delete-slide]");
+
+            const anyChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+
+            if (anyChecked) {
+                button.classList.remove('invisible');
+            } else {
+                button.classList.add('invisible');
+            }
+        }
+
+        function deleteRows() {
+            const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
+
+            checkboxes.forEach(checkbox => {
+                const row = checkbox.closest('tr');
+                row.remove();
+            });
+        }
+        const deleteButton = document.querySelector("button[delete-slide]");
+        deleteButton.addEventListener('click', deleteRows);
 
     })
 </script>
