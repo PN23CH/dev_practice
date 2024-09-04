@@ -115,6 +115,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const selectAllcheckbox = document.querySelector('[select-all]');
         const tableBody = document.querySelector('[data-table-slide]');
+        const buttonDelete = document.querySelector("button[delete-slide]");
 
         function getData() {
             fetch('../api/slide_api.php')
@@ -227,16 +228,48 @@
             }
         }
 
-        function deleteRows() {
+        buttonDelete.addEventListener('click', () => {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
+            const idsToDelete = Array.from(checkboxes).map(checkbox => checkbox.dataset.itemId);
 
-            checkboxes.forEach(checkbox => {
-                const row = checkbox.closest('tr');
-                row.remove();
-            });
+            console.log(idsToDelete.length);
+
+            if (idsToDelete.length > 0) {
+                const confirmDelete = window.confirm('Are you sure you want to delete the selected items?');
+                if (confirmDelete) {
+                    deleteItems(idsToDelete);
+                }
+                console.log('No items selected for deletion.');
+            }
+
+        })
+
+        function deleteItems(ids) {
+            fetch('../api/slide_api.php', {
+                    method: 'POST',
+                    header: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'delete',
+                        ids: ids
+                    }),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    console.log('Backend response:', result);
+                    const data = result.data.info;
+                    console.log('data :', data);
+                })
+                .catch(error => console.error('There was a problem with the delete operation:', error));
+
         }
-        const deleteButton = document.querySelector("button[delete-slide]");
-        deleteButton.addEventListener('click', deleteRows);
+
 
     })
 </script>
