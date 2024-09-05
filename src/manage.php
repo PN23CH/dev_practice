@@ -165,7 +165,7 @@
                         </defs>
                     </svg>
                 </div>
-                <div class="text-xl font-semibold text-black">คุณต้องการลบข้อมูล 1 รายการหรือไม่</div>
+                <div delete-message class="text-xl font-semibold text-black"></div>
                 <div class="text-lg font-semibold text-red-700">หมายเหตุ ข้อมูลที่ถูกลบไปแล้วไม่สามารถกู้คืนได้</div>
                 <div class="modal-buttons flex justify-end">
                     <button modal-confirm-button class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ยืนยัน</button>
@@ -295,11 +295,14 @@
         }
 
         const deleteModal = document.querySelector('div[modal-confirm-delete]');
+        const deleteMessage = document.querySelector('div[delete-message]');
         const cancelButton = document.querySelector('button[modal-cencel-button]');
         const confirmButton = document.querySelector('button[modal-confirm-button]');
         console.log(confirmButton);
 
-        function openConfirmModal() {
+        function openConfirmModal(idsToDelete) {
+            const itemCount = idsToDelete.length;
+            deleteMessage.textContent = `คุณต้องการลบข้อมูล ${itemCount} รายการหรือไม่?`;
             deleteModal.classList.remove('hidden');
         }
 
@@ -317,7 +320,7 @@
                 idsToDelete);
 
             if (idsToDelete.length > 0) {
-                openConfirmModal();
+                openConfirmModal(idsToDelete);
                 // const confirmDelete = window.confirm('Are you sure you want to delete the selected items?');
                 confirmButton.addEventListener('click', () => {
                     deleteItems(idsToDelete);
