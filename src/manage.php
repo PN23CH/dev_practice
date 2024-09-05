@@ -117,6 +117,8 @@
         const tableBody = document.querySelector('[data-table-slide]');
         const buttonDelete = document.querySelector("button[delete-slide]");
 
+        console.log(buttonDelete);
+
         function getData() {
             fetch('../api/slide_api.php')
                 .then(response => {
@@ -177,6 +179,9 @@
                 const selectCell = document.createElement('td');
                 const checkbox = document.createElement('input');
 
+                checkbox.setAttribute("data-delete-id", item.id)
+                console.log(checkbox.getAttribute("data-delete-id"));
+
                 checkbox.type = 'checkbox';
                 checkbox.classList.add('slide-checkbox');
 
@@ -200,6 +205,8 @@
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
             const allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
             selectAllcheckbox.checked = allChecked;
+
+            console.log(allChecked);
         }
 
         selectAllcheckbox.addEventListener('change', () => {
@@ -231,8 +238,7 @@
         buttonDelete.addEventListener('click', () => {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
             const idsToDelete = Array.from(checkboxes).map(checkbox => checkbox.dataset.itemId);
-
-            console.log(idsToDelete.length);
+            const dataSlide = checkbox.getAttribute("data-delete-id");
 
             if (idsToDelete.length > 0) {
                 const confirmDelete = window.confirm('Are you sure you want to delete the selected items?');
