@@ -163,7 +163,6 @@
                 dateCell.textContent = item.dateAdd;
                 row.appendChild(dateCell);
 
-                //TODO EDIT COLLUM
                 const editCell = document.createElement('td');
                 const button = document.createElement('button');
                 const iconDiv = document.createElement('div');
@@ -221,7 +220,6 @@
             }
         });
 
-        //TODO TRASH HANDLE AND DELETE FUNCTION
         function toggleButtonDelete() {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
             const button = document.querySelector("button[delete-slide]");
@@ -237,6 +235,7 @@
 
         buttonDelete.addEventListener('click', () => {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
+            //TODO
             const idsToDelete = Array.from(checkboxes).map(checkbox => checkbox.dataset.itemId);
             const dataSlide = checkbox.getAttribute("data-delete-id");
 
@@ -267,6 +266,7 @@
                     }
                     return response.json();
                 })
+                //TODO
                 .then(result => {
                     console.log('Backend response:', result);
                     const data = result.data.info;
