@@ -9,6 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <title>News - slide - manage</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </head>
 <style>
     body {
@@ -92,8 +93,24 @@
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
                 <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
-                    <div>REFRESH</div>
-                    <div>SAVE</div>
+                    <button type="button" class="bg-teal-500 hover:bg-teal-400 rounded-lg p-2" refresh-slide>
+                        <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <g clip-path="url(#clip0_2489_15023)">
+                                <path d="M3.48242 7C4.60742 4.375 7.23242 2.5 10.2324 2.5C13.9824 2.5 16.9824 5.25 17.6074 8.75H20.1074C19.4824 3.875 15.3574 0 10.2324 0C6.48242 0 3.23242 2 1.60742 5.125L0.232422 3.75V8.75H5.23242L3.48242 7Z" fill="white" />
+                                <path d="M20.2324 11.25H15.1074L16.9824 13C15.8574 15.625 13.2324 17.5 10.1074 17.5C6.48242 17.5 3.35742 14.75 2.73242 11.25H0.232422C0.857422 16.125 5.10742 20 10.1074 20C13.8574 20 17.1074 17.875 18.8574 14.875L20.2324 16.25V11.25Z" fill="white" />
+                            </g>
+                            <defs>
+                                <clipPath id="clip0_2489_15023">
+                                    <rect width="20" height="20" fill="white" transform="translate(0.232422)" />
+                                </clipPath>
+                            </defs>
+                        </svg>
+                    </button>
+                    <button type="button" class="bg-blue-400 hover:bg-blue-300 rounded-lg p-2" save-slide>
+                        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16.6989 4.07582L13.5159 0.79918C13.1743 0.447548 12.711 0.250003 12.228 0.25H2.05385C1.04789 0.25 0.232422 1.08945 0.232422 2.125V15.875C0.232422 16.9105 1.04789 17.75 2.05385 17.75H15.411C16.417 17.75 17.2324 16.9105 17.2324 15.875V5.40164C17.2324 4.90436 17.0405 4.42745 16.6989 4.07582ZM8.73242 15.25C7.39117 15.25 6.30385 14.1307 6.30385 12.75C6.30385 11.3693 7.39117 10.25 8.73242 10.25C10.0737 10.25 11.161 11.3693 11.161 12.75C11.161 14.1307 10.0737 15.25 8.73242 15.25ZM12.3753 3.35469V7.28125C12.3753 7.54012 12.1714 7.75 11.9199 7.75H3.11635C2.86488 7.75 2.66099 7.54012 2.66099 7.28125V3.21875C2.66099 2.95988 2.86488 2.75 3.11635 2.75H11.7879C11.9087 2.75 12.0245 2.79937 12.1098 2.8873L12.2419 3.02324C12.2842 3.06676 12.3177 3.11843 12.3406 3.1753C12.3635 3.23218 12.3753 3.29313 12.3753 3.35469Z" fill="white" />
+                        </svg>
+                    </button>
                     <div>
                         <input type="checkbox" name="select-all" select-all>
                         <label for="select-all">SELECT ALL</label>
@@ -191,7 +208,16 @@
                     return response.json();
                 })
                 .then(result => {
-                    displaySlideData(result.data.info, tableBody);
+                    const items = result.data.info.map(item => {
+                        return {
+                            id: item.id,
+                            sequent: item.sequent
+                        };
+                    });
+
+                    // console.log('Items:', items);
+
+                    displaySlideData(items, tableBody);
                 })
                 .catch(error => console.error('There was a problem with the fetch operation:', error));
         }
@@ -204,6 +230,8 @@
 
         function displaySlideData(data, table) {
 
+            tableBody.innerHTML = '';
+
             const infoArray = data;
 
             for (let key in infoArray) {
@@ -212,10 +240,10 @@
 
                 const idCell = document.createElement('td');
                 idCell.dataset.itemId = item.id; // dataset ของ id ไปเก็บของโค้ดด้านล่าง
-                console.log(idCell.dataset.itemId);
+                // console.log(idCell.dataset.itemId);
 
-                idCell.innerHTML = `<div>My : ${item.id}</div>`;
-                
+                idCell.innerHTML = `<div>My : ${item.id} SQ${item.sequent}</div>`;
+
                 row.appendChild(idCell);
 
                 const filenameCell = document.createElement('td');
@@ -258,6 +286,59 @@
             }
 
         }
+
+
+        let saveUpdate = [];
+
+        const sortable = new Sortable(tableBody, {
+            animation: 150,
+            onEnd: function(evt) {
+                saveUpdate = [];
+                const rows = tableBody.querySelectorAll('tr');
+                rows.forEach((row, index) => {
+                    const idCell = row.querySelector('td[data-item-id]');
+                    saveUpdate.push({
+                        id: idCell.dataset.itemId,
+                        sequent: index + 1
+                    });
+                });
+                console.log('updated data:', saveUpdate);
+                sendToServer(saveUpdate);
+
+            }
+        })
+
+        function sendToServer() {
+            const updatedData = [];
+            const row = tableBody.querySelectorAll('tr');
+
+            row.forEach(row => {
+                const idCell = row.querySelector('td[data-item-id]');
+                updatedData.push({
+                    id: idCell.dataset.itemId,
+                    sequent: idCell.dataset.sequent
+                });
+            });
+            console.log('Updated order:', updatedData);
+
+            fetch('../api/slide_api.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        updatedData: updatedData
+                    }),
+                })
+                .then(response => response.json())
+                .then(result => {
+                    console.log('Update result:', result);
+                })
+                .catch(error => {
+                    console.error('Error updating sequent:', error);
+                });
+        }
+
 
         function handleSelectAll() {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
@@ -337,12 +418,12 @@
         })
 
         function deleteItems(ids) {
-            
+
             const formData = new FormData();
 
-            formData.append("action" , "delete");
-            formData.append("ids" , JSON.stringify(ids));
-            formData.append("type" , "slide");
+            formData.append("action", "delete");
+            formData.append("ids", JSON.stringify(ids));
+            formData.append("type", "slide");
 
             console.log('Sending dataList:', dataList);
 
@@ -373,7 +454,7 @@
                         console.error('Failed to delete items:', result.message);
                     }
 
-                    
+
                 })
                 .catch(error => console.error('There was a problem with the delete operation:', error));
         }
@@ -382,6 +463,45 @@
         // handle ปุ่ม refresh (ยกเลิกการ sort) กับ save (ยิง api ว่า sequent เปลี่ยน) 
         // fetch api ที่ ไฟล์ _sortable โดยถ้าสำเร็จจะใช้ "message": "success",
 
+        document.querySelector('[save-slide]').addEventListener('click', () => {
+            if (saveUpdate.length > 0) {
+                sendToServer(saveUpdate);
+            } else {
+                console.log('No data to update');
+            }
+        });
+
+        document.querySelector('[refresh-slide]').addEventListener('click', () => {
+            getData();
+        });
+
+        const saveSlideButton = document.querySelector('button[save-slide]');
+        saveSlideButton.addEventListener('click', () => {
+            // ส่งคำขอไปยัง API
+            fetch('../api/slide_api_sortable.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'CSRF-Token': 'csrf'
+                    },
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.result && result.message === 'success') {
+                        console.log('Message from API:', result.message);
+                    } else {
+                        console.log('API responded with:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
 
 
     })
