@@ -211,7 +211,11 @@
                 const row = document.createElement('tr');
 
                 const idCell = document.createElement('td');
+                idCell.dataset.itemId = item.id; // dataset ของ id ไปเก็บของโค้ดด้านล่าง
+                console.log(idCell.dataset.itemId);
+
                 idCell.innerHTML = `<div>My : ${item.id}</div>`;
+                
                 row.appendChild(idCell);
 
                 const filenameCell = document.createElement('td');
@@ -240,9 +244,8 @@
 
                 const selectCell = document.createElement('td');
                 const checkbox = document.createElement('input');
-
-                checkbox.setAttribute("data-delete-id", item.id)
-                console.log(checkbox.getAttribute("data-delete-id"));
+                checkbox.setAttribute("data-delete-id", item.id) // เลือกไอเทมของ data และระบุไปใน checkbox
+                // console.log(checkbox.getAttribute("data-delete-id"));
 
                 checkbox.type = 'checkbox';
                 checkbox.classList.add('slide-checkbox');
@@ -298,7 +301,6 @@
         const deleteMessage = document.querySelector('div[delete-message]');
         const cancelButton = document.querySelector('button[modal-cencel-button]');
         const confirmButton = document.querySelector('button[modal-confirm-button]');
-        console.log(confirmButton);
 
         function openConfirmModal(idsToDelete) {
             const itemCount = idsToDelete.length;
@@ -335,19 +337,19 @@
         })
 
         function deleteItems(ids) {
-            const dataList = {
-                action: 'delete',
-                ids: ids
-            };
+            
+            const formData = new FormData();
+
+            formData.append("action" , "delete");
+            formData.append("ids" , JSON.stringify(ids));
+            formData.append("type" , "slide");
 
             console.log('Sending dataList:', dataList);
 
             fetch('../api/slide_api.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(dataList),
+                    'credentials': 'include', // policy 
+                    body: formData,
                 })
                 .then(response => {
                     if (!response.ok) {
@@ -357,7 +359,9 @@
                 })
                 .then(result => {
                     console.log('Server response:', result);
-                    if (result.success) {
+
+
+                    if (result) {
                         console.log('Items deleted successfully:', ids);
                         ids.forEach(id => {
                             const checkbox = tableBody.querySelector(`.slide-checkbox[data-delete-id="${id}"]`);
@@ -368,9 +372,15 @@
                     } else {
                         console.error('Failed to delete items:', result.message);
                     }
+
+                    
                 })
                 .catch(error => console.error('There was a problem with the delete operation:', error));
         }
+
+        //TODO Sortable - id / sequent => API  จับ data 2 ชุด id กับ sequent เมื่อสลับ sequent เปลี่ยน id เหมือนเดิม
+        // handle ปุ่ม refresh (ยกเลิกการ sort) กับ save (ยิง api ว่า sequent เปลี่ยน) 
+        // fetch api ที่ ไฟล์ _sortable โดยถ้าสำเร็จจะใช้ "message": "success",
 
 
 
