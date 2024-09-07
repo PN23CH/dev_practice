@@ -124,6 +124,7 @@
                 <table data-practice="practice" class="w-full">
                     <thead>
                         <tr>
+                            <th>No.</th>
                             <th>ID</th>
                             <th>FILENAME</th>
                             <th>LINK</th>
@@ -208,16 +209,19 @@
                     return response.json();
                 })
                 .then(result => {
-                    const items = result.data.info.map(item => {
-                        return {
-                            id: item.id,
-                            sequent: item.sequent
-                        };
-                    });
+                    // const items = result.data.info.map(item => {
+                    //     return {
+                    //         id: item.id,
+                    //         sequent: item.sequent
+                    //     };
+                    // });
+                    const items = result.data.info;
 
-                    // console.log('Items:', items);
+                    if (items) {
+                        // console.log(items);
+                        displaySlideData(items, tableBody);
+                    }
 
-                    displaySlideData(items, tableBody);
                 })
                 .catch(error => console.error('There was a problem with the fetch operation:', error));
         }
@@ -237,11 +241,15 @@
             for (let key in infoArray) {
                 const item = infoArray[key];
                 const row = document.createElement('tr');
+                row.dataset.itemId = item.id;
+                row.dataset.itemSq = item.sequent;
+
+                const numCell = document.createElement('td');
+                numCell.textContent = parseInt(key) + 1;
+
+                row.appendChild(numCell);
 
                 const idCell = document.createElement('td');
-                idCell.dataset.itemId = item.id; // dataset ของ id ไปเก็บของโค้ดด้านล่าง
-                // console.log(idCell.dataset.itemId);
-
                 idCell.innerHTML = `<div>My : ${item.id} SQ${item.sequent}</div>`;
 
                 row.appendChild(idCell);
@@ -288,47 +296,35 @@
         }
 
 
-        let saveUpdate = [];
+        // let saveUpdate = [];
 
         const sortable = new Sortable(tableBody, {
             animation: 150,
             onEnd: function(evt) {
-                saveUpdate = [];
                 const rows = tableBody.querySelectorAll('tr');
                 rows.forEach((row, index) => {
-                    const idCell = row.querySelector('td[data-item-id]');
-                    saveUpdate.push({
-                        id: idCell.dataset.itemId,
-                        sequent: index + 1
-                    });
-                });
-                console.log('updated data:', saveUpdate);
-                sendToServer(saveUpdate);
+                    const numCell = row.querySelector('td');
+                    numCell.textContent = index + 1;
+                    //TODO ใส่ Background
+
+                    console.log(numCell);
+                })
 
             }
         })
 
-        function sendToServer() {
-            const updatedData = [];
-            const row = tableBody.querySelectorAll('tr');
 
-            row.forEach(row => {
-                const idCell = row.querySelector('td[data-item-id]');
-                updatedData.push({
-                    id: idCell.dataset.itemId,
-                    sequent: idCell.dataset.sequent
-                });
-            });
-            console.log('Updated order:', updatedData);
+        function sendToServer(ids, sqs) {
+            const formData = new FormData();
+            formData.append("action", "update-sequent");
+            formData.append("ids", JSON.stringify(ids));
+            formData.append("sequent", JSON.stringify(sqs));
+            formData.append("type", "slide");
 
             fetch('../api/slide_api.php', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        updatedData: updatedData
-                    }),
+                    'credentials': 'include', // policy 
+                    body: formData,
                 })
                 .then(response => response.json())
                 .then(result => {
@@ -396,7 +392,6 @@
 
         buttonDelete.addEventListener('click', () => {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
-            //TODO
             const idsToDelete = Array.from(checkboxes).map(checkbox => checkbox.getAttribute('data-delete-id'));
 
             console.log("idsToDelete",
@@ -459,13 +454,26 @@
                 .catch(error => console.error('There was a problem with the delete operation:', error));
         }
 
-        //TODO Sortable - id / sequent => API  จับ data 2 ชุด id กับ sequent เมื่อสลับ sequent เปลี่ยน id เหมือนเดิม
-        // handle ปุ่ม refresh (ยกเลิกการ sort) กับ save (ยิง api ว่า sequent เปลี่ยน) 
-        // fetch api ที่ ไฟล์ _sortable โดยถ้าสำเร็จจะใช้ "message": "success",
 
         document.querySelector('[save-slide]').addEventListener('click', () => {
-            if (saveUpdate.length > 0) {
-                sendToServer(saveUpdate);
+
+            //TODO  ids: [{"id":"114"},{"id":"113"},{"id":"112"}] // ต้องการแค่ [114, 113 ,112]
+            //TODO sequent: [{"sequent":"2"},{"sequent":"3"},{"sequent":"1"}] // ต้องการแค่ [2, 3 ,1]
+            let saveUpdateId = [];
+            let saveUpdateSq = [];
+            const rows = tableBody.querySelectorAll('tr');
+            rows.forEach((row) => {
+                saveUpdateId.push({
+                    id: row.dataset.itemId,
+                });
+                saveUpdateSq.push({
+                    sequent: row.dataset.itemSq,
+                });
+                console.log("row.dataset.itemSq", row.dataset.itemSq);
+            });
+
+            if (saveUpdateId.length > 0) {
+                sendToServer(saveUpdateId, saveUpdateSq);
             } else {
                 console.log('No data to update');
             }
@@ -503,6 +511,8 @@
                 });
         });
 
+        //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
+        //TODO PAGINATION ไปแกะ code ของเอกได้
 
     })
 </script>
