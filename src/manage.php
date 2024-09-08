@@ -83,6 +83,10 @@
         width: 50%;
         text-align: center;
     }
+
+    .dragging {
+        background-color: #FED7AA;
+    }
 </style>
 
 <body>
@@ -250,7 +254,7 @@
                 row.appendChild(numCell);
 
                 const idCell = document.createElement('td');
-                idCell.innerHTML = `<div>My : ${item.id} SQ${item.sequent}</div>`;
+                idCell.innerHTML = `<div>${item.id} : ${item.sequent}</div>`;
 
                 row.appendChild(idCell);
 
@@ -296,20 +300,22 @@
         }
 
 
-        // let saveUpdate = [];
-
+        let lastDraggedRow = null;
         const sortable = new Sortable(tableBody, {
             animation: 150,
+            onStart: function(evt) {
+                if (lastDraggedRow) {
+                    lastDraggedRow.classList.remove('dragging'); // ลบสีล่าสุด หากมีการ dragging ที่ตำแหน่งอื่น
+                }
+                evt.item.classList.add('dragging'); // ใส่สีระหว่างที่ถูก Dragging
+            },
             onEnd: function(evt) {
                 const rows = tableBody.querySelectorAll('tr');
+                lastDraggedRow = evt.item; // เก็บแถวที่ถูก Dragging ล่าสุด
                 rows.forEach((row, index) => {
                     const numCell = row.querySelector('td');
                     numCell.textContent = index + 1;
-                    //TODO ใส่ Background
-
-                    console.log(numCell);
                 })
-
             }
         })
 
@@ -420,8 +426,6 @@
             formData.append("ids", JSON.stringify(ids));
             formData.append("type", "slide");
 
-            console.log('Sending dataList:', dataList);
-
             fetch('../api/slide_api.php', {
                     method: 'POST',
                     'credentials': 'include', // policy 
@@ -463,20 +467,33 @@
             let saveUpdateSq = [];
             const rows = tableBody.querySelectorAll('tr');
             rows.forEach((row) => {
-                saveUpdateId.push({
-                    id: row.dataset.itemId,
-                });
-                saveUpdateSq.push({
-                    sequent: row.dataset.itemSq,
-                });
-                console.log("row.dataset.itemSq", row.dataset.itemSq);
+                saveUpdateId.push(row.dataset.itemId); // เก็บเฉพาะ id
+                saveUpdateSq.push(row.dataset.itemSq); // เก็บเฉพาะ sequent
             });
 
+            console.log("IDs:", saveUpdateId);
+            console.log("Sequents:", saveUpdateSq);
+
             if (saveUpdateId.length > 0) {
-                sendToServer(saveUpdateId, saveUpdateSq);
+                sendToServer(saveUpdateId, saveUpdateSq); // ส่ง ids และ sequent ไปยังฟังก์ชัน
             } else {
                 console.log('No data to update');
             }
+            // rows.forEach((row) => {
+            //     saveUpdateId.push({
+            //         id: row.dataset.itemId,
+            //     });
+            //     saveUpdateSq.push({
+            //         sequent: row.dataset.itemSq,
+            //     });
+            //     console.log("row.dataset.itemSq", row.dataset.itemSq);
+            // });
+
+            // if (saveUpdateId.length > 0) {
+            //     sendToServer(saveUpdateId, saveUpdateSq);
+            // } else {
+            //     console.log('No data to update');
+            // }
         });
 
         document.querySelector('[refresh-slide]').addEventListener('click', () => {
