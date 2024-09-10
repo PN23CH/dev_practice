@@ -87,6 +87,10 @@
     .dragging {
         background-color: #FED7AA;
     }
+
+    .dragged {
+        background-color: #FED7AA;
+    }
 </style>
 
 <body>
@@ -146,7 +150,7 @@
                 </table>
                 <div class="flex justify-between items-center bg-slate-300">
                     <div>ADD</div>
-                    <div>PAGINATION</div>
+                    <div pagination>PAGINATION</div>
                 </div>
             </div>
         </div>
@@ -213,16 +217,9 @@
                     return response.json();
                 })
                 .then(result => {
-                    // const items = result.data.info.map(item => {
-                    //     return {
-                    //         id: item.id,
-                    //         sequent: item.sequent
-                    //     };
-                    // });
                     const items = result.data.info;
 
                     if (items) {
-                        // console.log(items);
                         displaySlideData(items, tableBody);
                     }
 
@@ -247,6 +244,10 @@
                 const row = document.createElement('tr');
                 row.dataset.itemId = item.id;
                 row.dataset.itemSq = item.sequent;
+
+                if (key % 2 == 1) {
+                    row.classList.add('bg-slate-100');
+                }
 
                 const numCell = document.createElement('td');
                 numCell.textContent = parseInt(key) + 1;
@@ -301,20 +302,34 @@
 
 
         let lastDraggedRow = null;
+        const draggedRows = new Set();
+
         const sortable = new Sortable(tableBody, {
             animation: 150,
             onStart: function(evt) {
-                if (lastDraggedRow) {
-                    lastDraggedRow.classList.remove('dragging'); // ลบสีล่าสุด หากมีการ dragging ที่ตำแหน่งอื่น
-                }
                 evt.item.classList.add('dragging'); // ใส่สีระหว่างที่ถูก Dragging
             },
             onEnd: function(evt) {
                 const rows = tableBody.querySelectorAll('tr');
+
                 lastDraggedRow = evt.item; // เก็บแถวที่ถูก Dragging ล่าสุด
+                draggedRows.add(lastDraggedRow);
+                lastDraggedRow.classList.remove('dragging');
+
                 rows.forEach((row, index) => {
                     const numCell = row.querySelector('td');
                     numCell.textContent = index + 1;
+
+                    row.classList.remove('bg-slate-100');
+
+                    if (index % 2 == 1) {
+                        row.classList.add('bg-slate-100');
+                    }
+
+                    if (draggedRows.has(row)) {
+                        row.classList.add('dragged');
+                        row.classList.remove('bg-slate-100');
+                    }
                 })
             }
         })
@@ -461,8 +476,6 @@
 
         document.querySelector('[save-slide]').addEventListener('click', () => {
 
-            //TODO  ids: [{"id":"114"},{"id":"113"},{"id":"112"}] // ต้องการแค่ [114, 113 ,112]
-            //TODO sequent: [{"sequent":"2"},{"sequent":"3"},{"sequent":"1"}] // ต้องการแค่ [2, 3 ,1]
             let saveUpdateId = [];
             let saveUpdateSq = [];
             const rows = tableBody.querySelectorAll('tr');
@@ -479,21 +492,6 @@
             } else {
                 console.log('No data to update');
             }
-            // rows.forEach((row) => {
-            //     saveUpdateId.push({
-            //         id: row.dataset.itemId,
-            //     });
-            //     saveUpdateSq.push({
-            //         sequent: row.dataset.itemSq,
-            //     });
-            //     console.log("row.dataset.itemSq", row.dataset.itemSq);
-            // });
-
-            // if (saveUpdateId.length > 0) {
-            //     sendToServer(saveUpdateId, saveUpdateSq);
-            // } else {
-            //     console.log('No data to update');
-            // }
         });
 
         document.querySelector('[refresh-slide]').addEventListener('click', () => {
@@ -527,6 +525,9 @@
                     console.error('Error:', error);
                 });
         });
+
+
+
 
         //TODO BG ระหว่างบรรทัดเลขคู่
         //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
