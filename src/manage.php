@@ -208,6 +208,12 @@
         const tableBody = document.querySelector('[data-table-slide]');
         const buttonDelete = document.querySelector("button[delete-slide]");
 
+        // let itemsPerPage
+        let maxrow = 2;
+        let currentPage = 1;
+        let fixItems = 3;
+        let items = [];
+
         function getData() {
             fetch('../api/slide_api.php')
                 .then(response => {
@@ -217,10 +223,18 @@
                     return response.json();
                 })
                 .then(result => {
-                    const items = result.data.info;
+                    const items = result.data.info; // จำนวนและ opject ที่อยู่ใน API ทั้งหมด
+                    const totalitems = result.data.total; //จำนวนของข้อมูลใน API
+
+
+                    // itemsPerPage = totalitems;
 
                     if (items) {
-                        displaySlideData(items, tableBody);
+                        displaySlideData(items, tableBody, currentPage);
+                    }
+
+                    if (totalitems) {
+                        displayPagination(totalitems, maxrow, currentPage, fixItems);
                     }
 
                 })
@@ -233,9 +247,14 @@
             getData();
         }
 
-        function displaySlideData(data, table) {
+        function displaySlideData(data, table, page) {
 
             tableBody.innerHTML = '';
+
+            const startIndex = (page - 1) * maxrow;
+            const endIndex = startIndex + maxrow;
+            const pageItems = items.slice(startIndex, endIndex);
+
 
             const infoArray = data;
 
@@ -286,7 +305,6 @@
                 const selectCell = document.createElement('td');
                 const checkbox = document.createElement('input');
                 checkbox.setAttribute("data-delete-id", item.id) // เลือกไอเทมของ data และระบุไปใน checkbox
-                // console.log(checkbox.getAttribute("data-delete-id"));
 
                 checkbox.type = 'checkbox';
                 checkbox.classList.add('slide-checkbox');
@@ -300,6 +318,59 @@
 
         }
 
+        function displayPagination(total, maxrow, currentPage, fixItems) {
+            const totalPages = Math.ceil(total / maxrow); // คำนวณจำนวนหน้าทั้งหมด
+            // return;
+            const paginationDiv = document.querySelector('[pagination]');
+            paginationDiv.innerHTML = '';
+
+            // console.log("totalPages", totalPages);
+            // console.log("paginationDiv", paginationDiv);
+
+            // console.log(items.length);
+
+            // Prev Button
+            const prevButton = document.createElement('button');
+            prevButton.textContent = 'ย้อนกลับ';
+            prevButton.disabled = currentPage === 1; // ปิดการใช้งานถ้าอยู่ที่หน้าแรก
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    displaySlideData(currentPage);
+                    displayPagination();
+                }
+            });
+            paginationDiv.appendChild(prevButton);
+
+            // Number
+            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                if (i === currentPage) {
+                    pageButton.classList.add('active'); // ทำให้ปุ่มของหน้าปัจจุบันเด่น
+                }
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    displaySlideData(currentPage);
+                    displayPagination();
+                });
+                paginationDiv.appendChild(pageButton);
+            }
+
+            // Next Button
+            const nextButton = document.createElement('button');
+            nextButton.textContent = 'ถัดไป';
+            nextButton.disabled = currentPage === totalPages; // ปิดการใช้งานถ้าอยู่ที่หน้าสุดท้าย
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    displaySlideData(currentPage);
+                    displayPagination();
+                }
+            });
+            paginationDiv.appendChild(nextButton);
+
+        }
 
         let lastDraggedRow = null;
         const draggedRows = new Set();
