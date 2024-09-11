@@ -211,7 +211,7 @@
         // let itemsPerPage
         let maxrow = 2;
         let currentPage = 1;
-        let fixItems = 3;
+        let fixedItems = 3;
         let items = [];
 
         function getData() {
@@ -226,15 +226,12 @@
                     const items = result.data.info; // จำนวนและ opject ที่อยู่ใน API ทั้งหมด
                     const totalitems = result.data.total; //จำนวนของข้อมูลใน API
 
-
-                    // itemsPerPage = totalitems;
-
                     if (items) {
-                        displaySlideData(items, tableBody, currentPage);
+                        displaySlideData(items, tableBody, currentPage, maxrow);
                     }
 
                     if (totalitems) {
-                        displayPagination(totalitems, maxrow, currentPage, fixItems);
+                        displayPagination(totalitems, maxrow, currentPage, fixedItems, items);
                     }
 
                 })
@@ -247,16 +244,15 @@
             getData();
         }
 
-        function displaySlideData(data, table, page) {
+        function displaySlideData(data, table, page, maxrow) {
 
             tableBody.innerHTML = '';
 
             const startIndex = (page - 1) * maxrow;
             const endIndex = startIndex + maxrow;
-            const pageItems = items.slice(startIndex, endIndex);
 
-
-            const infoArray = data;
+            // const infoArray = data;
+            const infoArray = data.slice(startIndex, endIndex);
 
             for (let key in infoArray) {
                 const item = infoArray[key];
@@ -318,58 +314,53 @@
 
         }
 
-        function displayPagination(total, maxrow, currentPage, fixItems) {
+        function displayPagination(total, maxrow, currentPage, fixedItems, items) {
             const totalPages = Math.ceil(total / maxrow); // คำนวณจำนวนหน้าทั้งหมด
+            console.log(totalPages);
             // return;
             const paginationDiv = document.querySelector('[pagination]');
             paginationDiv.innerHTML = '';
-
-            // console.log("totalPages", totalPages);
-            // console.log("paginationDiv", paginationDiv);
-
-            // console.log(items.length);
+            paginationDiv.className = "flex bg-gray-200 gap-x-2";
 
             // Prev Button
-            const prevButton = document.createElement('button');
-            prevButton.textContent = 'ย้อนกลับ';
-            prevButton.disabled = currentPage === 1; // ปิดการใช้งานถ้าอยู่ที่หน้าแรก
-            prevButton.addEventListener('click', () => {
-                if (currentPage > 1) {
+            if (currentPage > 1) {
+                const prevButton = document.createElement('button');
+                prevButton.textContent = '<';
+                prevButton.addEventListener('click', () => {
                     currentPage--;
-                    displaySlideData(currentPage);
-                    displayPagination();
-                }
-            });
-            paginationDiv.appendChild(prevButton);
+                    displaySlideData(items, tableBody, currentPage, maxrow);
+                    displayPagination(total, maxrow, currentPage, fixedItems, items);
+                });
+                paginationDiv.appendChild(prevButton);
+            }
 
             // Number
             for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
                 const pageButton = document.createElement('button');
                 pageButton.textContent = i;
                 if (i === currentPage) {
-                    pageButton.classList.add('active'); // ทำให้ปุ่มของหน้าปัจจุบันเด่น
+                    pageButton.classList.add('bg-rose-200'); // ทำให้ปุ่มของหน้าปัจจุบันเด่น
                 }
                 pageButton.addEventListener('click', () => {
                     currentPage = i;
-                    displaySlideData(currentPage);
-                    displayPagination();
+                    displaySlideData(items, tableBody, currentPage, maxrow);
+                    displayPagination(total, maxrow, currentPage, fixedItems, items);
                 });
                 paginationDiv.appendChild(pageButton);
             }
 
             // Next Button
-            const nextButton = document.createElement('button');
-            nextButton.textContent = 'ถัดไป';
-            nextButton.disabled = currentPage === totalPages; // ปิดการใช้งานถ้าอยู่ที่หน้าสุดท้าย
-            nextButton.addEventListener('click', () => {
-                if (currentPage < totalPages) {
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('button');
+                nextButton.textContent = '>';
+                // nextButton.disabled = currentPage === totalPages; // ปิดการใช้งานถ้าอยู่ที่หน้าสุดท้าย
+                nextButton.addEventListener('click', () => {
                     currentPage++;
-                    displaySlideData(currentPage);
-                    displayPagination();
-                }
-            });
-            paginationDiv.appendChild(nextButton);
-
+                    displaySlideData(items, tableBody, currentPage, maxrow);
+                    displayPagination(total, maxrow, currentPage, fixedItems, items);
+                });
+                paginationDiv.appendChild(nextButton);
+            }
         }
 
         let lastDraggedRow = null;
@@ -598,9 +589,6 @@
         });
 
 
-
-
-        //TODO BG ระหว่างบรรทัดเลขคู่
         //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
         //TODO PAGINATION ไปแกะ code ของเอกได้
 
