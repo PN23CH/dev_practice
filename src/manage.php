@@ -211,7 +211,6 @@
         // let itemsPerPage
         let maxrow = 2;
         let currentPage = 1;
-        let fixedItems = 3;
         let items = [];
 
         function getData() {
@@ -231,7 +230,7 @@
                     }
 
                     if (totalitems) {
-                        displayPagination(totalitems, maxrow, currentPage, fixedItems, items);
+                        displayPagination(totalitems, maxrow, currentPage, items);
                     }
 
                 })
@@ -314,7 +313,7 @@
 
         }
 
-        function displayPagination(total, maxrow, currentPage, fixedItems, items) {
+        function displayPagination(total, maxrow, currentPage, items) {
             const totalPages = Math.ceil(total / maxrow); // คำนวณจำนวนหน้าทั้งหมด
             console.log(totalPages);
             // return;
@@ -329,7 +328,7 @@
                 prevButton.addEventListener('click', () => {
                     currentPage--;
                     displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, fixedItems, items);
+                    displayPagination(total, maxrow, currentPage, items);
                 });
                 paginationDiv.appendChild(prevButton);
             }
@@ -344,7 +343,7 @@
                 pageButton.addEventListener('click', () => {
                     currentPage = i;
                     displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, fixedItems, items);
+                    displayPagination(total, maxrow, currentPage, items);
                 });
                 paginationDiv.appendChild(pageButton);
             }
@@ -357,7 +356,7 @@
                 nextButton.addEventListener('click', () => {
                     currentPage++;
                     displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, fixedItems, items);
+                    displayPagination(total, maxrow, currentPage, items);
                 });
                 paginationDiv.appendChild(nextButton);
             }
