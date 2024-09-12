@@ -91,6 +91,41 @@
     .dragged {
         background-color: #FED7AA;
     }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    input[type="number"] {
+        width: 2.5rem;
+        padding-left: 0.5rem;
+        padding-right: 0.5rem;
+        background-color: #D6D3D1;
+    }
+
+    input[type="number"]:focus {
+        border-radius: 0.3rem;
+        outline: none;
+    }
+
+    button[data-highlight-page],
+    button[data-prev-butt],
+    button[data-next-butt] {
+        border-radius: 0.5rem;
+        border: 0.15rem solid #A7A7A7;
+        background-color: #FFFFFF;
+        padding-left: 0.6rem;
+        padding-right: 0.6rem;
+        padding-top: 0.1rem;
+        padding-bottom: 0.1rem;
+    }
+
+    button[data-highlight-page="highlight"] {
+        background-color: #D9FDFD;
+        border: 0.15rem solid #18B9AC;
+    }
 </style>
 
 <body>
@@ -148,7 +183,7 @@
                         </tr>
                     </tfoot>
                 </table>
-                <div class="flex justify-between items-center bg-slate-300">
+                <div class="flex justify-between items-center">
                     <div>ADD</div>
                     <div pagination>PAGINATION</div>
                 </div>
@@ -209,9 +244,8 @@
         const buttonDelete = document.querySelector("button[delete-slide]");
 
         // let itemsPerPage
-        let maxrow = 2;
+        let maxrow = 3;
         let currentPage = 1;
-        let items = [];
 
         function getData() {
             fetch('../api/slide_api.php')
@@ -230,7 +264,7 @@
                     }
 
                     if (totalitems) {
-                        displayPagination(totalitems, maxrow, currentPage, items);
+                        displayPagination(totalitems, maxrow, currentPage, items); //ใช้เก็บและแสดง items ในแต่ละหน้าที่เรียกกับ pagination
                     }
 
                 })
@@ -314,16 +348,15 @@
         }
 
         function displayPagination(total, maxrow, currentPage, items) {
-            const totalPages = Math.ceil(total / maxrow); // คำนวณจำนวนหน้าทั้งหมด
-            console.log(totalPages);
-            // return;
+            const totalPages = Math.ceil(total / maxrow);
             const paginationDiv = document.querySelector('[pagination]');
             paginationDiv.innerHTML = '';
-            paginationDiv.className = "flex bg-gray-200 gap-x-2";
+            paginationDiv.className = "flex gap-x-2";
 
             // Prev Button
             if (currentPage > 1) {
                 const prevButton = document.createElement('button');
+                prevButton.setAttribute('data-prev-butt', '')
                 prevButton.textContent = '<';
                 prevButton.addEventListener('click', () => {
                     currentPage--;
@@ -333,26 +366,60 @@
                 paginationDiv.appendChild(prevButton);
             }
 
-            // Number
-            for (let i = Math.max(1, currentPage - 2); i <= Math.min(totalPages, currentPage + 2); i++) {
-                const pageButton = document.createElement('button');
-                pageButton.textContent = i;
-                if (i === currentPage) {
-                    pageButton.classList.add('bg-rose-200'); // ทำให้ปุ่มของหน้าปัจจุบันเด่น
+            // Page Number Buttons
+            if (totalPages <= 5) {
+                // แสดงหมายเลขหน้าทั้งหมดหากมี 5 หน้าหรือน้อยกว่า
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageButton = createPageLink(i, currentPage);
+                    paginationDiv.appendChild(pageButton);
                 }
-                pageButton.addEventListener('click', () => {
-                    currentPage = i;
-                    displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, items);
-                });
-                paginationDiv.appendChild(pageButton);
+            } else {
+                // Handle เมื่อมีมากกว่า 5 หน้า
+                if (currentPage === 1) {
+                    // แสดง 3 หน้าแรก, "..." และหน้าสุดท้าย
+                    for (let i = 1; i <= 3; i++) {
+                        paginationDiv.appendChild(createPageLink(i, currentPage));
+                    }
+                    paginationDiv.appendChild(createDotMorePage());
+                    paginationDiv.appendChild(createPageLink(totalPages, currentPage));
+                } else if (currentPage === 2) {
+                    // แสดงหน้า 1, หน้าปัจจุบัน, 3, "..." และหน้าสุดท้าย
+                    paginationDiv.appendChild(createPageLink(1, currentPage));
+                    for (let i = 2; i <= 3; i++) {
+                        paginationDiv.appendChild(createPageLink(i, currentPage));
+                    }
+                    paginationDiv.appendChild(createDotMorePage());
+                    paginationDiv.appendChild(createPageLink(totalPages, currentPage));
+                } else if (currentPage === 3) {
+                    // แสดงหน้า 1, 2, หน้าปัจจุบัน, "..." และหน้าสุดท้าย
+                    paginationDiv.appendChild(createPageLink(1, currentPage));
+                    for (let i = 2; i <= 3; i++) {
+                        paginationDiv.appendChild(createPageLink(i, currentPage));
+                    }
+                    paginationDiv.appendChild(createDotMorePage());
+                    paginationDiv.appendChild(createPageLink(totalPages, currentPage));
+                } else if (currentPage > 3 && currentPage < totalPages - 2) {
+                    // แสดงหน้า 1, "..." , หน้าปัจจุบัน, "..." และหน้าสุดท้าย
+                    paginationDiv.appendChild(createPageLink(1, currentPage));
+                    paginationDiv.appendChild(createDotMorePage());
+                    paginationDiv.appendChild(createPageLink(currentPage, currentPage));
+                    paginationDiv.appendChild(createDotMorePage());
+                    paginationDiv.appendChild(createPageLink(totalPages, currentPage));
+                } else if (currentPage >= totalPages - 2) {
+                    // แสดงหน้า 1, "..." , หน้าสุดท้ายสองสามหน้า
+                    paginationDiv.appendChild(createPageLink(1, currentPage));
+                    paginationDiv.appendChild(createDotMorePage());
+                    for (let i = totalPages - 2; i <= totalPages; i++) {
+                        paginationDiv.appendChild(createPageLink(i, currentPage));
+                    }
+                }
             }
 
             // Next Button
             if (currentPage < totalPages) {
                 const nextButton = document.createElement('button');
+                nextButton.setAttribute('data-next-butt', '')
                 nextButton.textContent = '>';
-                // nextButton.disabled = currentPage === totalPages; // ปิดการใช้งานถ้าอยู่ที่หน้าสุดท้าย
                 nextButton.addEventListener('click', () => {
                     currentPage++;
                     displaySlideData(items, tableBody, currentPage, maxrow);
@@ -360,7 +427,50 @@
                 });
                 paginationDiv.appendChild(nextButton);
             }
+
+            function createPageLink(pageNumber, currentPage) {
+                const link = document.createElement('button');
+                link.setAttribute('data-highlight-page', '');
+                link.textContent = pageNumber;
+                if (pageNumber === currentPage) {
+                    link.setAttribute('data-highlight-page', 'highlight');
+                }
+                link.addEventListener('click', () => {
+                    currentPage = pageNumber;
+                    displaySlideData(items, tableBody, currentPage, maxrow);
+                    displayPagination(total, maxrow, currentPage, items);
+                });
+                return link;
+            }
+
+            function createDotMorePage() {
+                const dots = document.createElement("div");
+                dots.textContent = "...";
+                dots.style.cursor = "pointer";
+                dots.addEventListener("click", () => {
+                    const pagenavi = document.createElement("input");
+                    pagenavi.type = "number";
+                    pagenavi.min = 1;
+                    pagenavi.max = totalPages;
+                    pagenavi.value = currentPage;
+                    pagenavi.addEventListener("keydown", (event) => {
+                        if (event.key === "Enter") {
+                            const pageNumber = parseInt(pagenavi.value, 10);
+                            if (pageNumber >= 1 && pageNumber <= totalPages) {
+                                currentPage = pageNumber;
+                                displaySlideData(items, tableBody, currentPage, maxrow);
+                                displayPagination(total, maxrow, currentPage, items);
+                            }
+                        }
+                    });
+                    dots.replaceWith(pagenavi);
+                    pagenavi.focus();
+                });
+                return dots;
+
+            }
         }
+
 
         let lastDraggedRow = null;
         const draggedRows = new Set();
@@ -589,7 +699,6 @@
 
 
         //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
-        //TODO PAGINATION ไปแกะ code ของเอกได้
 
     })
 </script>
