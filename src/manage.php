@@ -177,9 +177,9 @@
                         </tr>
                     </thead>
                     <tbody data-table-slide></tbody>
-                    <tfoot>
+                    <tfoot data-loading>
                         <tr>
-                            <td>FOOTER TABLE</td>
+                            <td colspan="3" id="loading-status">Loading...</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -247,46 +247,79 @@
         let maxrow = 3;
         let currentPage = 1;
 
-        // TODO รับ page กับ maxrow ลงไปทำ fetch fromData
         function getData(page, maxrow) {
-            fetch('../api/slide_api.php')
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(result => {
-                    const items = result.data.info; // จำนวนและ opject ที่อยู่ใน API ทั้งหมด
-                    const totalitems = result.data.total; //จำนวนของข้อมูลใน API
+            tableBody.innerHTML = '';
 
-                    if (items) {
-                        displaySlideData(items, tableBody, currentPage, maxrow);
-                    }
+            document.getElementById('loading-status').textContent = "Loading...";
+            const tfoot = document.querySelector('tfoot[data-loading]');
+            tfoot.style.display = ''; // แสดง tfoot
 
-                    if (totalitems) {
-                        displayPagination(totalitems, maxrow, currentPage);
-                    }
 
-                })
-                .catch(error => console.error('There was a problem with the fetch operation:', error));
+            setTimeout(() => {
+                const formData = new FormData();
+                formData.append('page', page);
+                formData.append('maxrow', maxrow);
+                formData.append("type", "slide");
+
+                fetch('../api/slide_api.php', {
+                        method: 'POST',
+                        'credentials': 'include', // policy 
+                        body: formData,
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+
+                    .then(result => {
+                        const items = result.data.info; // จำนวนและ opject ที่อยู่ใน API ทั้งหมด
+                        const totalitems = result.data.total; //จำนวนของข้อมูลใน API
+
+                        console.log("Fetch");
+
+                        if (items.length > 0) {
+                            displaySlideData(items, tableBody, page, maxrow); // แสดงข้อมูลในตาราง
+                            tfoot.style.display = 'none'; // ซ่อน tfoot เมื่อมีข้อมูล
+                            console.log("Have DATA");
+                        } else {
+                            // ถ้าไม่มีข้อมูล
+                            document.getElementById('loading-status').textContent = "No data found";
+                            console.log("NOT FOUND DATA");
+                        }
+
+                        // ถ้ามีข้อมูล Pagination
+                        if (totalitems) {
+                            displayPagination(totalitems, maxrow, page); // อัพเดท pagination หลังจาก fetch ข้อมูลใหม่
+                        }
+                    })
+                    .catch(error => {
+                        console.error('There was a problem with the fetch operation:', error);
+                        document.getElementById('loading-status').textContent = "Error loading data";
+                    });
+
+            }, 500);
+
+
         }
 
         const action = "edit";
 
         if (action == "edit") {
-            getData();
+            getData(currentPage, maxrow);
         }
 
-        function displaySlideData(data, table, page, maxrow) {
+
+
+        function displaySlideData(items, table, page, maxrow) {
 
             tableBody.innerHTML = '';
 
             const startIndex = (page - 1) * maxrow;
             const endIndex = startIndex + maxrow;
 
-            const infoArray = data.slice(startIndex, endIndex);
-
+            const infoArray = items.slice(startIndex, endIndex);
             for (let key in infoArray) {
                 const item = infoArray[key];
                 const row = document.createElement('tr');
@@ -361,8 +394,8 @@
                 prevButton.addEventListener('click', () => {
                     currentPage--;
                     // TODO Fetch DATA ทุกครั้งเมื่อมีการกดปุ่ม (โดยใช้ formData)
-                    // getData();
-                    displayPagination(total, maxrow, currentPage);
+                    getData(currentPage, maxrow);
+                    // displayPagination(total, maxrow, currentPage);
                 });
                 paginationDiv.appendChild(prevButton);
             }
@@ -415,7 +448,8 @@
                 nextButton.textContent = '>';
                 nextButton.addEventListener('click', () => {
                     currentPage++;
-                    displayPagination(total, maxrow, currentPage);
+                    getData(currentPage, maxrow);
+                    // displayPagination(total, maxrow, currentPage);
                 });
                 paginationDiv.appendChild(nextButton);
             }
@@ -429,7 +463,8 @@
                 }
                 link.addEventListener('click', () => {
                     currentPage = pageNumber;
-                    displayPagination(total, maxrow, currentPage);
+                    getData(currentPage, maxrow);
+                    // displayPagination(total, maxrow, currentPage);
                 });
                 return link;
             }
@@ -449,7 +484,8 @@
                             const pageNumber = parseInt(pagenavi.value, 10);
                             if (pageNumber >= 1 && pageNumber <= totalPages) {
                                 currentPage = pageNumber;
-                                displayPagination(total, maxrow, currentPage);
+                                getData(currentPage, maxrow);
+                                // displayPagination(total, maxrow, currentPage);
                             }
                         }
                     });
@@ -656,7 +692,7 @@
         });
 
         document.querySelector('[refresh-slide]').addEventListener('click', () => {
-            getData();
+            getData(currentPage, maxrow);
         });
 
         const saveSlideButton = document.querySelector('button[save-slide]');
