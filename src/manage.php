@@ -132,7 +132,7 @@
     <div class="w-full box-border mx-auto">
         <div class="bg-sky-200 h-16">NAVBAR</div>
         <div class="flex justify-between items-center w-full">
-            <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200 hidden">SIDEMENU</div>
+            <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
                 <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
@@ -179,7 +179,7 @@
                     <tbody data-table-slide></tbody>
                     <tfoot data-loading>
                         <tr>
-                            <td colspan="3" id="loading-status">Loading...</td>
+                            <td colspan="7" id="loading-status">Load</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -250,7 +250,13 @@
         function getData(page, maxrow) {
             tableBody.innerHTML = '';
 
-            document.getElementById('loading-status').textContent = "Loading...";
+            document.getElementById('loading-status').innerHTML = `<div class="flex justify-center items-center w-full">
+                    <div class="flex flex-row gap-2">
+                        <div class="w-2 h-2 rounded-full bg-slate-700 animate-bounce"></div>
+                        <div class="w-2 h-2 rounded-full bg-slate-700 animate-bounce [animation-delay:-.3s]"></div>
+                        <div class="w-2 h-2 rounded-full bg-slate-700 animate-bounce [animation-delay:-.5s]"></div>
+                    </div>
+                </div>`;
             const tfoot = document.querySelector('tfoot[data-loading]');
             tfoot.style.display = ''; // แสดง tfoot
 
@@ -299,7 +305,7 @@
                         document.getElementById('loading-status').textContent = "Error loading data";
                     });
 
-            }, 500);
+            }, 700);
 
 
         }
@@ -359,7 +365,7 @@
                 button.appendChild(iconDiv);
 
                 button.addEventListener('click', () => {
-                    window.location.href = '/';
+                    window.location.href = 'items.php';
                 });
                 editCell.appendChild(button);
                 row.appendChild(editCell);
