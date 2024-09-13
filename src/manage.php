@@ -185,7 +185,7 @@
                 </table>
                 <div class="flex justify-between items-center">
                     <div>ADD</div>
-                    <div pagination>PAGINATION</div>
+                    <div pagination></div>
                 </div>
             </div>
         </div>
@@ -247,7 +247,8 @@
         let maxrow = 3;
         let currentPage = 1;
 
-        function getData() {
+        // TODO รับ page กับ maxrow ลงไปทำ fetch fromData
+        function getData(page, maxrow) {
             fetch('../api/slide_api.php')
                 .then(response => {
                     if (!response.ok) {
@@ -264,7 +265,7 @@
                     }
 
                     if (totalitems) {
-                        displayPagination(totalitems, maxrow, currentPage, items); //ใช้เก็บและแสดง items ในแต่ละหน้าที่เรียกกับ pagination
+                        displayPagination(totalitems, maxrow, currentPage);
                     }
 
                 })
@@ -284,7 +285,6 @@
             const startIndex = (page - 1) * maxrow;
             const endIndex = startIndex + maxrow;
 
-            // const infoArray = data;
             const infoArray = data.slice(startIndex, endIndex);
 
             for (let key in infoArray) {
@@ -347,7 +347,7 @@
 
         }
 
-        function displayPagination(total, maxrow, currentPage, items) {
+        function displayPagination(total, maxrow, currentPage) {
             const totalPages = Math.ceil(total / maxrow);
             const paginationDiv = document.querySelector('[pagination]');
             paginationDiv.innerHTML = '';
@@ -360,8 +360,9 @@
                 prevButton.textContent = '<';
                 prevButton.addEventListener('click', () => {
                     currentPage--;
-                    displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, items);
+                    // TODO Fetch DATA ทุกครั้งเมื่อมีการกดปุ่ม (โดยใช้ formData)
+                    // getData();
+                    displayPagination(total, maxrow, currentPage);
                 });
                 paginationDiv.appendChild(prevButton);
             }
@@ -382,16 +383,8 @@
                     }
                     paginationDiv.appendChild(createDotMorePage());
                     paginationDiv.appendChild(createPageLink(totalPages, currentPage));
-                } else if (currentPage === 2) {
+                } else if (currentPage <= 3) {
                     // แสดงหน้า 1, หน้าปัจจุบัน, 3, "..." และหน้าสุดท้าย
-                    paginationDiv.appendChild(createPageLink(1, currentPage));
-                    for (let i = 2; i <= 3; i++) {
-                        paginationDiv.appendChild(createPageLink(i, currentPage));
-                    }
-                    paginationDiv.appendChild(createDotMorePage());
-                    paginationDiv.appendChild(createPageLink(totalPages, currentPage));
-                } else if (currentPage === 3) {
-                    // แสดงหน้า 1, 2, หน้าปัจจุบัน, "..." และหน้าสุดท้าย
                     paginationDiv.appendChild(createPageLink(1, currentPage));
                     for (let i = 2; i <= 3; i++) {
                         paginationDiv.appendChild(createPageLink(i, currentPage));
@@ -422,8 +415,7 @@
                 nextButton.textContent = '>';
                 nextButton.addEventListener('click', () => {
                     currentPage++;
-                    displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, items);
+                    displayPagination(total, maxrow, currentPage);
                 });
                 paginationDiv.appendChild(nextButton);
             }
@@ -437,8 +429,7 @@
                 }
                 link.addEventListener('click', () => {
                     currentPage = pageNumber;
-                    displaySlideData(items, tableBody, currentPage, maxrow);
-                    displayPagination(total, maxrow, currentPage, items);
+                    displayPagination(total, maxrow, currentPage);
                 });
                 return link;
             }
@@ -458,8 +449,7 @@
                             const pageNumber = parseInt(pagenavi.value, 10);
                             if (pageNumber >= 1 && pageNumber <= totalPages) {
                                 currentPage = pageNumber;
-                                displaySlideData(items, tableBody, currentPage, maxrow);
-                                displayPagination(total, maxrow, currentPage, items);
+                                displayPagination(total, maxrow, currentPage);
                             }
                         }
                     });
@@ -699,6 +689,7 @@
 
 
         //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
+        // TODO ทำ Edit Page - ยิง API ไป ไฟล์ใหม่
 
     })
 </script>
