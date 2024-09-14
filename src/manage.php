@@ -132,7 +132,7 @@
     <div class="w-full box-border mx-auto">
         <div class="bg-sky-200 h-16">NAVBAR</div>
         <div class="flex justify-between items-center w-full">
-            <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200">SIDEMENU</div>
+            <div class="hidden flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
                 <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
@@ -167,13 +167,13 @@
                 <table data-practice="practice" class="w-full">
                     <thead>
                         <tr>
-                            <th>No.</th>
-                            <th>ID</th>
-                            <th>FILENAME</th>
-                            <th>LINK</th>
-                            <th>DATE ADD</th>
-                            <th>EDIT</th>
-                            <th>DELETE</th>
+                            <th class="w-24 min-w-20">No.</th>
+                            <th class="w-24 min-w-20">ID</th>
+                            <th class="w-56 min-w-24">FILENAME</th>
+                            <th class="min-w-24 max-w-1/2">LINK</th>
+                            <th class="w-40 min-w-32 max-w-1/2">DATE ADD</th>
+                            <th class="w-24 min-w-20">EDIT</th>
+                            <th class="w-24 min-w-20">DELETE</th>
                         </tr>
                     </thead>
                     <tbody data-table-slide></tbody>
@@ -244,7 +244,7 @@
         const buttonDelete = document.querySelector("button[delete-slide]");
 
         // let itemsPerPage
-        let maxrow = 3;
+        let maxrow = 5;
         let currentPage = 1;
 
         function getData(page, maxrow) {
@@ -263,6 +263,7 @@
 
             setTimeout(() => {
                 const formData = new FormData();
+                formData.append("action", "getdata");
                 formData.append('page', page);
                 formData.append('maxrow', maxrow);
                 formData.append("type", "slide");
@@ -286,7 +287,7 @@
                         console.log("Fetch");
 
                         if (items.length > 0) {
-                            displaySlideData(items, tableBody, page, maxrow); // แสดงข้อมูลในตาราง
+                            displaySlideData(items, tableBody, page, maxrow);
                             tfoot.style.display = 'none'; // ซ่อน tfoot เมื่อมีข้อมูล
                             console.log("Have DATA");
                         } else {
@@ -304,10 +305,7 @@
                         console.error('There was a problem with the fetch operation:', error);
                         document.getElementById('loading-status').textContent = "Error loading data";
                     });
-
             }, 700);
-
-
         }
 
         const action = "edit";
@@ -331,7 +329,7 @@
                 const row = document.createElement('tr');
                 row.dataset.itemId = item.id;
                 row.dataset.itemSq = item.sequent;
-
+                
                 if (key % 2 == 1) {
                     row.classList.add('bg-slate-100');
                 }
@@ -365,7 +363,7 @@
                 button.appendChild(iconDiv);
 
                 button.addEventListener('click', () => {
-                    window.location.href = 'items.php';
+                    window.location.href = `items.php?id=${item.id}`;
                 });
                 editCell.appendChild(button);
                 row.appendChild(editCell);
@@ -492,6 +490,8 @@
                                 currentPage = pageNumber;
                                 getData(currentPage, maxrow);
                                 // displayPagination(total, maxrow, currentPage);
+                            } else {
+                                pagenavi.value = '';
                             }
                         }
                     });
@@ -663,10 +663,15 @@
                         console.log('Items deleted successfully:', ids);
                         ids.forEach(id => {
                             const checkbox = tableBody.querySelector(`.slide-checkbox[data-delete-id="${id}"]`);
-                            const row = checkbox.closest('tr');
-                            row.remove();
+                            if (checkbox) { // ตรวจสอบว่า checkbox ยังคงอยู่ใน DOM
+                                const row = checkbox.closest('tr');
+                                if (row) {
+                                    row.remove();
+                                }
+                            }
                         });
                         toggleButtonDelete();
+                        getData(currentPage, maxrow);
                     } else {
                         console.error('Failed to delete items:', result.message);
                     }
@@ -729,8 +734,6 @@
                 });
         });
 
-
-        //TODO FOOTER โชว์ Status ของ Data และ Waiting (Loading..) หาก Data มี ก็ Loading ถ้าไม่มี ก็โชว์ว่า No found Data
         // TODO ทำ Edit Page - ยิง API ไป ไฟล์ใหม่
 
     })

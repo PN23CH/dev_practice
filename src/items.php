@@ -1,3 +1,6 @@
+<?php
+$action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -86,6 +89,64 @@
 </body>
 
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // ดึงพารามิเตอร์จาก URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const itemId = urlParams.get('id');
+        console.log(itemId);
+
+        // ตรวจสอบว่ามีการส่ง id และ sequent มาหรือไม่
+        if (itemId) {
+            console.log(`ID: ${itemId}`);
+
+            // เรียก API เพื่อดึงข้อมูล
+            fetchItemData(itemId);
+        } else {
+            console.error('Missing id or sequent in the URL');
+            // แสดงข้อความหรือหน้าจอแสดงข้อผิดพลาด
+            document.body.innerHTML = '<div class="text-red-500 text-center">Error: Missing id or sequent in the URL</div>';
+        }
+    });
+
+    // ฟังก์ชันสำหรับเรียก API โดยใช้ itemId และ itemSequent
+    function fetchItemData(itemId) {
+        // ส่งข้อมูลไปยัง API
+        const formData = new FormData();
+        formData.append('id', itemId);
+        formData.append('action', 'getItem'); // ส่ง action ไปเพื่อบอกว่าต้องการข้อมูลของ item
+
+        fetch('../api/slide_api_item.php', {
+                method: 'POST',
+                'credentials': 'include', // policy 
+                body: formData,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(result => {
+                console.log(result);
+                // ตรวจสอบว่าข้อมูลที่ได้จาก API ถูกต้องหรือไม่
+                // if (result.status === 'success') {
+                //     const item = result.item; // ดึงข้อมูล item ออกมา
+                //     console.log('Item Data:', item);
+                //     // แสดงข้อมูลที่ได้จาก API บนหน้าเว็บ
+                //     displayItemData(item);
+                // } else {
+                //     console.error('Error fetching item data:', result.message);
+                //     document.body.innerHTML = '<div class="text-red-500 text-center">Error fetching item data: ' + result.message + '</div>';
+                // }
+            })
+            .catch(error => {
+                console.error('There was an error fetching the data:', error);
+                document.body.innerHTML = '<div class="text-red-500 text-center">Error fetching item data</div>';
+            });
+
+    }
+
+    //TODO ทำโครงรับของที่ยิงมาจาก API ให้ขึ้นถูกต้อง และ ทำปุ่ม Submit
 
 </script>
 
