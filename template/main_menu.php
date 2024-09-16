@@ -1,3 +1,4 @@
+<link href="../style/main_menu.css" rel="stylesheet" type="text/css" />
 <div id="logo-sidebar" aria-label="Sidebar" class="fixed min-w-72 max-w-80 h-[80%] left-0 inset-0 lg:block lg:h-[calc(100vh-4rem)] top-24 lg:sticky z-40 transition-transform -translate-x-full lg:translate-x-0 bg-cyan-100 rounded-3xl py-5">
     <div class="relative h-full overflow-y-auto px-3 pb-8 pt-2">
         <div class="menu-item menu-1 relative">
@@ -29,11 +30,12 @@
                 </svg>
             </button>
             <div class="submenu w-full">
-                <?php if ($org == "stj") {
+                <?php $currentId = isset($_GET['id']) ? $_GET['id'] : null;
+                if ($org == "stj") {
                     foreach ($govStjArrRev2 as $key => $value) {
                         if ($value['on'] == 1) {
                 ?>
-                            <a href="/bof_v2.1/manage-govdoc?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $govStjArrRev2[$key]['name']; ?></a>
+                            <a href="/dev_practice/src/manage_news.php?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base <?php echo ($currentId == $key) ? 'active' : ''; ?>"><?php echo $govStjArrRev2[$key]['name']; ?></a>
                         <?php
                         }
                     }
@@ -42,7 +44,7 @@
                     if ($value['on'] == 1) {
                         ?>
 
-                        <a href="/bof_v2.1/manage-news?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $newsArrRev2[$key]['name']; ?></a>
+                        <a href="/dev_practice/src/manage_news.php?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base <?php echo ($currentId == $key) ? 'active' : ''; ?>"><?php echo $newsArrRev2[$key]['name']; ?></a>
                     <?php
                     }
                 }
@@ -52,7 +54,7 @@
                     if ($hEtcArrRev2[$key]['on'] == 1) {
                     ?>
 
-                        <a href="<?php echo $hEtcArrRev2[$key]['link']; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $hEtcArrRev2[$key]['name']; ?></a>
+                        <a href="<?php echo $hEtcArrRev2[$key]['link']; ?>" class="block px-4 py-2 outline-none text-base <?php echo ($currentId == $key) ? 'active' : ''; ?>"><?php echo $hEtcArrRev2[$key]['name']; ?></a>
                 <?php
                     }
                 }
@@ -75,7 +77,7 @@
                 foreach ($pjPlan as $key) {
                     if ($projArrRev2[$key]['on'] == 1) {
                 ?>
-                        <a href="/bof_v2.1/manage-project?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $projArrRev2[$key]['name']; ?></a>
+                        <a href="/bof_v2.1/news/manage-project?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $projArrRev2[$key]['name']; ?></a>
                     <?php
                     }
                 }
@@ -230,6 +232,53 @@
 </div>
 
 <script>
+    document.querySelectorAll('.submenu a').forEach(item => {
+        item.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Remove 'active' class from all submenu links
+            document.querySelectorAll('.submenu a').forEach(link => {
+                link.classList.remove('active');
+            });
+
+            // Add 'active' class to the clicked submenu link
+            this.classList.add('active');
+
+            // Find the parent menu item and ensure it's open
+            const menuItem = this.closest('.menu-item.menu-2');
+
+            // Close all other menus
+            document.querySelectorAll('.menu-item.menu-2').forEach(item => {
+                item.classList.remove('open');
+            });
+
+            // Add 'open' class to the parent menu item of the clicked submenu link
+            if (menuItem) {
+                menuItem.classList.add('open');
+            }
+
+            // Navigate to the clicked link
+            window.location.href = this.href;
+        });
+    });
+
+    // Check URL on load to set the appropriate menu item open
+    document.addEventListener('DOMContentLoaded', () => {
+        const currentId = new URLSearchParams(window.location.search).get('id');
+        if (currentId) {
+            document.querySelectorAll('.submenu a').forEach(link => {
+                if (link.href.includes(`id=${currentId}`)) {
+                    link.classList.add('active');
+                    const menuItem = link.closest('.menu-item.menu-2');
+                    if (menuItem) {
+                        menuItem.classList.add('open');
+                    }
+                }
+            });
+        }
+    });
+
+
     function toggleMenu(element) {
         const menuItem = element.parentElement;
         const isOpen = menuItem.classList.contains('open');
