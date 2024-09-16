@@ -1,0 +1,180 @@
+.bg-menu {
+    background-color: #EAF9FF;
+}
+
+.submenu {
+    max-height: 0;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid transparent;
+    padding-left: 20px;
+    /* เพิ่มการขยับซับเมนู */
+}
+
+.menu-item.open .submenu {
+    max-height: 1000px;
+}
+
+.menu-item.open>button,
+.menu-item>button:hover {
+    color: white;
+}
+
+.submenu a {
+    position: relative;
+}
+
+.submenu a::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 100%;
+    background-color: #ccc;
+    /* สีพื้นฐานของเส้น */
+}
+
+.menu-item.open .submenu a:hover {
+    background-color: #FFFFFF;
+    border-radius: 20px;
+}
+
+.menu-item.open .submenu a:hover::before {
+    border-radius: 20px;
+}
+
+/* Menu Admin */
+.menu-item.menu-1>button:hover,
+.menu-item.menu-1.open>button {
+    background-color: #18B9AC;
+}
+
+.menu-item.menu-1 .submenu a:hover::before {
+    background-color: #18B9AC;
+}
+
+.menu-item.menu-1>button::before {
+    background-color: #18B9AC;
+}
+
+/* Menu หนังสือราชการ และระบบข่าว */
+.menu-item.menu-2>button:hover,
+.menu-item.menu-2.open>button {
+    background-color: #F7931A;
+}
+
+.menu-item.menu-2 .submenu a:hover::before {
+    background-color: #F7931A;
+}
+
+.menu-item.menu-2>button::before {
+    background-color: #F7931A;
+}
+
+/* Menu แผน / ข้อบัญญัติ */
+.menu-item.menu-3>button:hover,
+.menu-item.menu-3.open>button {
+    background-color: #FA4778;
+}
+
+.menu-item.menu-3 .submenu a:hover::before {
+    background-color: #FA4778;
+}
+
+.menu-item.menu-3>button::before {
+    background-color: #FA4778;
+}
+
+/* Menu รายงาน / สถิติ */
+.menu-item.menu-4>button:hover,
+.menu-item.menu-4.open>button {
+    background-color: #56ACFB;
+}
+
+.menu-item.menu-4 .submenu a:hover::before {
+    background-color: #56ACFB;
+}
+
+.menu-item.menu-4>button::before {
+    background-color: #56ACFB;
+}
+
+/* Menu ข้อมูลหน่วยงาน */
+.menu-item.menu-5>button:hover,
+.menu-item.menu-5.open>button {
+    background-color: #7459D9;
+}
+
+.menu-item.menu-5 .submenu a:hover::before {
+    background-color: #7459D9;
+}
+
+.menu-item.menu-5>button::before {
+    background-color: #7459D9;
+}
+
+/* Menu ระบบจัดการ Nax */
+.menu-item.menu-6>button:hover,
+.menu-item.menu-6.open>button {
+    background-color: #D72727;
+}
+
+.menu-item.menu-6 .submenu a:hover::before {
+    background-color: #D72727;
+}
+
+.menu-item.menu-6>button::before {
+    background-color: #D72727;
+}
+
+
+/* เพิ่มเส้นหน้าเมนูหลัก */
+.menu-item>button::before {
+    content: '';
+    position: absolute;
+    left: -10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 100%;
+    background-color: transparent;
+    transition: width 0.3s, background-color 0.3s, left 0.3s;
+    border-radius: 0 5px 5px 0;
+}
+
+.menu-item>button:hover::before,
+.menu-item.open>button::before {
+    width: 6px;
+    left: -14px;
+    /* เพิ่มระยะห่างจากเมนู */
+}
+
+/* จัด SVG ให้แนวเดียวกับข้อความ */
+.menu-item>button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+svg {
+    transition: fill 0.3s ease;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.menu-item.open .arrow-icon {
+    transform: rotate(180deg);
+}
+
+.menu-item>button .menu-icon {
+    border-radius: 100%;
+}
+
+.menu-item>button:hover .menu-icon,
+.menu-item.open>button .menu-icon {
+    background-color: white;
+}

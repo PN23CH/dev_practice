@@ -1,201 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
-    <title>News - slide - manage</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
-    <script src="../path/to/flowbite/dist/flowbite.min.js"></script>
-</head>
-
-<style>
-    .bg-menu {
-        background-color: #EAF9FF;
-    }
-
-    .submenu {
-        max-height: 0;
-        overflow: hidden;
-        position: relative;
-        border: 2px solid transparent;
-        padding-left: 20px;
-        /* เพิ่มการขยับซับเมนู */
-    }
-
-    .menu-item.open .submenu {
-        max-height: 1000px;
-    }
-
-    .menu-item.open>button,
-    .menu-item>button:hover {
-        color: white;
-    }
-
-    .submenu a {
-        position: relative;
-    }
-
-    .submenu a::before {
-        content: '';
-        position: absolute;
-        left: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 4px;
-        height: 100%;
-        background-color: #ccc;
-        /* สีพื้นฐานของเส้น */
-    }
-
-    .menu-item.open .submenu a:hover {
-        background-color: #FFFFFF;
-        border-radius: 20px;
-    }
-
-    .menu-item.open .submenu a:hover::before {
-        border-radius: 20px;
-    }
-
-    /* Menu Admin */
-    .menu-item.menu-1>button:hover,
-    .menu-item.menu-1.open>button {
-        background-color: #18B9AC;
-    }
-
-    .menu-item.menu-1 .submenu a:hover::before {
-        background-color: #18B9AC;
-    }
-
-    .menu-item.menu-1>button::before {
-        background-color: #18B9AC;
-    }
-
-    /* Menu หนังสือราชการ และระบบข่าว */
-    .menu-item.menu-2>button:hover,
-    .menu-item.menu-2.open>button {
-        background-color: #F7931A;
-    }
-
-    .menu-item.menu-2 .submenu a:hover::before {
-        background-color: #F7931A;
-    }
-
-    .menu-item.menu-2>button::before {
-        background-color: #F7931A;
-    }
-
-    /* Menu แผน / ข้อบัญญัติ */
-    .menu-item.menu-3>button:hover,
-    .menu-item.menu-3.open>button {
-        background-color: #FA4778;
-    }
-
-    .menu-item.menu-3 .submenu a:hover::before {
-        background-color: #FA4778;
-    }
-
-    .menu-item.menu-3>button::before {
-        background-color: #FA4778;
-    }
-
-    /* Menu รายงาน / สถิติ */
-    .menu-item.menu-4>button:hover,
-    .menu-item.menu-4.open>button {
-        background-color: #56ACFB;
-    }
-
-    .menu-item.menu-4 .submenu a:hover::before {
-        background-color: #56ACFB;
-    }
-
-    .menu-item.menu-4>button::before {
-        background-color: #56ACFB;
-    }
-
-    /* Menu ข้อมูลหน่วยงาน */
-    .menu-item.menu-5>button:hover,
-    .menu-item.menu-5.open>button {
-        background-color: #7459D9;
-    }
-
-    .menu-item.menu-5 .submenu a:hover::before {
-        background-color: #7459D9;
-    }
-
-    .menu-item.menu-5>button::before {
-        background-color: #7459D9;
-    }
-
-    /* Menu ระบบจัดการ Nax */
-    .menu-item.menu-6>button:hover,
-    .menu-item.menu-6.open>button {
-        background-color: #D72727;
-    }
-
-    .menu-item.menu-6 .submenu a:hover::before {
-        background-color: #D72727;
-    }
-
-    .menu-item.menu-6>button::before {
-        background-color: #D72727;
-    }
-
-
-    /* เพิ่มเส้นหน้าเมนูหลัก */
-    .menu-item>button::before {
-        content: '';
-        position: absolute;
-        left: -10px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 0;
-        height: 100%;
-        background-color: transparent;
-        transition: width 0.3s, background-color 0.3s, left 0.3s;
-        border-radius: 0 5px 5px 0;
-    }
-
-    .menu-item>button:hover::before,
-    .menu-item.open>button::before {
-        width: 6px;
-        left: -14px;
-        /* เพิ่มระยะห่างจากเมนู */
-    }
-
-    /* จัด SVG ให้แนวเดียวกับข้อความ */
-    .menu-item>button {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    svg {
-        transition: fill 0.3s ease;
-    }
-
-    .arrow-icon {
-        transition: transform 0.3s ease;
-    }
-
-    .menu-item.open .arrow-icon {
-        transform: rotate(180deg);
-    }
-
-    .menu-item>button .menu-icon {
-        border-radius: 100%;
-    }
-
-    .menu-item>button:hover .menu-icon,
-    .menu-item.open>button .menu-icon {
-        background-color: white;
-    }
-</style>
-
 <div id="logo-sidebar" aria-label="Sidebar" class="fixed min-w-72 max-w-80 h-[80%] left-0 inset-0 lg:block lg:h-[calc(100vh-4rem)] top-24 lg:sticky z-40 transition-transform -translate-x-full lg:translate-x-0 bg-cyan-100 rounded-3xl py-5">
     <div class="relative h-full overflow-y-auto px-3 pb-8 pt-2">
         <div class="menu-item menu-1 relative">
@@ -227,10 +29,34 @@
                 </svg>
             </button>
             <div class="submenu w-full">
-                <a href="/bof_v2.1/manage-govdoc?id=1" class="block px-4 py-2 outline-none text-base">subkey1</a>
-                <a href="/bof_v2.1/manage-news?id=2" class="block px-4 py-2 outline-none text-base">subkey2</a>
-                <a href="/bof_v2.1/manage-news?id=3" class="block px-4 py-2 outline-none text-base">subkey3</a>
-                <a href="/bof_v2.1/manage-news?id=4" class="block px-4 py-2 outline-none text-base">subkey4</a>
+                <?php if ($org == "stj") {
+                    foreach ($govStjArrRev2 as $key => $value) {
+                        if ($value['on'] == 1) {
+                ?>
+                            <a href="/bof_v2.1/manage-govdoc?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $govStjArrRev2[$key]['name']; ?></a>
+                        <?php
+                        }
+                    }
+                }
+                foreach ($newsArrRev2 as $key => $value) {
+                    if ($value['on'] == 1) {
+                        ?>
+
+                        <a href="/bof_v2.1/manage-news?id=<?php echo $key; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $newsArrRev2[$key]['name']; ?></a>
+                    <?php
+                    }
+                }
+
+                $etcNews = array(0, 1, 10, 15, 11);
+                foreach ($etcNews as $key) {
+                    if ($hEtcArrRev2[$key]['on'] == 1) {
+                    ?>
+
+                        <a href="<?php echo $hEtcArrRev2[$key]['link']; ?>" class="block px-4 py-2 outline-none text-base"><?php echo $hEtcArrRev2[$key]['name']; ?></a>
+                <?php
+                    }
+                }
+                ?>
             </div>
         </div>
         <div class="menu-item menu-3 relative mt-2">

@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<?php 
+require_once __DIR__ . "/../lib/util_var.php";
+require_once __DIR__ . "/../config/config_hd.php";
+require_once __DIR__ . "/../config/configuration.php"; 
+?>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
+    <link href="/../style/main_menu.css" rel="stylesheet" type="text/css" />
     <title>News - slide - manage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
@@ -132,7 +137,7 @@
     <div class="w-full box-border mx-auto">
         <div class="bg-sky-200 h-16">NAVBAR</div>
         <div class="flex justify-between items-center w-full">
-            <div class="hidden flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200">SIDEMENU</div>
+            <?php require_once __DIR__ . "/../template/main_menu.php"; ?>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
                 <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
