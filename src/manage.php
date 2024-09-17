@@ -141,6 +141,14 @@ require_once __DIR__ . "/../config/configuration.php";
             <?php require_once __DIR__ . "/../template/main_menu.php"; ?>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
+                <div class="flex justify-end">
+                    <button toggle-right-sidebar="rightSidebarButton" type="button" class="flex relative justify-self-end xl:hidden right-0 items-center p-2 text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200">
+                        <span class="sr-only">Open sidebar</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+                        </svg>
+                    </button>
+                </div>
                 <div class="flex justify-end items-center bg-yellow-50 gap-x-5 p-3">
                     <button type="button" class="bg-teal-500 hover:bg-teal-400 rounded-lg p-2" refresh-slide>
                         <svg width="21" height="20" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -194,6 +202,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     <div pagination></div>
                 </div>
             </div>
+            <?php require_once __DIR__ . "/../template/menu_manual.php"; ?>
         </div>
         <div class="bg-rose-200">FOOTER</div>
         <!-- MODAL CONFIRM -->
