@@ -202,7 +202,8 @@ require_once __DIR__ . "/../config/configuration.php";
                     <div pagination></div>
                 </div>
             </div>
-            <?php require_once __DIR__ . "/../template/menu_manual.php"; ?>
+            <!-- <?php //require_once __DIR__ . "/../template/menu_manual.php"; 
+                    ?> -->
         </div>
         <div class="bg-rose-200">FOOTER</div>
         <!-- MODAL CONFIRM -->
@@ -275,7 +276,6 @@ require_once __DIR__ . "/../config/configuration.php";
             const tfoot = document.querySelector('tfoot[data-loading]');
             tfoot.style.display = ''; // แสดง tfoot
 
-
             setTimeout(() => {
                 const formData = new FormData();
                 formData.append("action", "getdata");
@@ -328,8 +328,6 @@ require_once __DIR__ . "/../config/configuration.php";
         if (action == "edit") {
             getData(currentPage, maxrow);
         }
-
-
 
         function displaySlideData(items, table, page, maxrow) {
 
@@ -396,7 +394,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 tableBody.appendChild(row);
 
             }
-
         }
 
         function displayPagination(total, maxrow, currentPage) {
@@ -518,7 +515,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-
         let lastDraggedRow = null;
         const draggedRows = new Set();
 
@@ -552,7 +548,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         })
 
-
         function sendToServer(ids, sqs) {
             const formData = new FormData();
             formData.append("action", "update-sequent");
@@ -573,7 +568,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     console.error('Error updating sequent:', error);
                 });
         }
-
 
         function handleSelectAll() {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox');
@@ -628,7 +622,6 @@ require_once __DIR__ . "/../config/configuration.php";
             deleteModal.classList.add('hidden');
         }
 
-
         buttonDelete.addEventListener('click', () => {
             const checkboxes = tableBody.querySelectorAll('.slide-checkbox:checked');
             const idsToDelete = Array.from(checkboxes).map(checkbox => checkbox.getAttribute('data-delete-id'));
@@ -661,7 +654,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             fetch('../api/slide_api.php', {
                     method: 'POST',
-                    'credentials': 'include', // policy 
+                    'credentials': 'include', // policy
                     body: formData,
                 })
                 .then(response => {
@@ -672,7 +665,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 })
                 .then(result => {
                     console.log('Server response:', result);
-
 
                     if (result) {
                         console.log('Items deleted successfully:', ids);
@@ -695,7 +687,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 })
                 .catch(error => console.error('There was a problem with the delete operation:', error));
         }
-
 
         document.querySelector('[save-slide]').addEventListener('click', () => {
 
@@ -750,6 +741,7 @@ require_once __DIR__ . "/../config/configuration.php";
         });
 
         // TODO ทำ Edit Page - ยิง API ไป ไฟล์ใหม่
+
 
     })
 </script>
