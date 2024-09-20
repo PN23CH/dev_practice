@@ -1,5 +1,7 @@
 <?php
 $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
+$currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -38,9 +40,13 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
                         <div data-date-time></div>
                         <input type="file" data-file-choose />
                         <button type="button" data-delete-item>DELETE</button>
-                        <div>LINK</div>
-                        <input type="text" data-link placeholder="Enter link here" />
-                        <button type="button" data-button-submit>SUBMIT</button>
+                        <div class="flex justify-between">
+                            <div class="flex">
+                                <div class="mr-2">LINK</div>
+                                <input type="text" data-link placeholder="Enter link here" />
+                            </div>
+                            <button type="button" data-button-submit>SUBMIT</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -50,7 +56,10 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
 </body>
 
 <script>
+    const currentId = "<?php echo $currentId ?>"
+    // console.log(currentId);
     document.addEventListener('DOMContentLoaded', () => {
+        fetchItemData(currentId);
         const submitButton = document.querySelector('[data-button-submit]');
         const fileInput = document.querySelector('[data-file-choose]');
         const deleteButton = document.querySelector('[data-delete-item]');
@@ -72,8 +81,7 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
             // เตรียมข้อมูลสำหรับส่งไปเซิร์ฟเวอร์
             const formData = new FormData();
             formData.append('id', itemId);
-            formData.append('filename', fileName);
-            formData.append('link', linkSlide);
+            formData.append("type", "slide");
             formData.append('action', 'updateItem');
 
             // ถ้ามีไฟล์ที่เลือกใหม่
@@ -82,7 +90,11 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
                 const filename = fileInput.files[0].name;
                 formData.append('file', fileInput.files[0]); // อัปโหลดไฟล์ใหม่
                 formData.append('filename', filename); // ส่งชื่อไฟล์ใหม่ไปยังเซิร์ฟเวอร์
+
+                // TODO API uploadfile ระบุ category slide ด้วย [category=folder ของไฟล์]
             }
+
+            // TODO หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile ระบุ category slide ด้วย
 
             // ถ้าแก้ไขลิงก์
             const linkValue = linkInput.value.trim();
@@ -95,7 +107,7 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
                 formData.append('deleteFile', true); // ส่งคำสั่งลบไฟล์ไปยังเซิร์ฟเวอร์
             }
 
-            // ส่งข้อมูลไปยังเซิร์ฟเวอร์
+            // TODO ส่งข้อมูล update ไปยัง API uploadfile ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว
             fetch('../api/slide_api_item.php', {
                     method: 'POST',
                     'credentials': 'include', // policy 
@@ -109,27 +121,11 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
                 })
                 .then(result => {
                     console.log('Success:', result);
-                    alert("Data successfully updated!");
                 })
                 .catch(error => {
                     console.error('There was an error updating the data:', error);
-                    alert("Error updating data");
                 });
         });
-
-        // ดึงพารามิเตอร์จาก URL
-        // const urlParams = new URLSearchParams(window.location.search);
-        // const itemId = urlParams.get('id');
-        // console.log(itemId);
-
-        // // ตรวจสอบว่ามีการส่ง id และ sequent มาหรือไม่
-        // if (itemId) {
-        //     console.log(`ID: ${itemId}`);
-        //     fetchItemData(itemId);
-        // } else {
-        //     console.error('Missing id or sequent in the URL');
-        //     document.body.innerHTML = '<div class="text-red-500 text-center">Error: Missing id or sequent in the URL</div>';
-        // }
     });
 
     // ฟังก์ชันสำหรับเรียก API โดยใช้ itemId และ itemSequent
@@ -137,8 +133,7 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
         // ส่งข้อมูลไปยัง API
         const formData = new FormData();
         formData.append('id', itemId);
-        formData.append('filename', fileName);
-        formData.append('link', link);
+        formData.append("type", "slide");
         formData.append('action', 'getItem'); // ส่ง action ไปเพื่อบอกว่าต้องการข้อมูลของ item
 
         fetch('../api/slide_api_item.php', {
@@ -173,19 +168,23 @@ $action = (isset($_GET['action'])) ? $_GET['action'] : NULL;
     }
 
     function displayItemData(item) {
+        console.log('item', item);
         const imageSlideDiv = document.querySelector('[data-image-slide]');
         const dateTimeDiv = document.querySelector('[data-date-time]');
+        const linkSlide = document.querySelector('[data-link]');
 
         if (imageSlideDiv && item.filename) {
-            imageSlideDiv.innerHTML = `<img src="../path_to_images/${item.filename}" alt="Slide Image" />`;
+            imageSlideDiv.innerHTML = `<img src="../${item.filename}" alt="Slide Image" />`;
         }
 
         if (dateTimeDiv && item.dateAdd) {
             dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
         }
+        if (linkSlide && item.link) {
+            linkSlide.value = item.link;
+        }
     }
 
-    //TODO ทำโครงรับของที่ยิงมาจาก API ให้ขึ้นถูกต้อง และ ทำปุ่ม Submit
 </script>
 
 </html>
