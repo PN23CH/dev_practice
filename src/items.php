@@ -34,8 +34,8 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                         <div class="text-xl">ข้อมูลภาพสไลด์</div>
                         <hr class="h-2 border-gray-300 my-1">
                         <div class="text-sm">รูปปัจจุบัน</div>
-                        <div class="flex flex-col items-center justify-center w-full bg-rose-200">
-                            <div data-image-slide>IMAGE</div>
+                        <div class="flex flex-col items-center justify-center">
+                            <div data-image-slide class="w-fit bg-rose-200 rounded-xl p-8">IMAGE</div>
                         </div>
                         <div data-date-time></div>
                         <input type="file" data-file-choose />
@@ -66,32 +66,82 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
         const linkInput = document.querySelector('[data-link]');
         let isFileDeleted = false;
 
-        // เมื่อกดปุ่ม Delete จะตั้งค่าว่าไฟล์ถูกลบแล้ว
         deleteButton.addEventListener('click', () => {
             isFileDeleted = true;
-            alert("File will be deleted");
+
+            // ลบไฟล์ที่แสดงอยู่ใน UI ทันที
+            const imageSlideDiv = document.querySelector('[data-image-slide]');
+            if (imageSlideDiv) {
+                imageSlideDiv.innerHTML = ''; // ลบภาพ
+            }
+
+            // ส่งคำขอไปยังเซิร์ฟเวอร์เพื่อทำการลบไฟล์
+            const urlParams = new URLSearchParams(window.location.search);
+            const itemId = urlParams.get('id');
+            const formData = new FormData();
+            formData.append('id', itemId);
+            formData.append('deleteFile', true);
+            formData.append('category', 'slide');
+
+            fetch('../api/slide_api_uploadfile.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(result => {
+                    if (result.result) {
+                        alert('File deleted successfully');
+                    } else {
+                        console.error('Delete failed:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('There was an error deleting the file:', error);
+                });
         });
 
         submitButton.addEventListener('click', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('id');
             const fileName = urlParams.get('filename');
-            const linkSlide = urlParams.get('link');
-
-            // เตรียมข้อมูลสำหรับส่งไปเซิร์ฟเวอร์
+            console.log('Filename from URL:', fileName);
             const formData = new FormData();
             formData.append('id', itemId);
+            formData.append('filename', fileName);
             formData.append("type", "slide");
+            formData.append('category', 'slide');
             formData.append('action', 'updateItem');
 
             // ถ้ามีไฟล์ที่เลือกใหม่
+
             if (fileInput.files.length > 0) {
-                // ดึงชื่อไฟล์ (filename)
-                const filename = fileInput.files[0].name;
-                formData.append('file', fileInput.files[0]); // อัปโหลดไฟล์ใหม่
-                formData.append('filename', filename); // ส่งชื่อไฟล์ใหม่ไปยังเซิร์ฟเวอร์
+                console.log(fileInput.files);
+
+                const newFile = fileInput.files[0];
+
+                formData.append('file', newFile);
+
+                const imageSlideDiv = document.querySelector('[data-image-slide]');
+                if (imageSlideDiv) {
+                    const imageUrl = `../dnm_file/slide/${fileName}`; // ใช้ filepath ที่ได้รับจาก API
+                    imageSlideDiv.innerHTML = `<img src="${imageUrl}" alt="Slide Image" />`;
+                }
+
+                if (isFileDeleted) {
+                    formData.append('deleteFile', true);
+                    console.log('File will be deleted');
+                }
 
                 // TODO API uploadfile ระบุ category slide ด้วย [category=folder ของไฟล์]
+            } else if (isFileDeleted) {
+                formData.append('deleteFile', true);
+                formData.append('category', 'slide');
             }
 
             // TODO หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile ระบุ category slide ด้วย
@@ -99,16 +149,18 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
             // ถ้าแก้ไขลิงก์
             const linkValue = linkInput.value.trim();
             if (linkValue !== '') {
-                formData.append('link', linkValue); // ส่งลิงก์ที่ถูกแก้ไขไปยังเซิร์ฟเวอร์
+                formData.append('link', linkValue);
             }
 
             // ถ้าลบไฟล์
             if (isFileDeleted) {
                 formData.append('deleteFile', true); // ส่งคำสั่งลบไฟล์ไปยังเซิร์ฟเวอร์
+                formData.append('category', 'slide');
             }
 
             // TODO ส่งข้อมูล update ไปยัง API uploadfile ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว
-            fetch('../api/slide_api_item.php', {
+
+            fetch('../api/slide_api_uploadfile.php', {
                     method: 'POST',
                     'credentials': 'include', // policy 
                     body: formData,
@@ -120,7 +172,14 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                     return response.json();
                 })
                 .then(result => {
-                    console.log('Success:', result);
+                    // console.log(result.result);
+                    if (result.result) {
+                        console.log('Upload/Update success', result.data.filename);
+                        displayItemData(result.data);
+                        fetchItemData(currentId);
+                    } else {
+                        console.error('Update failed:', result.message);
+                    }
                 })
                 .catch(error => {
                     console.error('There was an error updating the data:', error);
@@ -134,7 +193,8 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
         const formData = new FormData();
         formData.append('id', itemId);
         formData.append("type", "slide");
-        formData.append('action', 'getItem'); // ส่ง action ไปเพื่อบอกว่าต้องการข้อมูลของ item
+        formData.append('action', 'getItem');
+
 
         fetch('../api/slide_api_item.php', {
                 method: 'POST',
@@ -148,12 +208,9 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                 return response.json();
             })
             .then(result => {
-                console.log(result);
+                // console.log(result);
                 if (result && result.result === true) {
-                    const item = result.data.info[0]; // ดึงข้อมูลของ item
-                    console.log(item);
-
-                    // แสดง .filename และ .dateAdd ใน HTML
+                    const item = result.data.info[0];
                     displayItemData(item);
                 } else {
                     console.error('Error fetching item data:', result.message);
@@ -168,13 +225,17 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
     }
 
     function displayItemData(item) {
-        console.log('item', item);
         const imageSlideDiv = document.querySelector('[data-image-slide]');
         const dateTimeDiv = document.querySelector('[data-date-time]');
         const linkSlide = document.querySelector('[data-link]');
 
+        // if (imageSlideDiv && item.filename) {
+        //     imageSlideDiv.innerHTML = `<img src="../dnm_file/slide/${item.filename}" alt="Slide Image" />`;
+        // }
         if (imageSlideDiv && item.filename) {
-            imageSlideDiv.innerHTML = `<img src="../${item.filename}" alt="Slide Image" />`;
+            const imageUrl = `../${item.filepath}`;
+            console.log(imageUrl);
+            imageSlideDiv.innerHTML = `<img src="${imageUrl}" alt="Slide Image" />`;
         }
 
         if (dateTimeDiv && item.dateAdd) {
@@ -184,7 +245,6 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
             linkSlide.value = item.link;
         }
     }
-
 </script>
 
 </html>
