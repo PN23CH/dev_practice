@@ -117,22 +117,17 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
 
             // ถ้ามีไฟล์ที่เลือกใหม่
             if (fileInput.files.length > 0) {
-                const newFile = fileInput.files[0]; // ใช้ไฟล์แรกที่ผู้ใช้เลือก (หรือเลือกไฟล์อื่นๆ ที่จำเป็น)
-                formData.append('file', newFile); // ส่งไฟล์ไปยัง API
+                const newFile = fileInput.files[0]; 
+                // formData.append('file', newFile); 
 
-                // เพิ่ม category slide เพื่อบอก API ว่าไฟล์นี้เป็นของ category slide
                 formData.append('category', 'slide');
 
-                // เพิ่มการดำเนินการอัปโหลดไฟล์ใหม่
-                // console.log('New file added to FormData:', newFile.name);
             }
 
             if (isFileDeleted || fileInput.files.length > 0) {
-                formData.append('deleteOldFile', true); // บอก API ให้ลบไฟล์เก่าเมื่อมีการอัปโหลดไฟล์ใหม่
+                formData.append('deleteOldFile', true); 
                 // console.log('Old file will be deleted');
             }
-
-            // TODO หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile ระบุ category slide ด้วย
 
             // ถ้าแก้ไขลิงก์
             const linkValue = linkInput.value.trim();
@@ -146,7 +141,12 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
             //     formData.append('category', 'slide');
             // }
 
-            // TODO ส่งข้อมูล update ไปยัง API uploadfile ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว
+            
+            // TODO ยิง API 3 ครั้ง ระบุ category slide ด้วย ครั้งที่ 1 สำหรับ upload ไฟล์ใหม่ ระบุ formData -มี filenameใหม่ -มี linkใหม่ // slide_api_uploadfile
+
+            // TODO ครั้งที่ 2 หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile // slide_api_removefile
+
+            // TODO ครั้งที่ 3 ส่งข้อมูล update ไปยัง API updateitem ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว slide_api_uploadfile
 
             fetch('../api/slide_api_uploadfile.php', {
                     method: 'POST',
