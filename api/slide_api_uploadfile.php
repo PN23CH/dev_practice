@@ -3,7 +3,7 @@
 "message": "success",
 "data": {
 "filename": "_Cover Youtube.jpg",
-"filepath": "dnm_file/slide/_Cover Youtube.jpg",
+"filepath": "dnm_file/slide/_CoverYoutube.jpg",
 "filesize": "196",
 "category": "slide"
 },

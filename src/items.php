@@ -56,9 +56,10 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
 </body>
 
 <script>
-    const currentId = "<?php echo $currentId ?>"
     document.addEventListener('DOMContentLoaded', () => {
+        const currentId = "<?php echo $currentId ?>";
         fetchItemData(currentId);
+
         const submitButton = document.querySelector('[data-button-submit]');
         const fileInput = document.querySelector('[data-file-choose]');
         const deleteButton = document.querySelector('[data-delete-item]');
@@ -67,144 +68,124 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
 
         deleteButton.addEventListener('click', () => {
             isFileDeleted = true;
-
-            // ลบไฟล์ที่แสดงอยู่ใน UI ทันที
             const imageSlideDiv = document.querySelector('[data-image-slide]');
             if (imageSlideDiv) {
-                imageSlideDiv.innerHTML = ''; // ลบภาพ
+                imageSlideDiv.innerHTML = ''; // ลบภาพทันทีใน UI
             }
-
-            // ส่งคำขอไปยังเซิร์ฟเวอร์เพื่อทำการลบไฟล์
-            const urlParams = new URLSearchParams(window.location.search);
-            const itemId = urlParams.get('id');
-            const formData = new FormData();
-            formData.append('id', itemId);
-            formData.append('deleteFile', true);
-            formData.append('category', 'slide');
-
-            fetch('../api/slide_api_uploadfile.php', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(result => {
-                    if (result.result) {
-                        alert('File deleted successfully');
-                    } else {
-                        console.error('Delete failed:', result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('There was an error deleting the file:', error);
-                });
         });
 
-        submitButton.addEventListener('click', () => {
+        submitButton.addEventListener('click', async () => {
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('id');
-
+            const linkValue = linkInput.value.trim();
             const formData = new FormData();
+            let uploadedFileName = '';
+
             formData.append('id', itemId);
-            formData.append("type", "slide");
             formData.append('category', 'slide');
             formData.append('action', 'updateItem');
 
-            // ถ้ามีไฟล์ที่เลือกใหม่
-            if (fileInput.files.length > 0) {
-                const newFile = fileInput.files[0]; 
-                // formData.append('file', newFile); 
+            try {
+                // TODO #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
+                if (fileInput.files.length > 0) {
+                    const newFile = fileInput.files[0];
+                    formData.append('file', newFile);
+                    formData.append('link', linkValue);
 
-                formData.append('category', 'slide');
+                    const uploadResponse = await fetch('../api/slide_api_uploadfile.php', {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData,
+                    });
+                    const uploadResult = await uploadResponse.json();
+                    if (!uploadResult.result) {
+                        throw new Error('Upload failed: ' + uploadResult.message);
+                    }
+                    console.log('Upload successful:', uploadResult.message);
+                    uploadedFileName = uploadResult.data.filename;
 
-            }
+                    displayItemData({
+                        filename: uploadedFileName,
+                        filepath: `../dmn_file/slide/${uploadedFileName}`,
+                        link: linkValue,
+                        dateAdd: new Date().toISOString()
+                    });
 
-            if (isFileDeleted || fileInput.files.length > 0) {
-                formData.append('deleteOldFile', true); 
-                // console.log('Old file will be deleted');
-            }
+                }
 
-            // ถ้าแก้ไขลิงก์
-            const linkValue = linkInput.value.trim();
-            if (linkValue !== '') {
-                formData.append('link', linkValue);
-            }
+                // TODO #2: ลบไฟล์เดิม (ถ้ามีการลบ)
+                if (isFileDeleted || fileInput.files.length > 0) {
+                    const deleteFormData = new FormData();
+                    deleteFormData.append('id', itemId);
+                    deleteFormData.append('deleteFile', true);
+                    deleteFormData.append('category', 'slide');
 
-            // ถ้าลบไฟล์
-            // if (isFileDeleted) {
-            //     formData.append('deleteFile', true); // ส่งคำสั่งลบไฟล์ไปยังเซิร์ฟเวอร์
-            //     formData.append('category', 'slide');
-            // }
+                    const deleteResponse = await fetch('../api/slide_api_removefile.php', {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: deleteFormData,
+                    });
+                    const deleteResult = await deleteResponse.json();
+                    if (!deleteResult.result) {
+                        throw new Error('Delete failed: ' + deleteResult.message);
+                    }
+                    console.log('Delete successful:', deleteResult.message);
+                }
 
-            
-            // TODO ยิง API 3 ครั้ง ระบุ category slide ด้วย ครั้งที่ 1 สำหรับ upload ไฟล์ใหม่ ระบุ formData -มี filenameใหม่ -มี linkใหม่ // slide_api_uploadfile
+                // TODO #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
+                const updateFormData = new FormData();
+                updateFormData.append('id', itemId);
+                updateFormData.append('category', 'slide');
+                updateFormData.append('action', 'updateItem');
+                updateFormData.append('link', linkValue);
 
-            // TODO ครั้งที่ 2 หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile // slide_api_removefile
+                if (uploadedFileName) {
+                    updateFormData.append('filename', uploadedFileName);
+                }
 
-            // TODO ครั้งที่ 3 ส่งข้อมูล update ไปยัง API updateitem ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว slide_api_uploadfile
-
-            fetch('../api/slide_api_uploadfile.php', {
+                const updateResponse = await fetch('../api/slide_api_updateitem.php', {
                     method: 'POST',
-                    'credentials': 'include',
-                    body: formData,
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(result => {
-                    if (result.result) {
-                        // console.log('Upload/Update success', result);
-                        fetchItemData(itemId); // เรียกฟังก์ชัน fetchItemData เพื่ออัปเดตข้อมูล
-                    } else {
-                        console.error('Update failed:', result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('There was an error updating the data:', error);
+                    credentials: 'include',
+                    body: updateFormData,
                 });
+                const updateResult = await updateResponse.json();
+                console.log(uploadedFileName)
+                if (!updateResult.result) {
+                    throw new Error('Update failed: ' + updateResult.message);
+                }
+                console.log('Update successful:', updateResult.message);
+
+                // เรียก fetchItemData เพื่อรีเฟรชข้อมูลใหม่
+                fetchItemData(itemId);
+
+            } catch (error) {
+                console.error('Error during the process:', error);
+            }
         });
     });
 
-    // ฟังก์ชันสำหรับเรียก API โดยใช้ itemId และ itemSequent
     function fetchItemData(itemId) {
-        // ส่งข้อมูลไปยัง API
         const formData = new FormData();
         formData.append('id', itemId);
-        formData.append("type", "slide");
+        formData.append('type', 'slide');
         formData.append('action', 'getItem');
 
         fetch('../api/slide_api_item.php', {
                 method: 'POST',
-                'credentials': 'include', // policy 
+                credentials: 'include',
                 body: formData,
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(result => {
-                if (result && result.result === true) {
+                if (result.result) {
                     const item = result.data.info[0];
                     displayItemData(item);
                 } else {
                     console.error('Error fetching item data:', result.message);
-                    document.body.innerHTML = '<div class="text-red-500 text-center">Error fetching item data</div>';
                 }
-
             })
             .catch(error => {
-                console.error('There was an error fetching the data:', error);
-                document.body.innerHTML = '<div class="text-red-500 text-center">Error fetching item data</div>';
+                console.error('Error fetching item data:', error);
             });
     }
 
@@ -213,14 +194,10 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
         const dateTimeDiv = document.querySelector('[data-date-time]');
         const linkSlide = document.querySelector('[data-link]');
 
-        // if (imageSlideDiv && item.filename) {
-        //     imageSlideDiv.innerHTML = `<img src="../dnm_file/slide/${item.filename}" alt="Slide Image" />`;
-        // }
         if (imageSlideDiv && item.filename) {
             const imageUrl = `../${item.filepath}`;
             imageSlideDiv.innerHTML = `<img src="${imageUrl}" alt="Slide Image" />`;
         }
-
         if (dateTimeDiv && item.dateAdd) {
             dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
         }
@@ -228,6 +205,11 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
             linkSlide.value = item.link;
         }
     }
+    // TODO ยิง API 3 ครั้ง ระบุ category slide ด้วย ครั้งที่ 1 สำหรับ upload ไฟล์ใหม่ ระบุ formData -มี filenameใหม่ -มี linkใหม่ // slide_api_uploadfile
+
+    // TODO ครั้งที่ 2 หากมีไฟล์เดิม ให้ลบไฟล์เดิม (ทำ API ไปลบไฟล์เดิม) API deletefile // slide_api_removefile
+
+    // TODO ครั้งที่ 3 ส่งข้อมูล update ไปยัง API updateitem ละทำ fetch เรียกข้อมูลใหม่ไปแสดง หลังอัพเดตแล้ว slide_api_updatefile
 </script>
 
 </html>
