@@ -2,7 +2,7 @@
 "result": true,
 "message": "updatesuccess",
 "data": {
-"filename": "_Cover Youtube.jpg",
+"filename": "_CoverYoutube.jpg",
 "filepath": "dnm_file/slide/_CoverYoutube.jpg",
 "filesize": "196",
 "category": "slide"

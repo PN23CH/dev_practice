@@ -101,15 +101,16 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                     if (!uploadResult.result) {
                         throw new Error('Upload failed: ' + uploadResult.message);
                     }
-                    console.log('Upload successful:', uploadResult.message);
+                    // console.log('Upload successful:', uploadResult.message);
                     uploadedFileName = uploadResult.data.filename;
 
                     displayItemData({
                         filename: uploadedFileName,
-                        filepath: `../dmn_file/slide/${uploadedFileName}`,
+                        filepath: `../dnm_file/slide/${uploadedFileName}`,
                         link: linkValue,
                         dateAdd: new Date().toISOString()
                     });
+                    // fetchItemData(itemId);
 
                 }
 
@@ -129,7 +130,7 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                     if (!deleteResult.result) {
                         throw new Error('Delete failed: ' + deleteResult.message);
                     }
-                    console.log('Delete successful:', deleteResult.message);
+                    // console.log('Delete successful:', deleteResult.message);
                 }
 
                 // TODO #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
@@ -153,10 +154,17 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                 if (!updateResult.result) {
                     throw new Error('Update failed: ' + updateResult.message);
                 }
-                console.log('Update successful:', updateResult.message);
+                // console.log('Update successful:', updateResult.message);
 
                 // เรียก fetchItemData เพื่อรีเฟรชข้อมูลใหม่
-                fetchItemData(itemId);
+                // fetchItemData(itemId);
+
+                displayItemData({
+                        filename: uploadedFileName,
+                        filepath: `../dnm_file/slide/${uploadedFileName}`,
+                        link: linkValue,
+                        dateAdd: new Date().toISOString()
+                    });
 
             } catch (error) {
                 console.error('Error during the process:', error);
