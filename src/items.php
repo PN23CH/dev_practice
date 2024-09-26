@@ -5,6 +5,12 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
 ?>
 <!DOCTYPE html>
 <html lang="en">
+<?php
+require_once __DIR__ . "/../lib/util_var.php";
+require_once __DIR__ . "/../config/config_hd.php";
+require_once __DIR__ . "/../config/config_dns.php";
+require_once __DIR__ . "/../config/configuration.php";
+?>
 
 <head>
     <meta charset="UTF-8">
@@ -54,7 +60,7 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                         <!-- <div data-date-time></div> -->
                         <div class="flex items-center">
                             <div class="relative inline-block">
-                                 <!-- TODO ใช้เป็น <label> ในการ config css
+                                <!-- TODO ใช้เป็น <label> ในการ config css
                                 TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)   
                                 TODO input type file ต้องมี name ว่าเป็นของหมวดอะไร >> name="mainfile" ส่วน input อื่นก็ "additionail-file"
                                 TODO หน้าแสดงผล ระบุ sizefile แทนชื่อไฟล์ เช่น sizefile/16mb หากใหญ่เกิน ก็ ทำ validate แจ้งด้วย
@@ -91,7 +97,9 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                             <div class="flex flex-col">
                                 <!-- TODO ทำ function text length ไม่เกิน 100 ตัว -->
                                 <div class="mr-2">LINK</div>
-                                <input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" />
+                                <div class="flex items-center gap-x-2"><input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" maxlength="100" value="" />
+                                    <p data-text-length></p>
+                                </div>
                                 <!-- TODO ทำ คำอธิบาย เป็น <textarea> เช็ค text length ไม่เกิน 150 ตัว -->
                             </div>
                             <button type="button" data-button-submit class="w-10 h-10 bg-red-700 ring-4 ring-red-200 rounded-full text-white hover:bg-red-600">OK</button>
@@ -107,14 +115,27 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         const currentId = "<?php echo $currentId ?>";
-        // const webName = "<?php //echo $webName ?>";
+        const webName = "<?php echo $webName ?>";
+        const dnmLocal = "<?php echo $dnmLocal; ?>";
+        const localFile = "<?php echo $localFile; ?>";
         fetchItemData(currentId);
+
+        let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
 
         const submitButton = document.querySelector('[data-button-submit]');
         const fileInput = document.querySelector('[data-file-choose]');
         const deleteButton = document.querySelector('[data-delete-item]');
         const linkInput = document.querySelector('[data-link]');
+        const textLengthDisplay = document.querySelector('p[data-text-length]');
+        const maxLength = linkInput.maxLength || 100;
         let isFileDeleted = false;
+
+        function updateCharacterCount() {
+            const characterCount = linkInput.value.length;
+            textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
+        }
+        updateCharacterCount();
+        linkInput.addEventListener('input', updateCharacterCount);
 
         deleteButton.addEventListener('click', () => {
             isFileDeleted = true;
@@ -134,6 +155,8 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
             formData.append('id', itemId);
             formData.append('category', 'slide');
             formData.append('action', 'updateItem');
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
 
             try {
                 // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg"
@@ -166,10 +189,10 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
                 if (isFileDeleted || fileInput.files.length > 0) {
                     const deleteFormData = new FormData();
-                    // deleteFormData.append('webName', webName); 
-                    deleteFormData.append('deleteFile', true);
+                    deleteFormData.append('webName', webName);
+                    deleteFormData.append('currentFile', currentFile);
                     deleteFormData.append('category', 'slide');
-                    // deleteFormData.append('action', 'remove');
+                    deleteFormData.append('action', 'remove');
                     // TODO ระบุ filename / ระบุ localfile [ว่าเป็น serverside =  หรือ local = 1] โดยอิงจากไฟล์ config_dns
 
                     const deleteResponse = await fetch('../api/slide_api_removefile.php', {
@@ -242,7 +265,7 @@ $currentId = (isset($_GET['id'])) ? $_GET['id'] : NULL;
                 console.error('Error fetching item data:', error);
             });
     }
-    
+
     // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล)
     // TODO Trigger handle ของ input หาก Brows ไฟล์มาใหม่ ก็ควรแสดงรูปใหม่ โดยไม่กด submit กรณีไม่มีไฟล์ เป็น placeholder(รูปdefault)
     function displayItemData(item) {
