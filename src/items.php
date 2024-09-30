@@ -42,7 +42,9 @@ require_once __DIR__ . "/../config/configuration.php";
                         <div class="text-sm">รูปปัจจุบัน</div>
                         <div class="flex flex-col items-center justify-center">
                             <div class="max-w-md mx-auto">
-                                <div data-image-slide class="w-fit bg-rose-200 rounded-xl overflow-hidden">IMAGE</div>
+                                <div data-image-slide class="w-fit bg-rose-200 rounded-xl overflow-hidden">
+                                    <img id="imagePreview" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-full" />
+                                </div>
                                 <!-- <div
                                     class="mt-5 bg-gray-50 text-gray-600 text-base rounded w-full h-48 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-12 mb-2 fill-gray-400" viewBox="0 0 32 32">
@@ -97,7 +99,8 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="flex flex-col">
                                 <!-- TODO ทำ function text length ไม่เกิน 100 ตัว -->
                                 <div class="mr-2">LINK</div>
-                                <div class="flex items-center gap-x-2"><input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" maxlength="100" value="" />
+                                <div class="flex items-center gap-x-2">
+                                    <input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" maxlength="100" value="" />
                                     <p data-text-length></p>
                                 </div>
                                 <!-- TODO ทำ คำอธิบาย เป็น <textarea> เช็ค text length ไม่เกิน 150 ตัว -->
@@ -118,13 +121,7 @@ require_once __DIR__ . "/../config/configuration.php";
         const webName = "<?php echo $webName ?>";
         const dnmLocal = "<?php echo $dnmLocal; ?>";
         const localFile = "<?php echo $localFile; ?>";
-        fetchItemData(currentId);
 
-        let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
-
-        const submitButton = document.querySelector('[data-button-submit]');
-        const fileInput = document.querySelector('[data-file-choose]');
-        const deleteButton = document.querySelector('[data-delete-item]');
         const linkInput = document.querySelector('[data-link]');
         const textLengthDisplay = document.querySelector('p[data-text-length]');
         const maxLength = linkInput.maxLength || 100;
@@ -134,8 +131,72 @@ require_once __DIR__ . "/../config/configuration.php";
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
         }
+
         updateCharacterCount();
+
+        function fetchItemData(itemId) {
+            const formData = new FormData();
+            formData.append('id', itemId);
+            formData.append('type', 'slide');
+            formData.append('action', 'getItem');
+
+            fetch('../api/slide_api_item.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.result) {
+                        const item = result.data.info[0];
+                        const linkInput = document.querySelector('[data-link]');
+                        // console.log(linkInput.value);
+                        linkInput.value = item.link || '';
+                        if (item.link) {
+                            updateCharacterCount();
+                        }
+                        displayItemData(item);
+
+                    } else {
+                        console.error('Error fetching item data:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching item data:', error);
+                });
+        }
+        fetchItemData(currentId);
+
+        let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
+
+        const submitButton = document.querySelector('[data-button-submit]');
+        const fileInput = document.querySelector('[data-file-choose]');
+        const imageSlideDiv = document.querySelector('[data-image-slide] img');
+        imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
+
+        const deleteButton = document.querySelector('[data-delete-item]');
         linkInput.addEventListener('input', updateCharacterCount);
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const reader = new FileReader();
+
+                reader.onload = (e) => {
+
+                    const item = {
+                        filepath: e.target.result, // ใช้ผลลัพธ์ของ FileReader
+                        dateAdd: new Date().toLocaleString(), // ตั้งค่าข้อมูลวันที่เป็นปัจจุบัน
+                        link: '', // สามารถเพิ่มข้อมูลลิงก์ที่ต้องการได้
+                    };
+                    console.log(item);
+                    displayItemData(item);
+                };
+                reader.readAsDataURL(file); // อ่านไฟล์เป็น Data URL
+            } else {
+                imageSlideDiv.src = '../dnm_file/slide/default-image.jpg'; // แสดงรูป placeholder
+            }
+        });
 
         deleteButton.addEventListener('click', () => {
             isFileDeleted = true;
@@ -239,51 +300,28 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error('Error during the process:', error);
             }
         });
+
+        function displayItemData(item) {
+            const imageSlideDiv = document.querySelector('[data-image-slide]');
+            const dateTimeDiv = document.querySelector('[data-date-time]');
+            const linkSlide = document.querySelector('[data-link]');
+
+            console.log('display', item)
+            if (imageSlideDiv && item.filename) {
+                const imageUrl = `../${item.filepath}`;
+                imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
+            }
+            if (dateTimeDiv && item.dateAdd) {
+                dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
+            }
+            if (linkSlide && item.link) {
+                linkSlide.value = item.link;
+            }
+        }
     });
 
-    function fetchItemData(itemId) {
-        const formData = new FormData();
-        formData.append('id', itemId);
-        formData.append('type', 'slide');
-        formData.append('action', 'getItem');
-
-        fetch('../api/slide_api_item.php', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.result) {
-                    const item = result.data.info[0];
-                    displayItemData(item);
-                } else {
-                    console.error('Error fetching item data:', result.message);
-                }
-            })
-            .catch(error => {
-                console.error('Error fetching item data:', error);
-            });
-    }
-
     // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล)
-    // TODO Trigger handle ของ input หาก Brows ไฟล์มาใหม่ ก็ควรแสดงรูปใหม่ โดยไม่กด submit กรณีไม่มีไฟล์ เป็น placeholder(รูปdefault)
-    function displayItemData(item) {
-        const imageSlideDiv = document.querySelector('[data-image-slide]');
-        const dateTimeDiv = document.querySelector('[data-date-time]');
-        const linkSlide = document.querySelector('[data-link]');
-
-        if (imageSlideDiv && item.filename) {
-            const imageUrl = `../${item.filepath}`;
-            imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
-        }
-        if (dateTimeDiv && item.dateAdd) {
-            dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
-        }
-        if (linkSlide && item.link) {
-            linkSlide.value = item.link;
-        }
-    }
+    // TODO Trigger handle ของ input หาก Browse ไฟล์มาใหม่ ก็ควรแสดงรูปใหม่ โดยไม่กด submit กรณีไม่มีไฟล์ เป็น placeholder(รูปdefault)
 
     // TODO ทำ Galley สำหรับการ upload รูปหลายๆ รูป [upload ครั้งละไม่เกิน 20 หากเกิน ไม่ให้ยิง API | ขนาดไฟล์ไม่เกืน 16MB] (input แบบ multiply) และ ทำ Preview กด Submit ยิง API
 </script>
