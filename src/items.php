@@ -127,6 +127,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const maxLength = linkInput.maxLength || 100;
         let isFileDeleted = false;
 
+
+
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
@@ -150,12 +152,23 @@ require_once __DIR__ . "/../config/configuration.php";
                     if (result.result) {
                         const item = result.data.info[0];
                         const linkInput = document.querySelector('[data-link]');
-                        // console.log(linkInput.value);
+                        const fileInput = document.querySelector('input[type="file"]');
+                        console.log(fileInput);
                         linkInput.value = item.link || '';
                         if (item.link) {
                             updateCharacterCount();
                         }
                         displayItemData(item);
+
+                        fileInput.addEventListener('change', () => {
+                            if (fileInput.files.length > 0) {
+
+                                displayItemData(item);
+
+                            } else {
+                                imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
+                            }
+                        });
 
                     } else {
                         console.error('Error fetching item data:', result.message);
@@ -170,33 +183,12 @@ require_once __DIR__ . "/../config/configuration.php";
         let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
 
         const submitButton = document.querySelector('[data-button-submit]');
-        const fileInput = document.querySelector('[data-file-choose]');
+
         const imageSlideDiv = document.querySelector('[data-image-slide] img');
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
 
         const deleteButton = document.querySelector('[data-delete-item]');
         linkInput.addEventListener('input', updateCharacterCount);
-
-        fileInput.addEventListener('change', () => {
-            if (fileInput.files.length > 0) {
-                const file = fileInput.files[0];
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-
-                    const item = {
-                        filepath: e.target.result, // ใช้ผลลัพธ์ของ FileReader
-                        dateAdd: new Date().toLocaleString(), // ตั้งค่าข้อมูลวันที่เป็นปัจจุบัน
-                        link: '', // สามารถเพิ่มข้อมูลลิงก์ที่ต้องการได้
-                    };
-                    console.log(item);
-                    displayItemData(item);
-                };
-                reader.readAsDataURL(file); // อ่านไฟล์เป็น Data URL
-            } else {
-                imageSlideDiv.src = '../dnm_file/slide/default-image.jpg'; // แสดงรูป placeholder
-            }
-        });
 
         deleteButton.addEventListener('click', () => {
             isFileDeleted = true;
@@ -240,7 +232,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
                     displayItemData({
                         filename: uploadedFileName,
-                        filepath: `../dnm_file/slide/${uploadedFileName}`,
+                        filepath: `dnm_file/slide/${uploadedFileName}`,
                         link: linkValue,
                         dateAdd: new Date().toISOString()
                     });
@@ -291,7 +283,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
                 displayItemData({
                     filename: uploadedFileName,
-                    filepath: `../dnm_file/slide/${uploadedFileName}`,
+                    filepath: `dnm_file/slide/${uploadedFileName}`,
                     link: linkValue,
                     dateAdd: new Date().toISOString()
                 });
@@ -306,10 +298,11 @@ require_once __DIR__ . "/../config/configuration.php";
             const dateTimeDiv = document.querySelector('[data-date-time]');
             const linkSlide = document.querySelector('[data-link]');
 
-            console.log('display', item)
             if (imageSlideDiv && item.filename) {
                 const imageUrl = `../${item.filepath}`;
                 imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
+                console.log('display', imageUrl)
+
             }
             if (dateTimeDiv && item.dateAdd) {
                 dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
