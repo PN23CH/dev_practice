@@ -127,14 +127,40 @@ require_once __DIR__ . "/../config/configuration.php";
         const maxLength = linkInput.maxLength || 100;
         let isFileDeleted = false;
 
+        const fileInput = document.querySelector('input[type="file"]');
+        const imagePreview = document.getElementById('imagePreview');
+        const submitButton = document.querySelector('[data-button-submit]');
+        const placeholderImage = '../dnm_file/slide/default-image.jpg';
 
+        imagePreview.src = placeholderImage;
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0]; // ไฟล์ที่ผู้ใช้เลือก
+            if (file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result; // แสดงภาพที่อ่านได้จากไฟล์
+                    imagePreview.style.display = 'block'; // แสดงภาพ preview
+                }
+
+                reader.readAsDataURL(file); // อ่านไฟล์เป็น URL เพื่อแสดงผล
+            } else {
+                imagePreview.src = placeholderImage; // หากไม่มีไฟล์ แสดง placeholder
+            }
+        }
+
+        // เพิ่ม Event Listener เพื่อจัดการเมื่อผู้ใช้เลือกไฟล์ใหม่
+        fileInput.addEventListener('change', handleFileSelect);
 
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
         }
 
-        updateCharacterCount();
+        if (linkInput && textLengthDisplay) {
+            updateCharacterCount();
+        }
 
         function fetchItemData(itemId) {
             const formData = new FormData();
@@ -152,14 +178,13 @@ require_once __DIR__ . "/../config/configuration.php";
                     if (result.result) {
                         const item = result.data.info[0];
                         const linkInput = document.querySelector('[data-link]');
-                        const fileInput = document.querySelector('input[type="file"]');
-                        console.log(fileInput);
+                        // const fileInput = document.querySelector('input[type="file"]');
+                        // console.log(fileInput);
                         linkInput.value = item.link || '';
                         if (item.link) {
                             updateCharacterCount();
                         }
                         displayItemData(item);
-
                         fileInput.addEventListener('change', () => {
                             if (fileInput.files.length > 0) {
 
@@ -182,7 +207,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
 
-        const submitButton = document.querySelector('[data-button-submit]');
+        // const submitButton = document.querySelector('[data-button-submit]');
 
         const imageSlideDiv = document.querySelector('[data-image-slide] img');
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
@@ -214,7 +239,7 @@ require_once __DIR__ . "/../config/configuration.php";
             try {
                 // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg"
                 //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
-                if (fileInput.files.length > 0) {
+                if (fileInput && fileInput.files.length > 0) {
                     const newFile = fileInput.files[0];
                     formData.append('file', newFile);
                     formData.append('link', linkValue);
@@ -240,7 +265,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 }
 
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
-                if (isFileDeleted || fileInput.files.length > 0) {
+                if (isFileDeleted || (fileInput && fileInput.files.length > 0)) {
                     const deleteFormData = new FormData();
                     deleteFormData.append('webName', webName);
                     deleteFormData.append('currentFile', currentFile);
@@ -276,7 +301,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     body: updateFormData,
                 });
                 const updateResult = await updateResponse.json();
-                console.log(uploadedFileName)
+                // console.log(uploadedFileName)
                 if (!updateResult.result) {
                     throw new Error('Update failed: ' + updateResult.message);
                 }
@@ -301,7 +326,7 @@ require_once __DIR__ . "/../config/configuration.php";
             if (imageSlideDiv && item.filename) {
                 const imageUrl = `../${item.filepath}`;
                 imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
-                console.log('display', imageUrl)
+                // console.log('display', imageUrl)
 
             }
             if (dateTimeDiv && item.dateAdd) {
