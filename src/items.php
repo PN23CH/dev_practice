@@ -41,9 +41,9 @@ require_once __DIR__ . "/../config/configuration.php";
                         <hr class="h-2 border-gray-300 my-1">
                         <div class="text-sm">รูปปัจจุบัน</div>
                         <div class="flex flex-col items-center justify-center">
-                            <div class="max-w-md mx-auto">
+                            <div class="min-w-fit max-w-md mx-auto">
                                 <div data-image-slide class="w-fit bg-rose-200 rounded-xl overflow-hidden">
-                                    <img id="imagePreview" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-full" />
+                                    <img data-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto" />
                                 </div>
                                 <!-- <div
                                     class="mt-5 bg-gray-50 text-gray-600 text-base rounded w-full h-48 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed">
@@ -72,6 +72,7 @@ require_once __DIR__ . "/../config/configuration.php";
                                     <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                                 </svg>
                             </div>
+                            <!-- TODO ทำ Checkbox สำหรับ delete file เมื่อกด Submit placeholder ไม่ต้องเปลี่ยน แต่เป็นการกด delete แล้ว checkbox ทำงาน -->
                             <button type="button" data-delete-item class="flex items-center gap-x-3">
                                 <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_1016_6844)">
@@ -125,33 +126,13 @@ require_once __DIR__ . "/../config/configuration.php";
         const linkInput = document.querySelector('[data-link]');
         const textLengthDisplay = document.querySelector('p[data-text-length]');
         const maxLength = linkInput.maxLength || 100;
-        let isFileDeleted = false;
 
         const fileInput = document.querySelector('input[type="file"]');
-        const imagePreview = document.getElementById('imagePreview');
+        const imagePreview = document.querySelector('[data-preview="image"]');
         const submitButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
-
-        imagePreview.src = placeholderImage;
-
-        function handleFileSelect(event) {
-            const file = event.target.files[0]; // ไฟล์ที่ผู้ใช้เลือก
-            if (file) {
-                const reader = new FileReader();
-
-                reader.onload = function(e) {
-                    imagePreview.src = e.target.result; // แสดงภาพที่อ่านได้จากไฟล์
-                    imagePreview.style.display = 'block'; // แสดงภาพ preview
-                }
-
-                reader.readAsDataURL(file); // อ่านไฟล์เป็น URL เพื่อแสดงผล
-            } else {
-                imagePreview.src = placeholderImage; // หากไม่มีไฟล์ แสดง placeholder
-            }
-        }
-
-        // เพิ่ม Event Listener เพื่อจัดการเมื่อผู้ใช้เลือกไฟล์ใหม่
-        fileInput.addEventListener('change', handleFileSelect);
+        const category = "slide";
+        // imagePreview.src = placeholderImage;
 
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
@@ -177,23 +158,14 @@ require_once __DIR__ . "/../config/configuration.php";
                 .then(result => {
                     if (result.result) {
                         const item = result.data.info[0];
+                        // console.log('displayItemData----');
+                        displayItemData(item);
+
                         const linkInput = document.querySelector('[data-link]');
-                        // const fileInput = document.querySelector('input[type="file"]');
-                        // console.log(fileInput);
                         linkInput.value = item.link || '';
                         if (item.link) {
                             updateCharacterCount();
                         }
-                        displayItemData(item);
-                        fileInput.addEventListener('change', () => {
-                            if (fileInput.files.length > 0) {
-
-                                displayItemData(item);
-
-                            } else {
-                                imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
-                            }
-                        });
 
                     } else {
                         console.error('Error fetching item data:', result.message);
@@ -204,6 +176,39 @@ require_once __DIR__ . "/../config/configuration.php";
                 });
         }
         fetchItemData(currentId);
+
+        fileInput.addEventListener('change', function() {
+            const currentFile = fileInput.files[0];
+
+            // const file = URL.createObjectURL(currentFile);
+            // console.log(imagePreview);
+            // console.log(file);
+            // imagePreview.src = file;
+            // console.log(imagePreview.src);
+            // console.log('imagePreview', imagePreview);
+            // console.log('on change----');
+
+            imagePreview.src = '';
+            if (currentFile) {
+                //     console.log('1111');
+                const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
+                //     console.log(imageURL); // ล็อก URL เพื่อดูว่าถูกต้องไหม
+                imagePreview.src = imageURL; // ตั้งค่า src ให้กับ Blob URL
+                //     imagePreview.style.display = 'block'; // แสดงภาพ
+            } else {
+                // console.log('2222');
+                imagePreview.src = 'path/to/placeholder-image.jpg'; // รูป placeholder ถ้าไม่มีไฟล์
+            }
+        })
+
+        function test(filename, category) {
+            // console.log(filename);
+            // console.log(category);
+
+            const hostname = `../dnm_file`;
+            const urlPart = `${hostname}/${category}/${filename}`;
+            return urlPart;
+        }
 
         let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
 
@@ -216,12 +221,15 @@ require_once __DIR__ . "/../config/configuration.php";
         linkInput.addEventListener('input', updateCharacterCount);
 
         deleteButton.addEventListener('click', () => {
-            isFileDeleted = true;
-            const imageSlideDiv = document.querySelector('[data-image-slide]');
-            if (imageSlideDiv) {
-                imageSlideDiv.innerHTML = ''; // ลบภาพทันทีใน UI
-            }
+            // isFileDeleted = true;
+            // const imageSlideDiv = document.querySelector('[data-image-slide]');
+            // if (imageSlideDiv) {
+            // imageSlideDiv.innerHTML = '';
+            imagePreview.src = placeholderImage;
+            // }
         });
+
+
 
         submitButton.addEventListener('click', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -229,6 +237,14 @@ require_once __DIR__ . "/../config/configuration.php";
             const linkValue = linkInput.value.trim();
             const formData = new FormData();
             let uploadedFileName = '';
+            let isFileDeleted = false;
+
+
+            const newFile = fileInput.files[0];
+
+            if (isCheck || newFile) {
+                isFileDeleted = true;
+            }
 
             formData.append('id', itemId);
             formData.append('category', 'slide');
@@ -239,8 +255,7 @@ require_once __DIR__ . "/../config/configuration.php";
             try {
                 // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg"
                 //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
-                if (fileInput && fileInput.files.length > 0) {
-                    const newFile = fileInput.files[0];
+                if (newFile) {
                     formData.append('file', newFile);
                     formData.append('link', linkValue);
 
@@ -265,13 +280,13 @@ require_once __DIR__ . "/../config/configuration.php";
                 }
 
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
-                if (isFileDeleted || (fileInput && fileInput.files.length > 0)) {
+                if (isFileDeleted) {
                     const deleteFormData = new FormData();
                     deleteFormData.append('webName', webName);
                     deleteFormData.append('currentFile', currentFile);
                     deleteFormData.append('category', 'slide');
                     deleteFormData.append('action', 'remove');
-                    // TODO ระบุ filename / ระบุ localfile [ว่าเป็น serverside =  หรือ local = 1] โดยอิงจากไฟล์ config_dns
+                    // TODO ระบุ oldFile ที่จะลบ ทำเป็น dataSet ตอน Gen
 
                     const deleteResponse = await fetch('../api/slide_api_removefile.php', {
                         method: 'POST',
@@ -290,7 +305,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 updateFormData.append('category', 'slide');
                 updateFormData.append('action', 'updateItem');
                 updateFormData.append('link', linkValue);
-
+                // TODO ระบุ newFile ที่มาจาก api (เมื่อมีการ upload ไฟล์ใหม่)
                 if (uploadedFileName) {
                     updateFormData.append('filename', uploadedFileName);
                 }
@@ -301,17 +316,19 @@ require_once __DIR__ . "/../config/configuration.php";
                     body: updateFormData,
                 });
                 const updateResult = await updateResponse.json();
-                // console.log(uploadedFileName)
-                if (!updateResult.result) {
+                console.log('last update', updateResult);
+
+                if (updateResult.result) {
+                    if (updateResult.filename) {
+                        console.log(updateResult.filename);
+                        partUrlFile = test(updateResult.filename, category);
+                        imagePreview.src = partUrlFile;
+                    }
+
+
+                } else if(!updateResult.result) {
                     throw new Error('Update failed: ' + updateResult.message);
                 }
-
-                displayItemData({
-                    filename: uploadedFileName,
-                    filepath: `dnm_file/slide/${uploadedFileName}`,
-                    link: linkValue,
-                    dateAdd: new Date().toISOString()
-                });
 
             } catch (error) {
                 console.error('Error during the process:', error);
@@ -319,27 +336,54 @@ require_once __DIR__ . "/../config/configuration.php";
         });
 
         function displayItemData(item) {
-            const imageSlideDiv = document.querySelector('[data-image-slide]');
-            const dateTimeDiv = document.querySelector('[data-date-time]');
-            const linkSlide = document.querySelector('[data-link]');
+            // const imageSlideDiv = document.querySelector('[data-image-slide]');
+            // const dateTimeDiv = document.querySelector('[data-date-time]');
+            // const linkSlide = document.querySelector('[data-link]');
+            // console.log(item);
+            // console.log(item.filename);
 
-            if (imageSlideDiv && item.filename) {
-                const imageUrl = `../${item.filepath}`;
-                imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
+            if (item.filename) {
+                partUrlFile = test(item.filename, category);
+                // console.log(partUrlFile);
+                imagePreview.src = partUrlFile;
+                // const imageUrl = `../${item.filepath}`;
+                // imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
                 // console.log('display', imageUrl)
+            }
 
-            }
-            if (dateTimeDiv && item.dateAdd) {
-                dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
-            }
-            if (linkSlide && item.link) {
-                linkSlide.value = item.link;
-            }
+            // if (imageSlideDiv && item.filename) {
+            //     const imageUrl = `../${item.filepath}`;
+            //     const img = document.createElement("img");
+            //     img.className = "bg-cover bg-center max-w-[640px]";
+            //     img.src = imageUrl;
+            //     img.alt = "Slide Image";
+
+            //     // ล้าง div ก่อนใส่รูปใหม่เข้าไป
+            //     imageSlideDiv.innerHTML = "";
+
+            //     // กรณีที่มี link ให้ wrap ไว้ใน a
+            //     if (item.link) {
+            //         const anchor = document.createElement("a");
+            //         anchor.href = item.link;
+            //         anchor.target = "_blank";
+            //         anchor.appendChild(img); // ใส่ img ใน a
+            //         imageSlideDiv.appendChild(anchor);
+            //     } else {
+            //         imageSlideDiv.appendChild(img); // ใส่ img ลงใน div
+            //     }
+            // }
+
+            // if (dateTimeDiv && item.dateAdd) {
+            //     dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
+            // }
+
+            // if (linkSlide && item.link) {
+            //     linkSlide.value = item.link;
+            // }
         }
     });
 
-    // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล)
-    // TODO Trigger handle ของ input หาก Browse ไฟล์มาใหม่ ก็ควรแสดงรูปใหม่ โดยไม่กด submit กรณีไม่มีไฟล์ เป็น placeholder(รูปdefault)
+    // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล) ทำฟังก์ชั่นเช็คขนาดไฟล์ ขนาดไฟล์ไม่เกืน 16MB
 
     // TODO ทำ Galley สำหรับการ upload รูปหลายๆ รูป [upload ครั้งละไม่เกิน 20 หากเกิน ไม่ให้ยิง API | ขนาดไฟล์ไม่เกืน 16MB] (input แบบ multiply) และ ทำ Preview กด Submit ยิง API
 </script>
