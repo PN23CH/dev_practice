@@ -132,7 +132,6 @@ require_once __DIR__ . "/../config/configuration.php";
         const submitButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
-        // imagePreview.src = placeholderImage;
 
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
@@ -158,7 +157,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 .then(result => {
                     if (result.result) {
                         const item = result.data.info[0];
-                        // console.log('displayItemData----');
                         displayItemData(item);
 
                         const linkInput = document.querySelector('[data-link]');
@@ -179,40 +177,22 @@ require_once __DIR__ . "/../config/configuration.php";
 
         fileInput.addEventListener('change', function() {
             const currentFile = fileInput.files[0];
-
-            // const file = URL.createObjectURL(currentFile);
-            // console.log(imagePreview);
-            // console.log(file);
-            // imagePreview.src = file;
-            // console.log(imagePreview.src);
-            // console.log('imagePreview', imagePreview);
-            // console.log('on change----');
-
             imagePreview.src = '';
             if (currentFile) {
-                //     console.log('1111');
                 const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
-                //     console.log(imageURL); // ล็อก URL เพื่อดูว่าถูกต้องไหม
-                imagePreview.src = imageURL; // ตั้งค่า src ให้กับ Blob URL
-                //     imagePreview.style.display = 'block'; // แสดงภาพ
+                imagePreview.src = imageURL;
             } else {
-                // console.log('2222');
                 imagePreview.src = 'path/to/placeholder-image.jpg'; // รูป placeholder ถ้าไม่มีไฟล์
             }
         })
 
-        function test(filename, category) {
-            // console.log(filename);
-            // console.log(category);
-
+        function genUrlPath(filename, category) {
             const hostname = `../dnm_file`;
-            const urlPart = `${hostname}/${category}/${filename}`;
-            return urlPart;
+            const UrlPath = `${hostname}/${category}/${filename}`;
+            return UrlPath;
         }
 
         let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
-
-        // const submitButton = document.querySelector('[data-button-submit]');
 
         const imageSlideDiv = document.querySelector('[data-image-slide] img');
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
@@ -221,15 +201,8 @@ require_once __DIR__ . "/../config/configuration.php";
         linkInput.addEventListener('input', updateCharacterCount);
 
         deleteButton.addEventListener('click', () => {
-            // isFileDeleted = true;
-            // const imageSlideDiv = document.querySelector('[data-image-slide]');
-            // if (imageSlideDiv) {
-            // imageSlideDiv.innerHTML = '';
             imagePreview.src = placeholderImage;
-            // }
         });
-
-
 
         submitButton.addEventListener('click', async () => {
             const urlParams = new URLSearchParams(window.location.search);
@@ -239,10 +212,10 @@ require_once __DIR__ . "/../config/configuration.php";
             let uploadedFileName = '';
             let isFileDeleted = false;
 
-
             const newFile = fileInput.files[0];
 
-            if (isCheck || newFile) {
+            if (newFile) {
+                // if (isCheck || newFile) {
                 isFileDeleted = true;
             }
 
@@ -256,130 +229,107 @@ require_once __DIR__ . "/../config/configuration.php";
                 // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg"
                 //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
                 if (newFile) {
-                    formData.append('file', newFile);
-                    formData.append('link', linkValue);
-
-                    const uploadResponse = await fetch('../api/slide_api_uploadfile.php', {
-                        method: 'POST',
-                        credentials: 'include',
-                        body: formData,
-                    });
-                    const uploadResult = await uploadResponse.json();
-                    if (!uploadResult.result) {
-                        throw new Error('Upload failed: ' + uploadResult.message);
-                    }
-                    uploadedFileName = uploadResult.data.filename;
-
+                    uploadedFileName = await uploadNewFile(newFile, linkValue, itemId);
                     displayItemData({
                         filename: uploadedFileName,
                         filepath: `dnm_file/slide/${uploadedFileName}`,
                         link: linkValue,
                         dateAdd: new Date().toISOString()
                     });
-
                 }
 
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
                 if (isFileDeleted) {
-                    const deleteFormData = new FormData();
-                    deleteFormData.append('webName', webName);
-                    deleteFormData.append('currentFile', currentFile);
-                    deleteFormData.append('category', 'slide');
-                    deleteFormData.append('action', 'remove');
-                    // TODO ระบุ oldFile ที่จะลบ ทำเป็น dataSet ตอน Gen
-
-                    const deleteResponse = await fetch('../api/slide_api_removefile.php', {
-                        method: 'POST',
-                        credentials: 'include',
-                        body: deleteFormData,
-                    });
-                    const deleteResult = await deleteResponse.json();
-                    if (!deleteResult.result) {
-                        throw new Error('Delete failed: ' + deleteResult.message);
-                    }
+                    const filenameToDelete = uploadedFileName || currentFile;
+                    await deleteOldFile(currentFile, filenameToDelete);
                 }
 
                 //  #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
-                const updateFormData = new FormData();
-                updateFormData.append('id', itemId);
-                updateFormData.append('category', 'slide');
-                updateFormData.append('action', 'updateItem');
-                updateFormData.append('link', linkValue);
-                // TODO ระบุ newFile ที่มาจาก api (เมื่อมีการ upload ไฟล์ใหม่)
-                if (uploadedFileName) {
-                    updateFormData.append('filename', uploadedFileName);
-                }
-
-                const updateResponse = await fetch('../api/slide_api_updateitem.php', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: updateFormData,
-                });
-                const updateResult = await updateResponse.json();
-                console.log('last update', updateResult);
-
-                if (updateResult.result) {
-                    if (updateResult.filename) {
-                        console.log(updateResult.filename);
-                        partUrlFile = test(updateResult.filename, category);
-                        imagePreview.src = partUrlFile;
-                    }
-
-
-                } else if(!updateResult.result) {
-                    throw new Error('Update failed: ' + updateResult.message);
-                }
-
+                await updateItemData(itemId, linkValue, uploadedFileName);
             } catch (error) {
                 console.error('Error during the process:', error);
             }
         });
 
-        function displayItemData(item) {
-            // const imageSlideDiv = document.querySelector('[data-image-slide]');
-            // const dateTimeDiv = document.querySelector('[data-date-time]');
-            // const linkSlide = document.querySelector('[data-link]');
-            // console.log(item);
-            // console.log(item.filename);
+        async function uploadNewFile(newFile, linkValue, itemId) {
+            const formData = new FormData();
 
-            if (item.filename) {
-                partUrlFile = test(item.filename, category);
-                // console.log(partUrlFile);
-                imagePreview.src = partUrlFile;
-                // const imageUrl = `../${item.filepath}`;
-                // imageSlideDiv.innerHTML = `<img class="bg-cover bg-center max-w-[640px]" src="${imageUrl}" alt="Slide Image" />`;
-                // console.log('display', imageUrl)
+            formData.append('id', itemId);
+            formData.append('category', 'slide');
+            formData.append('action', 'updateItem');
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
+            formData.append('file', newFile);
+            formData.append('link', linkValue);
+
+            const response = await fetch('../api/slide_api_uploadfile.php', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+
+            const result = await response.json();
+
+            if (!result.result) {
+                throw new Error('Upload failed: ' + result.message);
             }
 
-            // if (imageSlideDiv && item.filename) {
-            //     const imageUrl = `../${item.filepath}`;
-            //     const img = document.createElement("img");
-            //     img.className = "bg-cover bg-center max-w-[640px]";
-            //     img.src = imageUrl;
-            //     img.alt = "Slide Image";
+            return result.data.filename;
+        }
 
-            //     // ล้าง div ก่อนใส่รูปใหม่เข้าไป
-            //     imageSlideDiv.innerHTML = "";
+        async function deleteOldFile(currentFile, filename) {
+            const formData = new FormData();
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
+            formData.append('filename', filename);
+            formData.append('category', 'slide');
+            formData.append('action', 'remove');
 
-            //     // กรณีที่มี link ให้ wrap ไว้ใน a
-            //     if (item.link) {
-            //         const anchor = document.createElement("a");
-            //         anchor.href = item.link;
-            //         anchor.target = "_blank";
-            //         anchor.appendChild(img); // ใส่ img ใน a
-            //         imageSlideDiv.appendChild(anchor);
-            //     } else {
-            //         imageSlideDiv.appendChild(img); // ใส่ img ลงใน div
-            //     }
-            // }
+            const response = await fetch('../api/slide_api_removefile.php', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+            const result = await response.json();
 
-            // if (dateTimeDiv && item.dateAdd) {
-            //     dateTimeDiv.textContent = `Date Added: ${item.dateAdd}`;
-            // }
+            if (!result.result) {
+                throw new Error('Delete failed: ' + result.message);
+            }
+        }
 
-            // if (linkSlide && item.link) {
-            //     linkSlide.value = item.link;
-            // }
+        async function updateItemData(itemId, linkValue, uploadedFileName) {
+            const formData = new FormData();
+            formData.append('id', itemId);
+            formData.append('category', 'slide');
+            formData.append('action', 'updateItem');
+            formData.append('link', linkValue);
+
+            if (uploadedFileName) {
+                formData.append('filename', uploadedFileName);
+            }
+
+            const response = await fetch('../api/slide_api_updateitem.php', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+            const result = await response.json();
+
+            if (!result.result) {
+                throw new Error('Update failed: ' + result.message);
+            }
+
+            if (result.filename) {
+                pathUrlFile = genUrlPath(result.filename, category);
+                imagePreview.src = pathUrlFile;
+            }
+        }
+
+        function displayItemData(item) {
+            if (item.filename) {
+                pathUrlFile = genUrlPath(item.filename, category);
+                imagePreview.src = pathUrlFile;
+            }
         }
     });
 
