@@ -60,42 +60,47 @@ require_once __DIR__ . "/../config/configuration.php";
                             </div>
                         </div>
                         <!-- <div data-date-time></div> -->
-                        <div class="flex items-center">
-                            <div class="relative inline-block">
-                                <!-- TODO ใช้เป็น <label> ในการ config css
+                        <div class="flex">
+                            <div class="pb-5">
+                                <div class="relative inline-block">
+                                    <!-- TODO ใช้เป็น <label> ในการ config css
                                 TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)
                                 
                                 TODO หน้าแสดงผล ระบุ sizefile แทนชื่อไฟล์ เช่น sizefile/16mb หากใหญ่เกิน ก็ ทำ validate แจ้งด้วย
                                  -->
-                                <input type="file" data-file-choose class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
-                                <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
-                                </svg>
-                            </div>
-                            <!-- TODO ทำ Checkbox สำหรับ delete file เมื่อกด Submit placeholder ไม่ต้องเปลี่ยน แต่เป็นการกด delete แล้ว checkbox ทำงาน -->
-                            <button type="button" data-delete-item class="flex items-center gap-x-3">
-                                <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g filter="url(#filter0_d_1016_6844)">
-                                        <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
-                                        <rect x="2.4808" y="1.4808" width="29.0384" height="29.0384" rx="9.5192" stroke="#FF0000" stroke-width="0.961594" />
-                                        <path d="M20.2063 11.1936V10.5525C20.2063 9.65496 20.2063 9.20617 20.0317 8.86335C19.878 8.56179 19.6328 8.31661 19.3313 8.16296C18.9884 7.98828 18.5397 7.98828 17.6421 7.98828H16.36C15.4624 7.98828 15.0136 7.98828 14.6708 8.16296C14.3692 8.31661 14.124 8.56179 13.9704 8.86335C13.7957 9.20617 13.7957 9.65496 13.7957 10.5525V11.1936M15.3984 15.6009V19.6075M18.6037 15.6009V19.6075M9.78906 11.1936H24.213M22.6103 11.1936V20.1685C22.6103 21.5148 22.6103 22.188 22.3483 22.7023C22.1178 23.1546 21.7501 23.5224 21.2977 23.7528C20.7835 24.0149 20.1103 24.0149 18.7639 24.0149H15.2381C13.8917 24.0149 13.2186 24.0149 12.7043 23.7528C12.252 23.5224 11.8842 23.1546 11.6537 22.7023C11.3917 22.188 11.3917 21.5148 11.3917 20.1685V11.1936" stroke="white" stroke-width="1.60266" stroke-linecap="round" stroke-linejoin="round" />
-                                    </g>
-                                    <defs>
-                                        <filter id="filter0_d_1016_6844" x="0.0768117" y="0.0384058" width="33.8464" height="33.8464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                                            <feOffset dy="0.961594" />
-                                            <feGaussianBlur stdDeviation="0.961594" />
-                                            <feColorMatrix type="matrix" values="0 0 0 0 0.0627451 0 0 0 0 0.0941176 0 0 0 0 0.156863 0 0 0 0.05 0" />
-                                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1016_6844" />
-                                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1016_6844" result="shape" />
-                                        </filter>
-                                    </defs>
-                                </svg>
-                                ลบรูป / ไฟล์ปัจจุบัน
-                            </button>
-                        </div>
 
+                                    <input type="file" data-file-choose class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
+                                    <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                </div>
+                                <div data-size-file-show class="absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
+                            </div>
+                            <div class="flex items-start gap-x-4">
+                                <input type="checkbox" data-check-delete class="mt-3">
+                                <button type="button" data-delete-item class="flex items-center gap-x-3">
+                                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g filter="url(#filter0_d_1016_6844)">
+                                            <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
+                                            <rect x="2.4808" y="1.4808" width="29.0384" height="29.0384" rx="9.5192" stroke="#FF0000" stroke-width="0.961594" />
+                                            <path d="M20.2063 11.1936V10.5525C20.2063 9.65496 20.2063 9.20617 20.0317 8.86335C19.878 8.56179 19.6328 8.31661 19.3313 8.16296C18.9884 7.98828 18.5397 7.98828 17.6421 7.98828H16.36C15.4624 7.98828 15.0136 7.98828 14.6708 8.16296C14.3692 8.31661 14.124 8.56179 13.9704 8.86335C13.7957 9.20617 13.7957 9.65496 13.7957 10.5525V11.1936M15.3984 15.6009V19.6075M18.6037 15.6009V19.6075M9.78906 11.1936H24.213M22.6103 11.1936V20.1685C22.6103 21.5148 22.6103 22.188 22.3483 22.7023C22.1178 23.1546 21.7501 23.5224 21.2977 23.7528C20.7835 24.0149 20.1103 24.0149 18.7639 24.0149H15.2381C13.8917 24.0149 13.2186 24.0149 12.7043 23.7528C12.252 23.5224 11.8842 23.1546 11.6537 22.7023C11.3917 22.188 11.3917 21.5148 11.3917 20.1685V11.1936" stroke="white" stroke-width="1.60266" stroke-linecap="round" stroke-linejoin="round" />
+                                        </g>
+                                        <defs>
+                                            <filter id="filter0_d_1016_6844" x="0.0768117" y="0.0384058" width="33.8464" height="33.8464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                                <feOffset dy="0.961594" />
+                                                <feGaussianBlur stdDeviation="0.961594" />
+                                                <feColorMatrix type="matrix" values="0 0 0 0 0.0627451 0 0 0 0 0.0941176 0 0 0 0 0.156863 0 0 0 0.05 0" />
+                                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1016_6844" />
+                                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1016_6844" result="shape" />
+                                            </filter>
+                                        </defs>
+                                    </svg>
+                                    ลบรูป / ไฟล์ปัจจุบัน
+                                </button>
+                            </div>
+                        </div>
                         <div class="flex justify-between">
                             <div class="flex flex-col">
                                 <div class="mr-2">LINK</div>
@@ -131,6 +136,17 @@ require_once __DIR__ . "/../config/configuration.php";
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
         const slideForm = document.forms['slide'];
+
+        let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
+
+        const imageSlideDiv = document.querySelector('[data-image-slide] img');
+        imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
+        const deleteButton = document.querySelector('[data-delete-item]');
+        const checkDelete = document.querySelector('[data-check-delete]');
+        const currentSizeFile = document.querySelector('[data-size-file-show]');
+        const maxSizeMB = 16; // ขนาดสูงสุดที่อนุญาตใน MB
+        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+
 
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
@@ -185,12 +201,26 @@ require_once __DIR__ . "/../config/configuration.php";
 
         fileInput.addEventListener('change', function() {
             const currentFile = fileInput.files[0];
+            console.log(currentFile);
             imagePreview.src = '';
             if (currentFile) {
                 const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
+                const sizeNewFile = currentFile.size;
+                const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
+                currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
                 imagePreview.src = imageURL;
+
+                if (sizeNewFile > maxSizeBytes) {
+                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB}MB`; // แสดงข้อความเตือน
+                    submitButton.disabled = true; // ปิดการกด Submit
+                } else {
+                    currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`; // แสดงขนาดไฟล์
+                    submitButton.disabled = false; // เปิดการกด Submit
+                }
             } else {
                 imagePreview.src = 'path/to/placeholder-image.jpg'; // รูป placeholder ถ้าไม่มีไฟล์
+                currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
+                submitButton.disabled = true;
             }
         })
 
@@ -200,17 +230,16 @@ require_once __DIR__ . "/../config/configuration.php";
             return UrlPath;
         }
 
-        let currentFile = dnmLocal == 1 ? "dnmLocal" : localFile == 1 ? "localFile" : "";
-
-        const imageSlideDiv = document.querySelector('[data-image-slide] img');
-        imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
-
-        const deleteButton = document.querySelector('[data-delete-item]');
-
         linkInput.addEventListener('input', updateCharacterCount);
 
+        let isCheck = false;
+        checkDelete.addEventListener('change', (event) => {
+            isCheck = event.target.checked;
+        });
+
         deleteButton.addEventListener('click', () => {
-            imagePreview.src = placeholderImage;
+            checkDelete.checked ||= true; // การใช้ ||= จะตรวจสอบว่า checkDelete.checked เป็น false หรือ undefined และถ้าใช่ จะกำหนดค่าให้เป็น true
+            isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
         });
 
         async function SubmitButton() {
@@ -220,12 +249,11 @@ require_once __DIR__ . "/../config/configuration.php";
             let uploadedFileName = '';
             let isFileDeleted = false;
             const setOldFile = fileInput.dataset.oldfile;
-
             const newFile = fileInput.files[0];
 
-            if (newFile) {
-                // if (isCheck || newFile) {
+            if (isCheck || newFile) {
                 isFileDeleted = true;
+                imagePreview.src = placeholderImage;
             }
 
             formData.append('id', currentId);
