@@ -35,7 +35,7 @@ require_once __DIR__ . "/../config/configuration.php";
             <div class="flex min-w-[200px] w-[350px] max-w-[400px] h-screen bg-pink-200 hidden">SIDEMENU</div>
             <div class="flex flex-col w-full h-screen px-10 py-8 gap-y-5">
                 <div class="text-2xl font-semiblod">ระบบ จัดการภาพสไลด์</div>
-                <form data-form="main">
+                <form data-form="main" name="slide">
                     <div class="flex flex-col w-full bg-sky-100 rounded-2xl drop-shadow-lg p-5 gap-y-4">
                         <div class="text-xl">ข้อมูลภาพสไลด์</div>
                         <hr class="h-2 border-gray-300 my-1">
@@ -63,8 +63,8 @@ require_once __DIR__ . "/../config/configuration.php";
                         <div class="flex items-center">
                             <div class="relative inline-block">
                                 <!-- TODO ใช้เป็น <label> ในการ config css
-                                TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)   
-                                TODO input type file ต้องมี name ว่าเป็นของหมวดอะไร >> name="mainfile" ส่วน input อื่นก็ "additionail-file"
+                                TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)
+                                
                                 TODO หน้าแสดงผล ระบุ sizefile แทนชื่อไฟล์ เช่น sizefile/16mb หากใหญ่เกิน ก็ ทำ validate แจ้งด้วย
                                  -->
                                 <input type="file" data-file-choose class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
@@ -98,13 +98,11 @@ require_once __DIR__ . "/../config/configuration.php";
 
                         <div class="flex justify-between">
                             <div class="flex flex-col">
-                                <!-- TODO ทำ function text length ไม่เกิน 100 ตัว -->
                                 <div class="mr-2">LINK</div>
                                 <div class="flex items-center gap-x-2">
-                                    <input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" maxlength="100" value="" />
+                                    <input class="rounded-lg px-2 py-1" type="text" data-link placeholder="Enter link here" maxlength="100" value="" name="link" />
                                     <p data-text-length></p>
                                 </div>
-                                <!-- TODO ทำ คำอธิบาย เป็น <textarea> เช็ค text length ไม่เกิน 150 ตัว -->
                             </div>
                             <button type="button" data-button-submit class="w-10 h-10 bg-red-700 ring-4 ring-red-200 rounded-full text-white hover:bg-red-600">OK</button>
                         </div>
@@ -132,6 +130,7 @@ require_once __DIR__ . "/../config/configuration.php";
         const submitButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
+        const slideForm = document.forms['slide'];
 
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
@@ -142,9 +141,9 @@ require_once __DIR__ . "/../config/configuration.php";
             updateCharacterCount();
         }
 
-        function fetchItemData(itemId) {
+        function fetchItemData(currentId) {
             const formData = new FormData();
-            formData.append('id', itemId);
+            formData.append('id', currentId);
             formData.append('type', 'slide');
             formData.append('action', 'getItem');
 
@@ -159,12 +158,6 @@ require_once __DIR__ . "/../config/configuration.php";
                         const item = result.data.info[0];
                         displayItemData(item);
 
-                        const linkInput = document.querySelector('[data-link]');
-                        linkInput.value = item.link || '';
-                        if (item.link) {
-                            updateCharacterCount();
-                        }
-
                     } else {
                         console.error('Error fetching item data:', result.message);
                     }
@@ -174,6 +167,21 @@ require_once __DIR__ . "/../config/configuration.php";
                 });
         }
         fetchItemData(currentId);
+
+        function displayItemData(item) {
+            if (item.filename) {
+                // dataset old file
+                fileInput.dataset.oldfile = item.filename;
+                pathUrlFile = genUrlPath(item.filename, category);
+                imagePreview.src = pathUrlFile;
+            }
+
+            const linkInput = document.querySelector('[data-link]');
+            if (item.link && linkInput) {
+                linkInput.value = item.link || '';
+                updateCharacterCount();
+            }
+        }
 
         fileInput.addEventListener('change', function() {
             const currentFile = fileInput.files[0];
@@ -198,19 +206,20 @@ require_once __DIR__ . "/../config/configuration.php";
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
 
         const deleteButton = document.querySelector('[data-delete-item]');
+
         linkInput.addEventListener('input', updateCharacterCount);
 
         deleteButton.addEventListener('click', () => {
             imagePreview.src = placeholderImage;
         });
 
-        submitButton.addEventListener('click', async () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const itemId = urlParams.get('id');
+        async function SubmitButton() {
             const linkValue = linkInput.value.trim();
             const formData = new FormData();
+
             let uploadedFileName = '';
             let isFileDeleted = false;
+            const setOldFile = fileInput.dataset.oldfile;
 
             const newFile = fileInput.files[0];
 
@@ -219,17 +228,17 @@ require_once __DIR__ . "/../config/configuration.php";
                 isFileDeleted = true;
             }
 
-            formData.append('id', itemId);
+            formData.append('id', currentId);
             formData.append('category', 'slide');
             formData.append('action', 'updateItem');
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
 
             try {
-                // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg"
+                // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg" (สุดท้าย)
                 //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
                 if (newFile) {
-                    uploadedFileName = await uploadNewFile(newFile, linkValue, itemId);
+                    uploadedFileName = await uploadNewFile(newFile, currentId);
                     displayItemData({
                         filename: uploadedFileName,
                         filepath: `dnm_file/slide/${uploadedFileName}`,
@@ -239,28 +248,29 @@ require_once __DIR__ . "/../config/configuration.php";
                 }
 
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
-                if (isFileDeleted) {
-                    const filenameToDelete = uploadedFileName || currentFile;
-                    await deleteOldFile(currentFile, filenameToDelete);
+                if (isFileDeleted && setOldFile) {
+                    await deleteOldFile(currentFile, setOldFile);
                 }
 
                 //  #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
-                await updateItemData(itemId, linkValue, uploadedFileName);
+                await updateItemData(currentId, linkValue, uploadedFileName);
             } catch (error) {
                 console.error('Error during the process:', error);
             }
+        }
+
+        submitButton.addEventListener('click', async () => {
+            SubmitButton();
         });
 
-        async function uploadNewFile(newFile, linkValue, itemId) {
+        async function uploadNewFile(newFile, currentId) {
             const formData = new FormData();
-
-            formData.append('id', itemId);
+            formData.append('id', currentId);
             formData.append('category', 'slide');
             formData.append('action', 'updateItem');
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
             formData.append('file', newFile);
-            formData.append('link', linkValue);
 
             const response = await fetch('../api/slide_api_uploadfile.php', {
                 method: 'POST',
@@ -277,11 +287,11 @@ require_once __DIR__ . "/../config/configuration.php";
             return result.data.filename;
         }
 
-        async function deleteOldFile(currentFile, filename) {
+        async function deleteOldFile(currentFile, setOldFile) {
             const formData = new FormData();
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
-            formData.append('filename', filename);
+            formData.append('oldFile', setOldFile);
             formData.append('category', 'slide');
             formData.append('action', 'remove');
 
@@ -297,12 +307,12 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        async function updateItemData(itemId, linkValue, uploadedFileName) {
-            const formData = new FormData();
-            formData.append('id', itemId);
+        async function updateItemData(currentId, linkValue, uploadedFileName) {
+            const formData = new FormData(slideForm);
+            formData.append('id', currentId);
             formData.append('category', 'slide');
             formData.append('action', 'updateItem');
-            formData.append('link', linkValue);
+            // formData.append('link', linkValue);
 
             if (uploadedFileName) {
                 formData.append('filename', uploadedFileName);
@@ -325,15 +335,9 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        function displayItemData(item) {
-            if (item.filename) {
-                pathUrlFile = genUrlPath(item.filename, category);
-                imagePreview.src = pathUrlFile;
-            }
-        }
     });
 
-    // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล) ทำฟังก์ชั่นเช็คขนาดไฟล์ ขนาดไฟล์ไม่เกืน 16MB
+    // TODO ทำ preview ที่สามารถรองรับไฟล์หลายประเภท (นานเพราะเทสที่ละนามสกุล) ทำฟังก์ชั่นเช็คขนาดไฟล์ ขนาดไฟล์ไม่เกืน 16MB function maxfile20 กับ sizeFile16 (ทำงานกับ byte แสดงผลเป็น MB)
 
     // TODO ทำ Galley สำหรับการ upload รูปหลายๆ รูป [upload ครั้งละไม่เกิน 20 หากเกิน ไม่ให้ยิง API | ขนาดไฟล์ไม่เกืน 16MB] (input แบบ multiply) และ ทำ Preview กด Submit ยิง API
 </script>
