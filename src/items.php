@@ -65,8 +65,6 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="relative inline-block">
                                     <!-- TODO ใช้เป็น <label> ในการ config css
                                 TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)
-                                
-                                TODO หน้าแสดงผล ระบุ sizefile แทนชื่อไฟล์ เช่น sizefile/16mb หากใหญ่เกิน ก็ ทำ validate แจ้งด้วย
                                  -->
 
                                     <input type="file" data-file-choose class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
@@ -145,7 +143,7 @@ require_once __DIR__ . "/../config/configuration.php";
         const checkDelete = document.querySelector('[data-check-delete]');
         const currentSizeFile = document.querySelector('[data-size-file-show]');
         const maxSizeMB = 16; // ขนาดสูงสุดที่อนุญาตใน MB
-        const maxSizeBytes = maxSizeMB * 1024 * 1024;
+        const maxSizeBytes = maxSizeMB * 1024 * 1024; // เอาไปใส่ในฟังก์ชั่น
 
 
         function updateCharacterCount() {
@@ -203,24 +201,42 @@ require_once __DIR__ . "/../config/configuration.php";
             const currentFile = fileInput.files[0];
             console.log(currentFile);
             imagePreview.src = '';
+
+            const result = aa();
+
+            result.info[1].size
+
+            return;
+
+            // ############################# ตัวอย่าง result ของ sizefile >>>>> Loop แต่ละไฟล์เพื่อ ตรวจสอบ sizefile แต่ละไฟล์ แล้วถ้ามีไฟล์ที่ sizefile เกิน ก็ให้ผลเป็น false และ เขียนสรุป totalsize
+            // const fileInfo = {
+            //     isvalid: true,
+            //     totalsize: 20,
+            //     info: [
+            //         {size: 0.1, isvalid: true},
+            //         {size: 0.2, isvalid: true},
+            //         {size: 17, isvalid: false},
+            //         {size: 0, isvalid: false},
+            //         {size: 0, isvalid: false},
+            //     ]
+            // };
             if (currentFile) {
                 const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
+
+                // TODO ทำฟังก์ชั่น
                 const sizeNewFile = currentFile.size;
                 const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
                 currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
                 imagePreview.src = imageURL;
 
                 if (sizeNewFile > maxSizeBytes) {
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB}MB`; // แสดงข้อความเตือน
-                    submitButton.disabled = true; // ปิดการกด Submit
+                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB}MB`; // Display ข้อความเป็นสีแดง ถ้าไม่มีไฟล์ ก็ไม่ต้องแสดงข้อความ ทำงานหลังจากได้ result แล้ว ไม่ทำใน ฟังก์ชั่น
                 } else {
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`; // แสดงขนาดไฟล์
-                    submitButton.disabled = false; // เปิดการกด Submit
+                    currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`; 
                 }
             } else {
-                imagePreview.src = 'path/to/placeholder-image.jpg'; // รูป placeholder ถ้าไม่มีไฟล์
+                imagePreview.src = 'path/to/placeholder-image.jpg';
                 currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
-                submitButton.disabled = true;
             }
         })
 
