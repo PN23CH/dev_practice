@@ -67,12 +67,12 @@ require_once __DIR__ . "/../config/configuration.php";
                                 TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)
                                  -->
 
-                                    <input type="file" data-file-choose class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
+                                    <input type="file" data-file-choose multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
                                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </div>
-                                <div data-size-file-show class="absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
+                                <div data-size-file-show class="hidden absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
                             </div>
                             <div class="flex items-start gap-x-4">
                                 <input type="checkbox" data-check-delete class="mt-3">
@@ -142,8 +142,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const deleteButton = document.querySelector('[data-delete-item]');
         const checkDelete = document.querySelector('[data-check-delete]');
         const currentSizeFile = document.querySelector('[data-size-file-show]');
-        const maxSizeMB = 16; // ขนาดสูงสุดที่อนุญาตใน MB
-        const maxSizeBytes = maxSizeMB * 1024 * 1024; // เอาไปใส่ในฟังก์ชั่น
+        const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
+        const maxFiles = 20;
 
 
         function updateCharacterCount() {
@@ -197,46 +197,117 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        function sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile) {
+            const sizeNewFile = currentFile.size;
+            const setOldFile = fileInput.dataset.oldfile; // เก็บ dataset ของไฟล์เดิม
+            const maxSizeBytes = maxSizeMB * 1024 * 1024;
+            const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
+            currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
+            imagePreview.src = imageURL;
+
+            // ถ้าไฟล์ที่ input มาเกินกว่าที่กำหนด
+            if (sizeNewFile > maxSizeBytes) {
+                currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
+                currentSizeFile.classList.add('text-rose-700');
+
+                // ถ้ามีไฟล์เดิม
+                if (setOldFile) {
+                    pathUrlFile = genUrlPath(setOldFile, category); // Gen path file ให้ถูก
+                    imagePreview.src = pathUrlFile; // แสดงไฟล์เดิม
+                } else {
+                    // ถ้าไม่มีไฟล์เดิม ก็แสดงเป็นรูป Default
+                    imagePreview.src = placeholderImage;
+                    console.log('placeholderImage', placeholderImage);
+                }
+
+                fileInput.value = '';
+                return;
+            } else {
+                currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
+            }
+        }
+
+        // const result = aa();
+
+        // result.info[1].size
+
+        // return;
+
+        // ############################# ตัวอย่าง result ของ sizefile >>>>> Loop แต่ละไฟล์เพื่อ ตรวจสอบ sizefile แต่ละไฟล์ แล้วถ้ามีไฟล์ที่ sizefile เกิน ก็ให้ผลเป็น false และ เขียนสรุป totalsizeb
+        // const fileInfo = {
+        //     isvalid: true,
+        //     totalsize: 20,
+        //     info: [
+        //         {size: 0.1, isvalid: true},
+        //         {size: 0.2, isvalid: true},
+        //         {size: 17, isvalid: false},
+        //         {size: 0, isvalid: false},
+        //         {size: 0, isvalid: false},
+        //     ]
+        // };
+
+        function validateFiles(fileInput, maxFiles, maxSizeMB, currentSizeFile) {
+            const files = fileInput.files;
+            const fileInfo = {
+                isvalid: true,
+                totalsize: 0,
+                info: []
+            };
+
+            currentSizeFile.innerHTML = '';
+            currentSizeFile.classList.remove('text-rose-700');
+
+            // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
+            if (files.length > maxFiles) {
+                fileInfo.isvalid = false;
+                return fileInfo;
+            }
+
+            // Loop แต่ละไฟล์เพื่อตรวจสอบขนาด
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const sizeInMB = file.size / (1024 * 1024);
+                const isValidFile = sizeInMB <= maxSizeMB;
+
+                fileInfo.info.push({
+                    size: sizeInMB.toFixed(2), // เก็บขนาดไฟล์ในรูปแบบทศนิยม 2 ตำแหน่ง
+                    isvalid: isValidFile
+                });
+
+                fileInfo.totalsize += sizeInMB;
+
+                // ถ้าพบไฟล์ที่ไม่ valid ให้ isvalid เป็น false
+                if (!isValidFile) {
+                    fileInfo.isvalid = false;
+                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณมีไฟล์ที่ใหญ่กว่า ${maxSizeMB} MB`;
+                    currentSizeFile.classList.add('text-rose-700');
+                }
+            }
+            fileInfo.totalsize = fileInfo.totalsize.toFixed(2);
+            return fileInfo;
+        }
+
         fileInput.addEventListener('change', function() {
             const currentFile = fileInput.files[0];
-            console.log(currentFile);
+            const result = validateFiles(fileInput, maxFiles, maxSizeMB);
+            console.log(result);
             imagePreview.src = '';
 
-            const result = aa();
-
-            result.info[1].size
-
-            return;
-
-            // ############################# ตัวอย่าง result ของ sizefile >>>>> Loop แต่ละไฟล์เพื่อ ตรวจสอบ sizefile แต่ละไฟล์ แล้วถ้ามีไฟล์ที่ sizefile เกิน ก็ให้ผลเป็น false และ เขียนสรุป totalsize
-            // const fileInfo = {
-            //     isvalid: true,
-            //     totalsize: 20,
-            //     info: [
-            //         {size: 0.1, isvalid: true},
-            //         {size: 0.2, isvalid: true},
-            //         {size: 17, isvalid: false},
-            //         {size: 0, isvalid: false},
-            //         {size: 0, isvalid: false},
-            //     ]
-            // };
             if (currentFile) {
                 const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
 
                 // TODO ทำฟังก์ชั่น
-                const sizeNewFile = currentFile.size;
-                const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
-                currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
-                imagePreview.src = imageURL;
+                currentSizeFile.classList.remove('hidden');
+                sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile);
 
-                if (sizeNewFile > maxSizeBytes) {
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB}MB`; // Display ข้อความเป็นสีแดง ถ้าไม่มีไฟล์ ก็ไม่ต้องแสดงข้อความ ทำงานหลังจากได้ result แล้ว ไม่ทำใน ฟังก์ชั่น
-                } else {
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`; 
-                }
             } else {
-                imagePreview.src = 'path/to/placeholder-image.jpg';
+                imagePreview.src = placeholderImage;
                 currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
+            }
+
+            if (!result.isvalid) {
+                console.log('พบไฟล์ที่ไม่ผ่านข้อกำหนด');
+                // คุณสามารถทำอะไรเพิ่มเติมเมื่อเจอไฟล์ที่ไม่ถูกต้อง เช่นแจ้งเตือนผู้ใช้
             }
         })
 
