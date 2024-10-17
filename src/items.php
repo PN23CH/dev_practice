@@ -63,9 +63,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         <div class="flex">
                             <div class="pb-5">
                                 <div class="relative inline-block">
-                                    <!-- TODO ใช้เป็น <label> ในการ config css
-                                TODO ระบุ นามสกุลไฟล์ที่อนุญาตเท่านั้น (ทำที่ js ได้)
-                                 -->
+                                    <!-- TODO ใช้เป็น <label> ในการ config css -->
 
                                     <input type="file" data-file-choose multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
                                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -197,6 +195,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // TODO ยกเลิกฟังก์ชั่นนี้
         function sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile) {
             const sizeNewFile = currentFile.size;
             const setOldFile = fileInput.dataset.oldfile; // เก็บ dataset ของไฟล์เดิม
@@ -246,16 +245,17 @@ require_once __DIR__ . "/../config/configuration.php";
         //     ]
         // };
 
-        function validateFiles(fileInput, maxFiles, maxSizeMB, currentSizeFile) {
-            const files = fileInput.files;
+        // TODO แยกฟังก์ชั่น maxFiles และ maxSize (และใส่ try catch ดักไว้ ที่ fileInput change)
+        function validateFiles(files, maxFiles, maxSizeMB, currentSizeFile) {
+        console.log(fileInput);
             const fileInfo = {
                 isvalid: true,
                 totalsize: 0,
                 info: []
             };
 
-            currentSizeFile.innerHTML = '';
-            currentSizeFile.classList.remove('text-rose-700');
+            // currentSizeFile.innerHTML = '';
+            // currentSizeFile.classList.remove('text-rose-700');
 
             // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
             if (files.length > maxFiles) {
@@ -266,30 +266,37 @@ require_once __DIR__ . "/../config/configuration.php";
             // Loop แต่ละไฟล์เพื่อตรวจสอบขนาด
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-                const sizeInMB = file.size / (1024 * 1024);
-                const isValidFile = sizeInMB <= maxSizeMB;
+                const sizeIn = file.size; // หน่วยเป็น ไบต์
+                const sizeInMB = file.size / (1024 * 1024); // หน่วยเป็น MB
+                const isValidFile = sizeIn <= maxSizeMB * 1024 * 1024;
 
                 fileInfo.info.push({
                     size: sizeInMB.toFixed(2), // เก็บขนาดไฟล์ในรูปแบบทศนิยม 2 ตำแหน่ง
                     isvalid: isValidFile
                 });
 
-                fileInfo.totalsize += sizeInMB;
+                fileInfo.totalsize += sizeIn;
 
                 // ถ้าพบไฟล์ที่ไม่ valid ให้ isvalid เป็น false
                 if (!isValidFile) {
                     fileInfo.isvalid = false;
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณมีไฟล์ที่ใหญ่กว่า ${maxSizeMB} MB`;
-                    currentSizeFile.classList.add('text-rose-700');
+                    // currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณมีไฟล์ที่ใหญ่กว่า ${maxSizeMB} MB`;
+                    // currentSizeFile.classList.add('text-rose-700');
                 }
             }
             fileInfo.totalsize = fileInfo.totalsize.toFixed(2);
+            // console.log(fileInfo);
             return fileInfo;
         }
 
-        fileInput.addEventListener('change', function() {
+        // TODO ทำ ฟังก์ชั่น อนุญาตนามสกุลไฟล์ ที่ input ว่า ต้องการให้นามสกุลไหนบ้างผ่านเข้าไป 
+        // TODO ทำ ฟังก์ชั่น อนุญาตนามสกุลไฟล์ ที่ Submit ว่า ต้องการให้นามสกุลไหนบ้างผ่านเข้าไป
+        fileInput.addEventListener('change', async function() {
             const currentFile = fileInput.files[0];
-            const result = validateFiles(fileInput, maxFiles, maxSizeMB);
+            const testFile = fileInput.files;
+
+
+            const result = await validateFiles(testFile, maxFiles, maxSizeMB);
             console.log(result);
             imagePreview.src = '';
 
@@ -307,7 +314,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             if (!result.isvalid) {
                 console.log('พบไฟล์ที่ไม่ผ่านข้อกำหนด');
-                // คุณสามารถทำอะไรเพิ่มเติมเมื่อเจอไฟล์ที่ไม่ถูกต้อง เช่นแจ้งเตือนผู้ใช้
+                // TODO DISPLAY ของ maxSize และ maxFile
             }
         })
 
