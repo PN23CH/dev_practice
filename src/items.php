@@ -21,6 +21,7 @@ require_once __DIR__ . "/../config/configuration.php";
     <title>News - slide - manage</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
 </head>
 <style>
     body {
@@ -196,35 +197,35 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // TODO ยกเลิกฟังก์ชั่นนี้
-        function sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile) {
-            const sizeNewFile = currentFile.size;
-            const setOldFile = fileInput.dataset.oldfile; // เก็บ dataset ของไฟล์เดิม
-            const maxSizeBytes = maxSizeMB * 1024 * 1024;
-            const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
-            currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
-            imagePreview.src = imageURL;
+        // function sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile) {
+        //     const sizeNewFile = currentFile.size;
+        //     const setOldFile = fileInput.dataset.oldfile; // เก็บ dataset ของไฟล์เดิม
+        //     const maxSizeBytes = maxSizeMB * 1024 * 1024;
+        //     const sizeInMB = (sizeNewFile / (1024 * 1024)).toFixed(2);
+        //     currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
+        //     imagePreview.src = imageURL;
 
-            // ถ้าไฟล์ที่ input มาเกินกว่าที่กำหนด
-            if (sizeNewFile > maxSizeBytes) {
-                currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
-                currentSizeFile.classList.add('text-rose-700');
+        //     // ถ้าไฟล์ที่ input มาเกินกว่าที่กำหนด
+        //     if (sizeNewFile > maxSizeBytes) {
+        //         currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
+        //         currentSizeFile.classList.add('text-rose-700');
 
-                // ถ้ามีไฟล์เดิม
-                if (setOldFile) {
-                    pathUrlFile = genUrlPath(setOldFile, category); // Gen path file ให้ถูก
-                    imagePreview.src = pathUrlFile; // แสดงไฟล์เดิม
-                } else {
-                    // ถ้าไม่มีไฟล์เดิม ก็แสดงเป็นรูป Default
-                    imagePreview.src = placeholderImage;
-                    console.log('placeholderImage', placeholderImage);
-                }
+        //         // ถ้ามีไฟล์เดิม
+        //         if (setOldFile) {
+        //             pathUrlFile = genUrlPath(setOldFile, category); // Gen path file ให้ถูก
+        //             imagePreview.src = pathUrlFile; // แสดงไฟล์เดิม
+        //         } else {
+        //             // ถ้าไม่มีไฟล์เดิม ก็แสดงเป็นรูป Default
+        //             imagePreview.src = placeholderImage;
+        //             console.log('placeholderImage', placeholderImage);
+        //         }
 
-                fileInput.value = '';
-                return;
-            } else {
-                currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
-            }
-        }
+        //         fileInput.value = '';
+        //         return;
+        //     } else {
+        //         currentSizeFile.innerHTML = `ขนาดไฟล์ ${sizeInMB} MB`;
+        //     }
+        // }
 
         // const result = aa();
 
@@ -246,22 +247,28 @@ require_once __DIR__ . "/../config/configuration.php";
         // };
 
         // TODO แยกฟังก์ชั่น maxFiles และ maxSize (และใส่ try catch ดักไว้ ที่ fileInput change)
-        function validateFiles(files, maxFiles, maxSizeMB, currentSizeFile) {
-        console.log(fileInput);
+        function maxFileValid(files) {
             const fileInfo = {
                 isvalid: true,
                 totalsize: 0,
                 info: []
             };
 
-            // currentSizeFile.innerHTML = '';
-            // currentSizeFile.classList.remove('text-rose-700');
-
             // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
             if (files.length > maxFiles) {
                 fileInfo.isvalid = false;
                 return fileInfo;
             }
+
+            return fileInfo;
+        }
+
+        function maxSizeValid(files) {
+            const fileInfo = {
+                isvalid: true,
+                totalsize: 0,
+                info: []
+            };
 
             // Loop แต่ละไฟล์เพื่อตรวจสอบขนาด
             for (let i = 0; i < files.length; i++) {
@@ -280,41 +287,105 @@ require_once __DIR__ . "/../config/configuration.php";
                 // ถ้าพบไฟล์ที่ไม่ valid ให้ isvalid เป็น false
                 if (!isValidFile) {
                     fileInfo.isvalid = false;
-                    // currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณมีไฟล์ที่ใหญ่กว่า ${maxSizeMB} MB`;
-                    // currentSizeFile.classList.add('text-rose-700');
                 }
             }
             fileInfo.totalsize = fileInfo.totalsize.toFixed(2);
-            // console.log(fileInfo);
             return fileInfo;
         }
+
+        // ฟังก์ชันตรวจสอบนามสกุลไฟล์
+        function isValidFileType(file) {
+            const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+            return allowedExtensions.includes(fileExtension);
+        }
+
+        // ฟังก์ชันแปลงไฟล์ .heic เป็น .jpg
+        async function convertHeicToJpg(file) {
+            try {
+                const convertedFile = await heic2any({
+                    blob: file,
+                    toType: 'image/jpeg',
+                });
+                return convertedFile;
+            } catch (error) {
+                console.error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว:', error);
+                return null;
+            }
+        }
+
 
         // TODO ทำ ฟังก์ชั่น อนุญาตนามสกุลไฟล์ ที่ input ว่า ต้องการให้นามสกุลไหนบ้างผ่านเข้าไป 
         // TODO ทำ ฟังก์ชั่น อนุญาตนามสกุลไฟล์ ที่ Submit ว่า ต้องการให้นามสกุลไหนบ้างผ่านเข้าไป
         fileInput.addEventListener('change', async function() {
-            const currentFile = fileInput.files[0];
-            const testFile = fileInput.files;
+            const inputFile = fileInput.files;
+            const validFiles = [];
 
+            for (let i = 0; i < inputFile.length; i++) {
+                let file = inputFile[i];
 
-            const result = await validateFiles(testFile, maxFiles, maxSizeMB);
-            console.log(result);
+                // ตรวจสอบนามสกุลไฟล์ก่อน
+                if (!isValidFileType(file)) {
+                    console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
+                    continue; // ข้ามไฟล์ที่ไม่ผ่านเงื่อนไข
+                }
+
+                // ถ้าเป็นไฟล์ .heic ให้แปลงเป็น .jpg
+                if (file.name.toLowerCase().endsWith('.heic')) {
+                    const convertedFile = await convertHeicToJpg(file);
+                    if (convertedFile) {
+                        file = new File([convertedFile], file.name.replace('.heic', '.jpg'), {
+                            type: 'image/jpeg',
+                            lastModified: Date.now(),
+                        });
+                    } else {
+                        console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
+                        continue; // ถ้าแปลงไม่สำเร็จ ข้ามไฟล์นี้ไป
+                    }
+                }
+
+                // เก็บไฟล์ที่ผ่านการตรวจสอบแล้วใน validFiles
+                validFiles.push(file);
+            }
+
+            let resultMaxFile = null;
+            let resultMaxSize = null;
+
+            try {
+                // พยายามตรวจสอบ maxFileValid ก่อน
+                resultMaxFile = await maxFileValid(inputFile);
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการตรวจสอบ maxFile:', error);
+            }
+
+            try {
+                // พยายามตรวจสอบ maxSizeValid ต่อไป
+                resultMaxSize = await maxSizeValid(inputFile);
+            } catch (error) {
+                console.error('เกิดข้อผิดพลาดในการตรวจสอบ maxSize:', error);
+            }
+
+            const currentFile = validFiles[0];
             imagePreview.src = '';
 
             if (currentFile) {
                 const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
 
                 // TODO ทำฟังก์ชั่น
+                imagePreview.src = imageURL;
                 currentSizeFile.classList.remove('hidden');
-                sizeFileValidate(currentFile, maxSizeMB, imageURL, currentSizeFile);
 
             } else {
                 imagePreview.src = placeholderImage;
                 currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
             }
 
-            if (!result.isvalid) {
+            if (!resultMaxFile.isvalid || !resultMaxSize.isvalid) {
                 console.log('พบไฟล์ที่ไม่ผ่านข้อกำหนด');
                 // TODO DISPLAY ของ maxSize และ maxFile
+                currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
+                currentSizeFile.classList.add('text-rose-700');
+
             }
         })
 
@@ -360,7 +431,28 @@ require_once __DIR__ . "/../config/configuration.php";
                 // TODO convert นามสกุล ".heic" แปลงเป็น ".jpg" (สุดท้าย)
                 //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
                 if (newFile) {
-                    uploadedFileName = await uploadNewFile(newFile, currentId);
+                    const fileExtension = newFile.name.split('.').pop().toLowerCase();
+
+                    // อนุญาตเฉพาะไฟล์นามสกุลที่กำหนด
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        throw new Error(`นามสกุลไฟล์ ${fileExtension} ไม่ได้รับอนุญาต`);
+                    }
+
+                    // ถ้าเป็น .heic แปลงเป็น .jpg ก่อน
+                    if (fileExtension === 'heic') {
+                        const convertedFile = await convertHeicToJpg(newFile);
+                        if (convertedFile) {
+                            uploadedFileName = await uploadNewFile(convertedFile, currentId);
+                        } else {
+                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
+                        }
+                    } else {
+                        // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
+                        uploadedFileName = await uploadNewFile(newFile, currentId);
+                    }
+
+                    // uploadedFileName = await uploadNewFile(newFile, currentId);
                     displayItemData({
                         filename: uploadedFileName,
                         filepath: `dnm_file/slide/${uploadedFileName}`,
