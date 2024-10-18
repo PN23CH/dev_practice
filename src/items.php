@@ -262,14 +262,41 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
 
-        // TODO ปรับ ให้ return แค่ true false และ ให้แยก type image
+        // TODO ปรับ ให้ return แค่ true false และ ให้แยก type image ☑️
         // ฟังก์ชันตรวจสอบนามสกุลไฟล์
+        const allowedExtensions = {
+            image: ['jpg', 'jpeg', 'png', 'gif', 'heic'],
+            document: ['pdf', 'doc', 'docx']
+        };
+
+        // ฟังก์ชั่น check ประเภทของไฟล์
         function isValidFileType(file, type) {
-            console.log('FileTypefunc');
-            // console.log('file' , file)
-            const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
             const fileExtension = file.name.split('.').pop().toLowerCase();
-            return allowedExtensions.includes(fileExtension);
+            let category = null;
+
+            if (allowedExtensions.image.includes(fileExtension)) {
+                category = 'image';
+            } else if (allowedExtensions.document.includes(fileExtension)) {
+                category = 'document';
+            }
+
+            if (category) {
+                console.log(`File is a valid ${category} file.`);
+                // เรียกใช้ฟังก์ชันอื่นตามประเภท
+                if (category === 'image') {
+                    console.log('type = image')
+                    // handleImageFile(file); // ส่งไฟล์ไปทำงานในฟังก์ชันจัดการรูปภาพ
+                } else if (category === 'document') {
+                    console.log('type = document')
+                    // handleDocumentFile(file); // ส่งไฟล์ไปทำงานในฟังก์ชันจัดการเอกสาร
+                }
+                return true; // valid
+            } else {
+                console.log('File type is not supported.');
+                return false; // invalid
+            }
+
+            // return allowedExtensions.includes(fileExtension); // return เป็น true,false 
         }
 
         // ฟังก์ชันแปลงไฟล์ .heic เป็น .jpg
@@ -288,70 +315,86 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        fileInput.addEventListener('change', async function() {
-            const inputFile = fileInput.files;
-            console.log('inputFile', inputFile)
-            const validFiles = [];
-
+        // ฟังก์ชันสำหรับตรวจสอบจำนวนไฟล์
+        async function checkMaxFileValid(inputFile) {
             let resultMaxFile = null;
-            let resultMaxSize = null;
-
             try {
-                // พยายามตรวจสอบ maxFileValid ก่อน
                 resultMaxFile = await maxFileValid(inputFile);
-
                 if (!resultMaxFile) {
                     currentSizeFile.innerHTML = `คุณใส่ไฟล์เกิน ${maxFiles} ไฟล์`;
                     currentSizeFile.classList.add('text-rose-700');
-                    return
+                    return false;
                 }
+                return true;
             } catch (error) {
                 console.error('เกิดข้อผิดพลาดในการตรวจสอบ maxFile:', error);
+                return false;
             }
+        }
 
+        // ฟังก์ชันสำหรับตรวจสอบขนาดไฟล์
+        async function checkMaxSizeValid(inputFile) {
+            let resultMaxSize = null;
             try {
-                // พยายามตรวจสอบ maxSizeValid ต่อไป
                 resultMaxSize = await maxSizeValid(inputFile);
-
                 if (!resultMaxSize.isvalid) {
-                    console.log('fileInput', fileInput.value);
                     currentSizeFile.classList.remove('hidden');
                     currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
                     currentSizeFile.classList.add('text-rose-700');
                     fileInput.value = '';
-                    return
+                    return false;
                 } else {
                     currentSizeFile.classList.remove('text-rose-700');
                     currentSizeFile.innerHTML = `ขนาดไฟล์ ${resultMaxSize.totalsize} MB`;
+                    return true;
                 }
-
             } catch (error) {
                 console.error('เกิดข้อผิดพลาดในการตรวจสอบ maxSize:', error);
+                return false;
             }
+        }
 
-            let file = inputFile[0];
+        // ฟังก์ชันสำหรับตรวจสอบนามสกุลไฟล์
+        function checkFileTypeValid(file) {
+            if (!isValidFileType(file)) {
+                console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
+                return false;
+            }
+            return true;
+        }
 
-            console.log('isValidFileType', isValidFileType);
-                // ตรวจสอบนามสกุลไฟล์ก่อน
-                if (!isValidFileType(file)) {
-                    console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
-                    return;
-                }
-
-            // Preview Image
+        // Preview Image
+        async function handleFilePreview(file) {
             let imgPreview = '';
             if (file.name.toLowerCase().endsWith('.heic')) {
                 const convertedFile = await convertHeicToJpg(file);
                 if (convertedFile) {
-                    console.log('convertedFile', convertedFile);
                     imgPreview = URL.createObjectURL(convertedFile);
-                    console.log('imgPreview', imgPreview);
                 }
             } else {
                 imgPreview = URL.createObjectURL(file);
-
             }
             imagePreview.src = imgPreview;
+        }
+
+        fileInput.addEventListener('change', async function() {
+            const inputFile = fileInput.files;
+            console.log('inputFile', inputFile)
+            // ตรวจสอบจำนวนไฟล์
+            const isMaxFileValid = await checkMaxFileValid(inputFile);
+            if (!isMaxFileValid) return;
+
+            // ตรวจสอบขนาดไฟล์
+            const isMaxSizeValid = await checkMaxSizeValid(inputFile);
+            if (!isMaxSizeValid) return;
+
+            // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
+            const file = inputFile[0];
+            const isFileTypeValid = checkFileTypeValid(file);
+            if (!isFileTypeValid) return;
+
+            // ทำการแสดงผล Preview ภาพ
+            await handleFilePreview(file);
 
             // for (let i = 0; i < inputFile.length; i++) {
             //     let file = inputFile[i];
@@ -388,7 +431,7 @@ require_once __DIR__ . "/../config/configuration.php";
             // if (currentFile) {
             //     const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
 
-            //     // TODO ทำฟังก์ชั่น 🆗
+            //     // TO_DO ทำฟังก์ชั่น 🆗
             //     imagePreview.src = imageURL;
             //     currentSizeFile.classList.remove('hidden');
 
