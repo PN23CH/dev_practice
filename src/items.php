@@ -66,7 +66,7 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="relative inline-block">
                                     <!-- TODO ใช้เป็น <label> ในการ config css -->
 
-                                    <input type="file" data-file-choose multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
+                                    <input type="file" id="fileInput" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
                                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
@@ -262,7 +262,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
 
-7        // ฟังก์ชันตรวจสอบนามสกุลไฟล์
+        // ฟังก์ชันตรวจสอบนามสกุลไฟล์
         const allowedExtensions = {
             image: ['jpg', 'jpeg', 'png', 'gif', 'heic'],
             document: ['doc', 'docx'],
@@ -271,6 +271,18 @@ require_once __DIR__ . "/../config/configuration.php";
         };
 
         // TODO ฟังก์ชั่น set input type element เพื่อกรอง type ที่ input ว่าจะอนุญาต type อะไรบ้าง เช่น accept=".png , .jpg" ใน element
+        function setInputAcceptType(elementId, allowedTypes) {
+            const acceptTypes = allowedTypes.map(type => `.${type}`).join(', ');
+
+            const inputElement = document.getElementById(elementId);
+
+            if (inputElement) {
+                inputElement.setAttribute('accept', acceptTypes);
+            } else {
+                console.error(`Element with id "${elementId}" not found`);
+            }
+        }
+        setInputAcceptType('fileInput', allowedExtensions.image);
 
         // TODO loop ไฟล์ สำหรับหลายๆ file หลาย type
         // ฟังก์ชั่น check ประเภทของไฟล์
@@ -278,21 +290,36 @@ require_once __DIR__ . "/../config/configuration.php";
             const fileExtension = file.name.split('.').pop().toLowerCase();
             let category = null;
 
-            const targetType = allowedExtensions[type];
+            // const targetType = allowedExtensions[type];
             console.log(file);
-            // return;
 
-            if (targetType.includes(fileExtension)) {
-                console.log('111111');
-                return true;
-            } 
+            // if (targetType.includes(fileExtension)) {
+            //     return true;
+            // } else {
+            //     return false;
+            // }
+            // วนลูปเช็คทุกประเภทใน allowedExtensions
+            for (const type in allowedExtensions) {
+                const targetType = allowedExtensions[type];
+
+                if (targetType.includes(fileExtension)) {
+                    category = type; // เก็บประเภทที่ตรงกับไฟล์นี้
+                    return {
+                        isValid: true,
+                        category: category
+                    };
+                }
+            }
+
+            // หากไม่เจอประเภทที่ตรงกัน
+            return {
+                isValid: false,
+                category: null
+            };
+
             // else if (allowedExtensions.document.includes(fileExtension)) {
             //     category = 'document';
             // } 
-            else {
-                console.log('2222222');
-                return false;
-            }
 
             // if (category) {
             //     // console.log(`File is a valid ${category} file.`);
@@ -372,8 +399,21 @@ require_once __DIR__ . "/../config/configuration.php";
         async function checkFileTypeValid(file, type) {
 
             // เช่น ถ้าเป็น false ก็บอก user ว่าไฟล์ไม่ผ่าน และ อนุญาตไฟล์อะไรบ้าง ทีนี่
-            return await isValidFileType(file, 'image');
+            // return await isValidFileType(file, 'image');
 
+            const {
+                isValid,
+                category
+            } = isValidFileType(file);
+
+            // หากไฟล์ไม่ผ่านการตรวจสอบ
+            if (!isValid) {
+                // แสดงข้อความให้ผู้ใช้ทราบ
+                alert(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
+                return false;
+            }
+
+            return true;
 
             // if (!isValidFileType(file)) {
             //     console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
@@ -402,7 +442,7 @@ require_once __DIR__ . "/../config/configuration.php";
             // ตรวจสอบจำนวนไฟล์
             const isMaxFileValid = await checkMaxFileValid(inputFile);
             if (!isMaxFileValid) return;
-            
+
             // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
             const file = inputFile[0];
             const isFileTypeValid = await checkFileTypeValid(file, 'image');
