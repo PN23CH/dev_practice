@@ -20,6 +20,7 @@ require_once __DIR__ . "/../config/configuration.php";
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <title>News - slide - manage</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="../style/modal.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/heic2any/0.0.4/heic2any.min.js"></script>
 </head>
@@ -113,6 +114,17 @@ require_once __DIR__ . "/../config/configuration.php";
             </div>
         </div>
         <div class="bg-rose-200">FOOTER</div>
+
+        <!-- MODAL -->
+        <div modal-file-valid class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+            <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
+                <div>SVG</div>
+                <div modal-notvalid-message class="text-xl font-semibold text-black"></div>
+                <div class="flex justify-end">
+                    <button modal-understood-button class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">เข้าใจแล้ว</button>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 
@@ -143,6 +155,19 @@ require_once __DIR__ . "/../config/configuration.php";
         const currentSizeFile = document.querySelector('[data-size-file-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
         const maxFiles = 20;
+
+        const notValidModal = document.querySelector('div[modal-file-valid]');
+        const notValidMessage = document.querySelector('div[modal-notvalid-message]');
+        const understoodButton = document.querySelector('button[modal-understood-button]');
+
+        async function showModal(message) {
+            notValidMessage.textContent = message;
+            notValidModal.classList.remove('hidden');
+        }
+
+        understoodButton.addEventListener('click', () => {
+            notValidModal.classList.add('hidden');
+        });
 
 
         function updateCharacterCount() {
@@ -303,7 +328,10 @@ require_once __DIR__ . "/../config/configuration.php";
             for (const type in allowedExtensions) {
                 const targetType = allowedExtensions[type];
 
+                console.log('targetType1', targetType.includes(fileExtension));
+
                 if (targetType.includes(fileExtension)) {
+                    console.log('targetType2', targetType.includes(fileExtension));
                     category = type; // เก็บประเภทที่ตรงกับไฟล์นี้
                     return {
                         isValid: true,
@@ -398,19 +426,17 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // ฟังก์ชันสำหรับตรวจสอบนามสกุลไฟล์ การ DISPLAY ใส่ที่ฟังก์ชั่นนี้
         async function checkFileTypeValid(file, type) {
-
-            // เช่น ถ้าเป็น false ก็บอก user ว่าไฟล์ไม่ผ่าน และ อนุญาตไฟล์อะไรบ้าง ทีนี่
-            // return await isValidFileType(file, 'image');
-
             const {
                 isValid,
                 category
             } = isValidFileType(file);
 
+            console.log(isValid);
+
             // หากไฟล์ไม่ผ่านการตรวจสอบ
             if (!isValid) {
                 // แสดงข้อความให้ผู้ใช้ทราบ
-                alert(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
+                await showModal(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
                 return false;
             }
 
@@ -440,14 +466,15 @@ require_once __DIR__ . "/../config/configuration.php";
         fileInput.addEventListener('change', async function() {
             const inputFile = fileInput.files;
             // console.log('inputFile', inputFile)
-            // ตรวจสอบจำนวนไฟล์
-            const isMaxFileValid = await checkMaxFileValid(inputFile);
-            if (!isMaxFileValid) return;
 
             // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
             const file = inputFile[0];
             const isFileTypeValid = await checkFileTypeValid(file, 'image');
             if (!isFileTypeValid) return;
+
+            // ตรวจสอบจำนวนไฟล์
+            const isMaxFileValid = await checkMaxFileValid(inputFile);
+            if (!isMaxFileValid) return;
 
             // ตรวจสอบขนาดไฟล์
             const isMaxSizeValid = await checkMaxSizeValid(inputFile);

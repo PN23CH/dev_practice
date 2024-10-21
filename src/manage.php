@@ -14,6 +14,7 @@ require_once __DIR__ . "/../config/configuration.php";
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet">
     <!-- <link href="../style/main_menu.css" rel="stylesheet" type="text/css" /> -->
+    <link rel="stylesheet" href="../style/modal.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 </head>
@@ -67,27 +68,6 @@ require_once __DIR__ . "/../config/configuration.php";
         height: 1.5rem;
         margin-left: auto;
         margin-right: auto;
-    }
-
-    .modal {
-        position: fixed;
-        z-index: 50;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-content {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        width: 50%;
-        text-align: center;
     }
 
     .dragging {
@@ -244,7 +224,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 </div>
                 <div delete-message class="text-xl font-semibold text-black"></div>
                 <div class="text-lg font-semibold text-red-700">หมายเหตุ ข้อมูลที่ถูกลบไปแล้วไม่สามารถกู้คืนได้</div>
-                <div class="modal-buttons flex justify-end">
+                <div class="flex justify-end">
                     <button modal-confirm-button class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ยืนยัน</button>
                     <button modal-cencel-button class="bg-gray-500 text-white px-4 py-2 mr-2 rounded">ยกเลิก</button>
                 </div>
