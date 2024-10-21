@@ -215,9 +215,9 @@ require_once __DIR__ . "/../config/configuration.php";
         //     ]
         // };
 
+        // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
         function maxFileValid(files) {
 
-            // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
             if (files.length > maxFiles) {
                 return false;
             }
@@ -226,6 +226,7 @@ require_once __DIR__ . "/../config/configuration.php";
             return true;
         }
 
+        // ตรวจขนาดของไฟล์
         function maxSizeValid(files) {
             // console.log('maxSizeFunc');
             const fileInfo = {
@@ -261,7 +262,6 @@ require_once __DIR__ . "/../config/configuration.php";
             return fileInfo;
         }
 
-
         // ฟังก์ชันตรวจสอบนามสกุลไฟล์
         const allowedExtensions = {
             image: ['jpg', 'jpeg', 'png', 'gif', 'heic'],
@@ -282,16 +282,17 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error(`Element with id "${elementId}" not found`);
             }
         }
-        setInputAcceptType('fileInput', allowedExtensions.image);
+
+        setInputAcceptType('fileInput', allowedExtensions.image); // กำหนด type ให้ input
 
         // TODO loop ไฟล์ สำหรับหลายๆ file หลาย type
         // ฟังก์ชั่น check ประเภทของไฟล์
         function isValidFileType(file, type) {
             const fileExtension = file.name.split('.').pop().toLowerCase();
             let category = null;
+            console.log(file);
 
             // const targetType = allowedExtensions[type];
-            console.log(file);
 
             // if (targetType.includes(fileExtension)) {
             //     return true;
