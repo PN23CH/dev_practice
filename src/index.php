@@ -5,6 +5,7 @@ require_once __DIR__ . "/../lib/util_var.php";
 require_once __DIR__ . "/../config/config_hd.php";
 require_once __DIR__ . "/../config/configuration.php";
 ?>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -18,21 +19,22 @@ require_once __DIR__ . "/../config/configuration.php";
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
 </head>
+
 <body class="bg-sky-800 min-h-screen max-w-full">
     <div class="bg-sky-800 text-white sticky top-0 z-40 duration-500 border-b border-b-slate-500">
-        <div class="max-w-7xl mx-auto p-5 flex justify-between items-center">
-            <div class="font-semibold text-[26px] xl:text-[32px]">
-                <a href="#" class="items-center">
+        <div class="flex items-center justify-between rtl:justify-end w-full p-5">
+            <div class="flex justify-between items-center lg:w-1/4 font-semibold text-lg xl:text-xl">
+                <a href="#">
                     <i class="main_logo"></i>
-                    <div class="ml-16">เทศบาลตำบลรั้วใหญ่</div>
+                    <p class="pl-16">เทศบาลตำบลรั้วใหญ่</p>
                 </a>
             </div>
-            <div>
-                <button id="dropdownMenuTop" data-dropdown-toggle="dropdownDots" class="items-center pt-3 px-2 ml-3 text-3xl rounded-lg lg:hidden focus:outline-none focus:ring-2 focus:ring-slate-500">
+            <div class="flex lg:w-3/4">
+                <button id="dropdownMenuTop" data-dropdown-toggle="dropdownDots" class="inline-flex items-center p-2 text-3xl text-slate-300 rounded-lg lg:hidden hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-slate-200">
                     &#65049;
                 </button>
                 <!-- Menu Top1 -->
-                <nav class="hidden lg:block space-x-8 text-[18px] xl:text-[22px] font-semibold z-50">
+                <nav class="hidden lg:block space-x-8 text-md xl:text-lg font-semibold z-50">
                     <a href="#" class="hover:opacity-90 hover:text-yellow-300 hover:underline hover:underline-offset-2">หน้าแรก</a>
                     <a href="#" class="hover:opacity-90 hover:text-yellow-300 hover:underline hover:underline-offset-2">ข้อมูลหน่วยงาน</a>
                     <a href="#" class="hover:opacity-90 hover:text-yellow-300 hover:underline hover:underline-offset-2">บุคลากร</a>
@@ -45,7 +47,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 </nav>
                 <!-- Menu Top2 -->
                 <div id="dropdownDots" class="z-10 hidden bg-gray-300 divide-y divide-gray-100 rounded-lg shadow w-44">
-                    <ul class="py-2 text-[24px] font-semibold text-gray-700" aria-labelledby="dropdownMenuTop">
+                    <ul class="py-2 text-lg font-semibold text-gray-700" aria-labelledby="dropdownMenuTop">
                         <li>
                             <a href="#" class="block px-4 py-2 hover:bg-gray-100">หน้าแรก</a>
                         </li>
@@ -85,7 +87,7 @@ require_once __DIR__ . "/../config/configuration.php";
             &#9776;
         </button>
         <div class="ml-4 flex text-sm leading-6 whitespace-nowrap min-w-0 justify-items-center">
-            <div class="px-2 py-1 ml-2 w-24 text-center text-slate-300 text-[24px] font-semibold">Hot News &#62;</div>
+            <div class="px-2 py-1 ml-2 w-24 text-center text-slate-300 text-md font-semibold">Hot News &#62;</div>
             <div class="flex px-2 py-1 mx-2 w-screen text-slate-200 text-[18px]">text-gen-news</div>
         </div>
     </div>
@@ -95,156 +97,156 @@ require_once __DIR__ . "/../config/configuration.php";
             <nav class="h-full pl-10 2xl:px-3 py-4 overflow-y-auto lg:text-sm lg:leading-7 relative">
                 <ul>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-5 lg:mb-3 text-[28px] font-bold text-white">ข้อมูลหน่วยงาน</div>
+                        <div class="mb-5 lg:mb-3 text-lg font-bold text-white">ข้อมูลหน่วยงาน</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-6 lg:mt-4">
-                                <div class="block text-slate-200 text-[24px] font-semibold">ข้อมูลพื้นฐาน</div>
+                                <div class="block text-slate-200 text-md font-semibold">ข้อมูลพื้นฐาน</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ประวัติหน่วยงาน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ประวัติหน่วยงาน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">สภาพทั่วไป</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">สภาพทั่วไป</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ผลิตภัณฑ์</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ผลิตภัณฑ์</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">สถานที่สำคัญ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">สถานที่สำคัญ</a>
                                     </li>
                                 </ul>
                             </li>
                             <li class="mt-12 lg:mt-8">
-                                <div class="block text-slate-200 text-[24px] font-semibold">เกี่ยวกับหน่วยงาน</div>
+                                <div class="block text-slate-200 text-md font-semibold">เกี่ยวกับหน่วยงาน</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">วิสัยทัศน์/พันธกิจ/ยุทธศาสตร์</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">วิสัยทัศน์/พันธกิจ/ยุทธศาสตร์</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">คำขวัญ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">คำขวัญ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">โครงสร้างองค์กร</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">โครงสร้างองค์กร</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">บทบาทหน้าที่</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">บทบาทหน้าที่</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">อำนาจหน้าที่</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">อำนาจหน้าที่</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">คู่มือการปฏิบัติงาน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">คู่มือการปฏิบัติงาน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">คู่มือหรือมาตรฐานการให้บริการ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">คู่มือหรือมาตรฐานการให้บริการ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ติดต่อ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ติดต่อ</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-8 lg:mb-3 text-[28px] font-bold text-white">บุคลากร</div>
+                        <div class="mb-8 lg:mb-3 text-lg font-bold text-white">บุคลากร</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-4 lg:mt-2">
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">คณะผู้บริหาร</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">คณะผู้บริหาร</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">สมาชิกสภา</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">สมาชิกสภา</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">หัวหน้าส่วนราชการ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">หัวหน้าส่วนราชการ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">บุคลากร</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">บุคลากร</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ผู้นำชุมชน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ผู้นำชุมชน</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-8 lg:mb-3 text-[28px] font-bold text-white">การบริหารบุคคล</div>
+                        <div class="mb-8 lg:mb-3 text-lg font-bold text-white">การบริหารบุคคล</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-4 lg:mt-2">
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">นโยบายการบริหารทรัพยากรบุคคล</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">นโยบายการบริหารทรัพยากรบุคคล</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">การดำเนินการตามนโยบายการบริหารทรัพยากรบุคคล</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">การดำเนินการตามนโยบายการบริหารทรัพยากรบุคคล</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">หลักเกณฑ์การบริหารและพัฒนาทรัพยากรบุคคล</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">หลักเกณฑ์การบริหารและพัฒนาทรัพยากรบุคคล</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-8 lg:mb-3 text-[28px] font-bold text-white">ข่าวสาร</div>
+                        <div class="mb-8 lg:mb-3 text-lg font-bold text-white">ข่าวสาร</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-6 lg:mt-4">
-                                <div class="block text-slate-200 text-[24px] font-semibold">กิจกรรม</div>
+                                <div class="block text-slate-200 text-md font-semibold">กิจกรรม</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">กิจกรรม</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">กิจกรรม</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">กิจการสภา</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">กิจการสภา</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">วีดิทัศน์</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">วีดิทัศน์</a>
                                     </li>
                                 </ul>
                             </li>
                             <li class="mt-12 lg:mt-8">
-                                <div class="block text-slate-200 text-[24px] font-semibold">ข่าวสาร</div>
+                                <div class="block text-slate-200 text-md font-semibold">ข่าวสาร</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ข่าวประชาสัมพันธ์</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ข่าวประชาสัมพันธ์</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ข่าวจัดซื้อจัดจ้าง</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ข่าวจัดซื้อจัดจ้าง</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ประกาศผลจัดซื้อจัดจ้าง</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ประกาศผลจัดซื้อจัดจ้าง</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ประกาศจากระบบ
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ประกาศจากระบบ
                                             e-GP</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">กองทุนหลักประกันสุขภาพ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">กองทุนหลักประกันสุขภาพ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ข่าวสรรหาบุคลากร</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ข่าวสรรหาบุคลากร</a>
                                     </li>
                                 </ul>
                             </li>
                             <li class="mt-12 lg:mt-8">
-                                <div class="block text-slate-200 text-[24px] font-semibold">ข่าวสารภายนอก</div>
+                                <div class="block text-slate-200 text-md font-semibold">ข่าวสารภายนอก</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">หนังสือสั่งการ
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">หนังสือสั่งการ
                                             สถ.</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ข่าวสารจาก
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ข่าวสารจาก
                                             สถ.จ.</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ข่าวสาร
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ข่าวสาร
                                             ในเครือข่าย</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ประกาศจากระบบ
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ประกาศจากระบบ
                                             e-GP ในเครือข่าย</a>
                                     </li>
                                 </ul>
@@ -252,168 +254,168 @@ require_once __DIR__ . "/../config/configuration.php";
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-8 lg:mb-3 text-[28px] font-bold text-white">แผน</div>
+                        <div class="mb-8 lg:mb-3 text-lg font-bold text-white">แผน</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-4 lg:mt-2">
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนพัฒนาท้องถิ่น</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนพัฒนาท้องถิ่น</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนการดำเนินงาน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนการดำเนินงาน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนอัตรากำลัง</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนอัตรากำลัง</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนจัดหาพัสดุ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนจัดหาพัสดุ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนป้องกันปราบปรามทุจริต</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนป้องกันปราบปรามทุจริต</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนตรวจสอบภายใน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนตรวจสอบภายใน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">เทศบัญญัติงบประมาณรายจ่าย</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">เทศบัญญัติงบประมาณรายจ่าย</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">แผนอื่นๆ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">แผนอื่นๆ</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-8 lg:mb-3 text-[28px] font-bold text-white">รายงาน</div>
+                        <div class="mb-8 lg:mb-3 text-lg font-bold text-white">รายงาน</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-4 lg:mt-2">
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานทางการเงิน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานทางการเงิน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">งบแสดงรายรับ-รายจ่าย</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">งบแสดงรายรับ-รายจ่าย</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานผลการปฏิบัติงานประจำปี</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานผลการปฏิบัติงานประจำปี</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานผลการกำกับติดตาม</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานผลการกำกับติดตาม</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">สรุปผลการจัดหาพัสดุรายเดือน
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">สรุปผลการจัดหาพัสดุรายเดือน
                                             (สขร.1)</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานสรุปผลการจัดซื้อจัดจ้างประจำปี(สขร.)</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานสรุปผลการจัดซื้อจัดจ้างประจำปี(สขร.)</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานการประชุมผู้บริหาร</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานการประชุมผู้บริหาร</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานการประชุมสภา</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานการประชุมสภา</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานการประชุมพนักงาน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานการประชุมพนักงาน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานผลการบริหารและพัฒนาทรัพยากรบุคคลประจำปี</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานผลการบริหารและพัฒนาทรัพยากรบุคคลประจำปี</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานผลตรวจสอบภายใน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานผลตรวจสอบภายใน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">รายงานอื่นๆ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">รายงานอื่นๆ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">สถิติ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">สถิติ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">การดำเนินการเพื่อป้องกันการทุจริต</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">การดำเนินการเพื่อป้องกันการทุจริต</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">การส่งเสริมความโปร่งใสและป้องกันการทุจริตภายในหน่วยงาน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">การส่งเสริมความโปร่งใสและป้องกันการทุจริตภายในหน่วยงาน</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-5 lg:mb-3 text-[28px] font-bold text-white">ระเบียบ</div>
+                        <div class="mb-5 lg:mb-3 text-lg font-bold text-white">ระเบียบ</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-6 lg:mt-4">
-                                <div class="block text-slate-200 text-[24px] font-semibold">ภายในหน่วยงาน</div>
+                                <div class="block text-slate-200 text-md font-semibold">ภายในหน่วยงาน</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">เทศบัญญัติ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">เทศบัญญัติ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ประกาศ</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ประกาศ</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">คำสั่ง</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">คำสั่ง</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">กฎหมายที่เกี่ยวข้อง</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">กฎหมายที่เกี่ยวข้อง</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">การจัดการองค์ความรู้
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">การจัดการองค์ความรู้
                                             (KM)</a>
                                     </li>
                                 </ul>
                             </li>
                             <li class="mt-12 lg:mt-8">
-                                <div class="block text-slate-200 text-[24px] font-semibold">ระเบียบส่วนกลาง</div>
+                                <div class="block text-slate-200 text-md font-semibold">ระเบียบส่วนกลาง</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">พรบ./พรก.</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">พรบ./พรก.</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ระเบียบกระทรวงมหาดไทย</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ระเบียบกระทรวงมหาดไทย</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ระเบียบปฏิบัติอื่น</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ระเบียบปฏิบัติอื่น</a>
                                     </li>
                                 </ul>
                             </li>
                         </ul>
                     </li>
                     <li class="mt-12 lg:mt-8">
-                        <div class="mb-5 lg:mb-3 text-[28px] font-bold text-white">บริการประชาชน</div>
+                        <div class="mb-5 lg:mb-3 text-lg font-bold text-white">บริการประชาชน</div>
                         <ul class="space-y-6 lg:space-y-2">
                             <li class="mt-6 lg:mt-4">
                                 <a href="#">
-                                    <div class="block text-slate-200 text-[24px] hover:text-yellow-300 font-semibold">
+                                    <div class="block text-slate-200 text-md hover:text-yellow-300 font-semibold">
                                         คู่มือประชาชน</div>
                                 </a>
-                                <div class="block text-slate-200 text-[24px] font-semibold">รับเรื่องราวร้องเรียน</div>
+                                <div class="block text-slate-200 text-md font-semibold">รับเรื่องราวร้องเรียน</div>
                                 <ul class="border-l border-slate-400 pl-6 ml-2">
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ศูนย์จัดการเรื่องร้องเรียน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ศูนย์จัดการเรื่องร้องเรียน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ศูนย์ช่วยเหลือประชาชน</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ศูนย์ช่วยเหลือประชาชน</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ร้องเรียนทุจริต</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ร้องเรียนทุจริต</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ร้องเรียนร้องทุกข์</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ร้องเรียนร้องทุกข์</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">ช่องทางรับฟังความคิดเห็น</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">ช่องทางรับฟังความคิดเห็น</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-[20px] font-semibold">กระดานสนทนา</a>
+                                        <a href="#" class="block border-l pl-4 -ml-[1.55rem] border-transparent hover:border-slate-800 text-gray-300 hover:text-yellow-300 text-sm font-semibold">กระดานสนทนา</a>
                                     </li>
                                 </ul>
                                 <a href="#">
-                                    <div class="block text-slate-200 text-[24px] hover:text-yellow-300 font-semibold">
+                                    <div class="block text-slate-200 text-md hover:text-yellow-300 font-semibold">
                                         วารสาร/จดหมายข่าว</div>
                                 </a>
                                 <a href="#">
-                                    <div class="block text-slate-200 text-[24px] hover:text-yellow-300 font-semibold">
+                                    <div class="block text-slate-200 text-md hover:text-yellow-300 font-semibold">
                                         คำถามที่พบบ่อย</div>
                                 </a>
                             </li>
@@ -428,7 +430,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 <!-- hotnews box -->
                 <div class="hidden lg:flex mb-2">
                     <div class="ml-4 flex text-sm leading-6 whitespace-nowrap min-w-0 justify-items-center border-y border-slate-500">
-                        <div class="px-2 py-1 ml-2 w-24 text-center text-slate-300 text-[24px] font-semibold">Hot News
+                        <div class="px-2 py-1 ml-2 w-24 text-center text-slate-300 text-md font-semibold">Hot News
                             &#62;</div>
                         <div class="flex px-2 py-1 mx-2 w-screen text-sky-400 text-[18px]">text-gen-news</div>
                     </div>
@@ -440,10 +442,10 @@ require_once __DIR__ . "/../config/configuration.php";
                 <!-- welcome -->
                 <div class="flex flex-col-reverse justify-center xl:flex-row p-6 items-center gap-8 my-12">
                     <div class="xl:w-1/2">
-                        <div class="max-w-md text-4xl font-bold text-center xl:text-5xl xl:text-left text-slate-300">
-                            ยินดีต้อนรับเข้าสู่เว็บไซต์<br><span class="text-6xl">เทศบาลตำบลรั้วใหญ่</span>
+                        <div class="max-w-md text-xl font-bold text-center xl:text-2xl xl:text-left text-slate-300">
+                            ยินดีต้อนรับเข้าสู่เว็บไซต์<br><span class="text-3xl">เทศบาลตำบลรั้วใหญ่</span>
                         </div>
-                        <div class="max-w-md text-2xl font-semibold mt-4 text-center xl:text-left text-slate-400 xl:indent-12">
+                        <div class="max-w-md text-lg font-semibold mt-4 text-center xl:text-left text-slate-400 xl:indent-12">
                             ทต.รั้วใหญ่ ได้จัดทำเว็บไซต์ขึ้นมาเพื่อเผยแพร่
                             ข้อมูลข่าวสารของหน่วยงานและข้อมูลชุมชนให้แก่ประชาชน และ
                             ผู้สนใจ ในขณะเดียวกันก็เป็นที่รับเรื่องราวสุข-ทุกข์ของประชาชน<br>
@@ -453,8 +455,8 @@ require_once __DIR__ . "/../config/configuration.php";
                     </div>
                     <img src="https://www.ruayai.go.th/image/js/logo.png" alt="logo_welcome">
                 </div>
-                                <!-- Call Nayok / Palad -->
-                                <section class="text-gray-200">
+                <!-- Call Nayok / Palad -->
+                <section class="text-gray-200">
                     <div class="container px-5 py-2 mx-auto">
                         <div class="flex flex-wrap justify-center -m-4">
                             <div class="pb-10 xl:w-1/2">
@@ -490,7 +492,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="my-5 text-[18px] text-white">Lorem ipsum dolor sit amet, consectetur
                                 adipisicing elit. Repellendus, accusantium. Quasi consectetur accusamus cum. Tenetur
                                 blanditiis cupiditate voluptates incidunt eos.</div>
-                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                 <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                             </a>
                         </div>
@@ -502,7 +504,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="my-5 text-[18px] text-white">Lorem ipsum dolor sit amet, consectetur
                                 adipisicing elit. Repellendus, accusantium. Quasi consectetur accusamus cum. Tenetur
                                 blanditiis cupiditate voluptates incidunt eos.</div>
-                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                 <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                             </a>
                         </div>
@@ -514,7 +516,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="my-5 text-[18px] text-white">Lorem ipsum dolor sit amet, consectetur
                                 adipisicing elit. Repellendus, accusantium. Quasi consectetur accusamus cum. Tenetur
                                 blanditiis cupiditate voluptates incidunt eos.</div>
-                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                 <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                             </a>
                         </div>
@@ -530,17 +532,17 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <ul class="border-b border-slate-200 space-x-6 flex whitespace-nowrap">
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-sky-300 border-current">ข่าวประชาสัมพันธ์</a>
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-sky-300 border-current">ข่าวประชาสัมพันธ์</a>
                                         </h2>
                                     </li>
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสรรหาบุคลากร</a>
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสรรหาบุคลากร</a>
                                         </h2>
                                     </li>
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวกองทุนหลักประกันสุขภาพ</a>
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวกองทุนหลักประกันสุขภาพ</a>
                                         </h2>
                                     </li>
                                 </ul>
@@ -549,7 +551,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     </div>
 
                     <div id="content-wrapper" class="relative z-10 max-w-3xl mb-1">
-                        <div class="text-white text-[20px]">Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                        <div class="text-white text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit.
                             Vitae quidem maxime expedita, explicabo eos quos minima atque eaque autem repellat quas
                             velit eveniet voluptates reiciendis a praesentium harum delectus ad inventore libero
                             adipisci ducimus laudantium? Eius facere non accusantium veritatis repudiandae ullam at
@@ -559,7 +561,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             quod ducimus rerum eveniet ad atque ex. Hic in dolorem velit nesciunt ad perspiciatis
                             accusantium optio iste unde exercitationem laudantium minus, commodi quas veritatis!</div>
                         <div class="flex justify-end">
-                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                 <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                             </a>
                         </div>
@@ -574,20 +576,20 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="h-full flex items-start">
                                     <div class="w-12 flex-shrink-0 flex flex-col text-center leading-none">
                                         <span class="font-semibold text-[18px] text-gray-200 pb-2 mb-2 border-b-2 border-gray-400">Apr</span>
-                                        <span class="font-semibold text-[20px] text-gray-200  leading-none">18</span>
+                                        <span class="font-semibold text-sm text-gray-200  leading-none">18</span>
                                     </div>
                                     <div class="flex-grow pl-6">
-                                        <div class="tracking-widest text-[24px] font-semibold text-sky-200 mb-1">ข่าวสาร
+                                        <div class="tracking-widest text-md font-semibold text-sky-200 mb-1">ข่าวสาร
                                         </div>
                                         <div class="text-[30px] font-semibold text-gray-200 mb-3">ข่าวจัดซื้อจัดจ้าง
                                         </div>
-                                        <div class="leading-relaxed mb-5 text-[20px]">Lorem ipsum dolor sit amet
+                                        <div class="leading-relaxed mb-5 text-sm">Lorem ipsum dolor sit amet
                                             consectetur adipisicing elit. At odio asperiores qui quos pariatur eius odit
                                             doloremque nostrum maxime nihil. Vero minus deserunt rem accusantium labore
                                             voluptate mollitia commodi? Possimus dicta asperiores neque labore est. Iste
                                             expedita placeat ipsa, et delectus, sit error natus doloribus explicabo
                                             optio inventore ut minima.</div>
-                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                             <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                         </a>
                                     </div>
@@ -597,20 +599,20 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="h-full flex items-start">
                                     <div class="w-12 flex-shrink-0 flex flex-col text-center leading-none">
                                         <span class="font-semibold text-[18px] text-gray-200 pb-2 mb-2 border-b-2 border-gray-400">Apr</span>
-                                        <span class="font-semibold text-[20px] text-gray-200  leading-none">20</span>
+                                        <span class="font-semibold text-sm text-gray-200  leading-none">20</span>
                                     </div>
                                     <div class="flex-grow pl-6">
-                                        <div class="tracking-widest text-[24px] font-semibold text-sky-200 mb-1">ข่าวสาร
+                                        <div class="tracking-widest text-md font-semibold text-sky-200 mb-1">ข่าวสาร
                                         </div>
                                         <div class="text-[30px] font-semibold text-gray-200 mb-3">ประกาศผลจัดซื้อจัดจ้าง
                                         </div>
-                                        <div class="leading-relaxed mb-5 text-[20px]">Lorem ipsum dolor sit amet
+                                        <div class="leading-relaxed mb-5 text-sm">Lorem ipsum dolor sit amet
                                             consectetur adipisicing elit. At odio asperiores qui quos pariatur eius odit
                                             doloremque nostrum maxime nihil. Vero minus deserunt rem accusantium labore
                                             voluptate mollitia commodi? Possimus dicta asperiores neque labore est. Iste
                                             expedita placeat ipsa, et delectus, sit error natus doloribus explicabo
                                             optio inventore ut minima.</div>
-                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                             <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                         </a>
                                     </div>
@@ -629,24 +631,24 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <ul class="border-b border-slate-200 space-x-6 flex whitespace-nowrap">
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-sky-300 border-current">หนังสือสั่งการ
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-sky-300 border-current">หนังสือสั่งการ
                                                 สถ.</a>
                                         </h2>
                                     </li>
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสารจาก
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสารจาก
                                                 สถ.จ.</a>
                                         </h2>
                                     </li>
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสารในเครือข่าย</a>
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ข่าวสารในเครือข่าย</a>
                                         </h2>
                                     </li>
                                     <li>
                                         <h2>
-                                            <a href="#" class="flex text-[24px] leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ประกาศจากระบบ
+                                            <a href="#" class="flex text-md leading-6 font-semibold pt-3 pb-2.5 border-b-2 -mb-px text-slate-300 border-transparent hover:border-slate-100">ประกาศจากระบบ
                                                 e-GP ในเครือข่าย</a>
                                         </h2>
                                     </li>
@@ -656,7 +658,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     </div>
 
                     <div id="content-wrapper" class="relative z-10 max-w-3xl mb-1">
-                        <div class="text-white text-[20px]">Lorem ipsum, dolor sit amet consectetur adipisicing elit.
+                        <div class="text-white text-sm">Lorem ipsum, dolor sit amet consectetur adipisicing elit.
                             Vitae quidem maxime expedita, explicabo eos quos minima atque eaque autem repellat quas
                             velit eveniet voluptates reiciendis a praesentium harum delectus ad inventore libero
                             adipisci ducimus laudantium? Eius facere non accusantium veritatis repudiandae ullam at
@@ -666,7 +668,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             quod ducimus rerum eveniet ad atque ex. Hic in dolorem velit nesciunt ad perspiciatis
                             accusantium optio iste unde exercitationem laudantium minus, commodi quas veritatis!</div>
                         <div class="flex justify-end">
-                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                            <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                 <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                             </a>
                         </div>
@@ -681,20 +683,20 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="h-full flex items-start">
                                     <div class="w-12 flex-shrink-0 flex flex-col text-center leading-none">
                                         <span class="font-semibold text-[18px] text-gray-200 pb-2 mb-2 border-b-2 border-gray-400">Apr</span>
-                                        <span class="font-semibold text-[20px] text-gray-200  leading-none">18</span>
+                                        <span class="font-semibold text-sm text-gray-200  leading-none">18</span>
                                     </div>
                                     <div class="flex-grow pl-6">
-                                        <div class="tracking-widest text-[24px] font-semibold text-sky-200 mb-1">e-GP
+                                        <div class="tracking-widest text-md font-semibold text-sky-200 mb-1">e-GP
                                         </div>
                                         <div class="text-[30px] font-semibold text-gray-200 mb-3">ประกาศจากระบบ e-GP
                                         </div>
-                                        <div class="leading-relaxed mb-5 text-[20px]">Lorem ipsum dolor sit amet
+                                        <div class="leading-relaxed mb-5 text-sm">Lorem ipsum dolor sit amet
                                             consectetur adipisicing elit. At odio asperiores qui quos pariatur eius odit
                                             doloremque nostrum maxime nihil. Vero minus deserunt rem accusantium labore
                                             voluptate mollitia commodi? Possimus dicta asperiores neque labore est. Iste
                                             expedita placeat ipsa, et delectus, sit error natus doloribus explicabo
                                             optio inventore ut minima.</div>
-                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                             <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                         </a>
                                     </div>
@@ -704,19 +706,19 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="h-full flex items-start">
                                     <div class="w-12 flex-shrink-0 flex flex-col text-center leading-none">
                                         <span class="font-semibold text-[18px] text-gray-200 pb-2 mb-2 border-b-2 border-gray-400">Apr</span>
-                                        <span class="font-semibold text-[20px] text-gray-200  leading-none">20</span>
+                                        <span class="font-semibold text-sm text-gray-200  leading-none">20</span>
                                     </div>
                                     <div class="flex-grow pl-6">
-                                        <div class="tracking-widest text-[24px] font-semibold text-sky-200 mb-1">
+                                        <div class="tracking-widest text-md font-semibold text-sky-200 mb-1">
                                             Webboard</div>
                                         <div class="text-[30px] font-semibold text-gray-200 mb-3">กระดานสนทนา</div>
-                                        <div class="leading-relaxed mb-5 text-[20px]">Lorem ipsum dolor sit amet
+                                        <div class="leading-relaxed mb-5 text-sm">Lorem ipsum dolor sit amet
                                             consectetur adipisicing elit. At odio asperiores qui quos pariatur eius odit
                                             doloremque nostrum maxime nihil. Vero minus deserunt rem accusantium labore
                                             voluptate mollitia commodi? Possimus dicta asperiores neque labore est. Iste
                                             expedita placeat ipsa, et delectus, sit error natus doloribus explicabo
                                             optio inventore ut minima.</div>
-                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                        <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                             <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                         </a>
                                     </div>
@@ -734,11 +736,11 @@ require_once __DIR__ . "/../config/configuration.php";
                                     <img src="https://www.saiyai.go.th/dnm_file/otop/87_gall_518_Ly3T.jpg" alt="otop">
                                 </div>
                                 <div class="text-[30px] font-semibold text-white mt-6 mb-3">ผลิตภัณฑ์ในชุมชน</div>
-                                <div class="leading-relaxed text-[20px]">Lorem ipsum, dolor sit amet consectetur
+                                <div class="leading-relaxed text-sm">Lorem ipsum, dolor sit amet consectetur
                                     adipisicing elit. Debitis eum dignissimos, qui magnam autem nulla saepe iure dolore
                                     animi in ad, voluptates, enim laudantium maiores ut sapiente molestiae nobis minus.
                                 </div>
-                                <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                     <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                 </a>
                             </div>
@@ -747,11 +749,11 @@ require_once __DIR__ . "/../config/configuration.php";
                                     <img src="https://www.saiyai.go.th/dnm_file/otop/87_gall_518_Ly3T.jpg" alt="otop">
                                 </div>
                                 <div class="text-[30px] font-semibold text-white mt-6 mb-3">สถานที่สำคัญในชุมชน</div>
-                                <div class="leading-relaxed text-[20px]">Lorem ipsum, dolor sit amet consectetur
+                                <div class="leading-relaxed text-sm">Lorem ipsum, dolor sit amet consectetur
                                     adipisicing elit. Debitis eum dignissimos, qui magnam autem nulla saepe iure dolore
                                     animi in ad, voluptates, enim laudantium maiores ut sapiente molestiae nobis minus.
                                 </div>
-                                <a href="#" class="group inline-flex items-center h-9 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
+                                <a href="#" class="group inline-flex items-center h-9 rounded-full text-sm font-semibold whitespace-nowrap px-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">ดูทั้งหมด
                                     <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                 </a>
                             </div>
@@ -769,9 +771,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">คู่มือประชาชน</div>
+                                    <div class="text-white text-lg font-semibold mb-3">คู่มือประชาชน</div>
                                     <div class="leading-relaxed text-[22px]">แบบฟอร์ม ระเบียบ หนังสือราชการต่างๆ</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -783,9 +785,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">คำแนะนำชำระภาษี</div>
+                                    <div class="text-white text-lg font-semibold mb-3">คำแนะนำชำระภาษี</div>
                                     <div class="leading-relaxed text-[22px]">ภาษีป้าย ภาษีที่ดินและสิ่งปลูกสร้าง</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -797,9 +799,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">Knowledge</div>
+                                    <div class="text-white text-lg font-semibold mb-3">Knowledge</div>
                                     <div class="leading-relaxed text-[22px]">การจัดการองค์ความรู้ภายในองค์กร</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -811,9 +813,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">Google Earth</div>
+                                    <div class="text-white text-lg font-semibold mb-3">Google Earth</div>
                                     <div class="leading-relaxed text-[22px]">แผนที่ดาวเทียม</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -825,9 +827,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">แบบสอบถาม</div>
+                                    <div class="text-white text-lg font-semibold mb-3">แบบสอบถาม</div>
                                     <div class="leading-relaxed text-[22px]">กรอกแบบสอบถามความพึงพอใจ</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -839,9 +841,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">ประมวลผลสำรวจ</div>
+                                    <div class="text-white text-lg font-semibold mb-3">ประมวลผลสำรวจ</div>
                                     <div class="leading-relaxed text-[22px]">ประมวลผลสำรวจความพึงพอใจ</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -853,9 +855,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                     </svg>
                                 </div>
                                 <div class="flex-grow">
-                                    <div class="text-white text-[28px] font-semibold mb-3">NAX SOLUTION</div>
+                                    <div class="text-white text-lg font-semibold mb-3">NAX SOLUTION</div>
                                     <div class="leading-relaxed text-[22px]">เว็บไซต์เพื่อท้องถิ่นไทย</div>
-                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-[20px] font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
+                                    <a href="#" class="group inline-flex items-center h-7 rounded-full text-sm font-semibold whitespace-nowrap px-3 my-3 focus:outline-none focus:ring-2 bg-slate-700 text-slate-100 hover:bg-slate-200 hover:text-slate-900 focus:ring-slate-500">Click
                                         <span class="overflow-visible ml-3 text-slate-300 group-hover:text-slate-400">&#62;</span>
                                     </a>
                                 </div>
@@ -888,28 +890,28 @@ require_once __DIR__ . "/../config/configuration.php";
                                             <li class="border-b border-gray-200 rounded-t-lg">
                                                 <div class="flex items-center pl-3">
                                                     <input id="vue-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-[20px] font-semibold text-slate-100">ตัวเลือก
+                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-sm font-semibold text-slate-100">ตัวเลือก
                                                         1</label>
                                                 </div>
                                             </li>
                                             <li class="w-full border-b border-gray-200 rounded-t-lg">
                                                 <div class="flex items-center pl-3">
                                                     <input id="vue-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-[20px] font-semibold text-slate-100">ตัวเลือก
+                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-sm font-semibold text-slate-100">ตัวเลือก
                                                         2</label>
                                                 </div>
                                             </li>
                                             <li class="w-full border-b border-gray-200 rounded-t-lg">
                                                 <div class="flex items-center pl-3">
                                                     <input id="vue-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-[20px] font-semibold text-slate-100">ตัวเลือก
+                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-sm font-semibold text-slate-100">ตัวเลือก
                                                         3</label>
                                                 </div>
                                             </li>
                                             <li class="w-full border-b border-gray-200 rounded-t-lg">
                                                 <div class="flex items-center pl-3">
                                                     <input id="vue-checkbox" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 focus:ring-2">
-                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-[20px] font-semibold text-slate-100">ตัวเลือก
+                                                    <label for="vue-checkbox" class="w-full py-3 ml-2 text-sm font-semibold text-slate-100">ตัวเลือก
                                                         4</label>
                                                 </div>
                                             </li>
@@ -925,7 +927,7 @@ require_once __DIR__ . "/../config/configuration.php";
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                     </svg></button>
                                 <div id="dropdown" class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-44">
-                                    <ul class="py-2 text-[20px] text-gray-700" aria-labelledby="dropdownDefaultButton">
+                                    <ul class="py-2 text-sm text-gray-700" aria-labelledby="dropdownDefaultButton">
                                         <li>
                                             <a href="#" class="block px-4 py-2 hover:bg-gray-100">จังหวัด1</a>
                                         </li>
@@ -956,24 +958,9 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="p-2 lg:w-1/3 md:w-full">
                                 <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
                                     <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 1
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 1
                                         </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
-                                        </div>
-                                        <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
-                                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                                <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-2 lg:w-1/3 md:w-full">
-                                <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
-                                    <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 2
-                                        </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
                                         </div>
                                         <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
                                             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
@@ -986,24 +973,9 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="p-2 lg:w-1/3 md:w-full">
                                 <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
                                     <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 3
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 2
                                         </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
-                                        </div>
-                                        <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
-                                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
-                                                <path d="M5 12h14M12 5l7 7-7 7"></path>
-                                            </svg>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="p-2 lg:w-1/3 md:w-full">
-                                <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
-                                    <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 4
-                                        </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
                                         </div>
                                         <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
                                             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
@@ -1016,9 +988,9 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="p-2 lg:w-1/3 md:w-full">
                                 <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
                                     <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 5
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 3
                                         </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
                                         </div>
                                         <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
                                             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
@@ -1031,9 +1003,39 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="p-2 lg:w-1/3 md:w-full">
                                 <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
                                     <div class="flex-grow">
-                                        <div class="text-slate-200 text-[24px] font-semibold mb-3">ลิงค์นอกแบนเนอร์ 6
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 4
                                         </div>
-                                        <div class="leading-relaxed text-[20px]">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        </div>
+                                        <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
+                                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                                <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2 lg:w-1/3 md:w-full">
+                                <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
+                                    <div class="flex-grow">
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 5
+                                        </div>
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
+                                        </div>
+                                        <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
+                                            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
+                                                <path d="M5 12h14M12 5l7 7-7 7"></path>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-2 lg:w-1/3 md:w-full">
+                                <div class="flex border-2 rounded-lg border-gray-200 border-opacity-50 py-4 px-8 sm:flex-row flex-col">
+                                    <div class="flex-grow">
+                                        <div class="text-slate-200 text-md font-semibold mb-3">ลิงค์นอกแบนเนอร์ 6
+                                        </div>
+                                        <div class="leading-relaxed text-sm">เนื้อหาลิงค์นอกโดยย่อหรือไม่ย่อก็ได้
                                         </div>
                                         <a href="#" class="mt-3 text-sky-200 hover:text-yellow-200 inline-flex items-center">Click
                                             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-2" viewBox="0 0 24 24">
@@ -1055,7 +1057,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             <i class="footer_logo md:absolute"></i>
                             <span class="ml-0 md:ml-14 text-[26px]">เทศบาลตำบลรั้วใหญ่</span>
                         </a>
-                        <div class="mt-2 text-[20px] text-slate-400 font-semibold">อำเภอเมืองสุพรรณบุรี
+                        <div class="mt-2 text-sm text-slate-400 font-semibold">อำเภอเมืองสุพรรณบุรี
                             จังหวัดสุพรรณบุรี</div>
                     </div>
                     <div class="flex-grow flex flex-wrap md:pl-20 -mb-10 md:mt-0 mt-10 md:text-left text-center">
@@ -1064,18 +1066,18 @@ require_once __DIR__ . "/../config/configuration.php";
                             </div>
                             <nav class="list-none mb-10">
                                 <li>
-                                    <a class="text-slate-200 text-[20px]">ที่อยู่ : </a>
+                                    <a class="text-slate-200 text-sm">ที่อยู่ : </a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-200 text-[20px] hover:text-sky-400">โทรศัพท์ :
+                                    <a href="#" class="text-slate-200 text-sm hover:text-sky-400">โทรศัพท์ :
                                         000-000-000</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-200 text-[20px] hover:text-sky-400">โทรสาร :
+                                    <a href="#" class="text-slate-200 text-sm hover:text-sky-400">โทรสาร :
                                         000-000-000</a>
                                 </li>
                                 <li>
-                                    <a href="#" class="text-slate-200 text-[20px] hover:text-sky-400">E-mail :
+                                    <a href="#" class="text-slate-200 text-sm hover:text-sky-400">E-mail :
                                         aaaa@aaaa.go.th</a>
                                 </li>
                             </nav>
@@ -1084,29 +1086,29 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div class="font-semibold text-slate-300 tracking-widest text-[22px] mb-3">เพิ่มเติม</div>
                             <nav class="list-none mb-10">
                                 <li>
-                                    <a class="text-slate-200 text-[20px]">จำนวนผู้เข้าชม xxxxxx</a>
+                                    <a class="text-slate-200 text-sm">จำนวนผู้เข้าชม xxxxxx</a>
                                 </li>
                                 <li>
-                                    <div class="text-slate-200 text-[20px]">จัดทำโดย : <a href="#" class="hover:text-sky-400">Naxsolutiom.com</a></div>
+                                    <div class="text-slate-200 text-sm">จัดทำโดย : <a href="#" class="hover:text-sky-400">Naxsolutiom.com</a></div>
                                 </li>
                             </nav>
                         </div>
                         <div class="lg:w-1/3 md:w-1/2 w-full px-4">
                             <nav class="list-disc text-slate-200 mb-10">
                                 <li>
-                                    <a href="" class="text-slate-200 text-[20px] hover:text-sky-400">แผนผังเว็บไซต์</a>
+                                    <a href="" class="text-slate-200 text-sm hover:text-sky-400">แผนผังเว็บไซต์</a>
                                 </li>
                                 <li>
-                                    <a href="" class="text-slate-200 text-[20px] hover:text-sky-400">นโยบาย1</a>
+                                    <a href="" class="text-slate-200 text-sm hover:text-sky-400">นโยบาย1</a>
                                 </li>
                                 <li>
-                                    <a href="" class="text-slate-200 text-[20px] hover:text-sky-400">นโยบาย2</a>
+                                    <a href="" class="text-slate-200 text-sm hover:text-sky-400">นโยบาย2</a>
                                 </li>
                                 <li>
-                                    <a href="" class="text-slate-200 text-[20px] hover:text-sky-400">นโยบาย3</a>
+                                    <a href="" class="text-slate-200 text-sm hover:text-sky-400">นโยบาย3</a>
                                 </li>
                                 <li>
-                                    <a href="" class="text-slate-200 text-[20px] hover:text-sky-400">นโยบาย4</a>
+                                    <a href="" class="text-slate-200 text-sm hover:text-sky-400">นโยบาย4</a>
                                 </li>
                             </nav>
                         </div>
@@ -1114,7 +1116,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 </div>
                 <div class="border-t border-sky-950">
                     <div class="container max-w-full mx-auto py-4 px-5 flex flex-wrap flex-col sm:flex-row items-center">
-                        <div class="text-slate-300 text-[24px] text-center sm:text-left">สงวนลิขสิทธิ์ พ.ศ.2551
+                        <div class="text-slate-300 text-md text-center sm:text-left">สงวนลิขสิทธิ์ พ.ศ.2551
                             ตามพระราชบัญญัติลิขสิทธิ์ 2537
                             <a href="#" class="text-gray-200 ml-1" target="_blank">เทศบาลตำบลรั้วใหญ่</a>
                         </div>
@@ -1147,4 +1149,5 @@ require_once __DIR__ . "/../config/configuration.php";
     <script src="/ep1/node_modules/flowbite/dist/flowbite.js"></script>
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>  -->
 </body>
+
 </html>
