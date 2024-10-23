@@ -24,3 +24,18 @@ body {
   width: 200px;
   height: 200px;
 }
+
+#gallery {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.gallery-item {
+  width: 33.33%; /* สำหรับจอใหญ่: 3 รูปต่อแถว */
+}
+
+@media (max-width: 1024px) {
+  .gallery-item {
+    width: 50%; /* สำหรับจอเล็ก: 2 รูปต่อแถว */
+  }
+}

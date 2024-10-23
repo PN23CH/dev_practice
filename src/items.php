@@ -99,6 +99,9 @@ require_once __DIR__ . "/../config/configuration.php";
                                 </button>
                             </div>
                         </div>
+                        <div>
+                            <button open-gal-modal class="bg-slate-300 hover:bg-slate-600 rounded-xl text-black hover:text-white px-3 py-2">Add Gallery</button>
+                        </div>
                         <div class="flex justify-between">
                             <div class="flex flex-col">
                                 <div class="mr-2">LINK</div>
@@ -122,6 +125,36 @@ require_once __DIR__ . "/../config/configuration.php";
                 <div modal-notvalid-message class="text-xl font-semibold text-black"></div>
                 <div class="flex justify-end">
                     <button modal-understood-button class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">เข้าใจแล้ว</button>
+                </div>
+            </div>
+        </div>
+
+        <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
+            <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
+                <div class="relative inline-block">
+                    <input data-add-gal="slide" type="file" id="addGalery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
+                    <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </div>
+
+                <div id="gallery" class="flex">
+                    <?php
+                    $imageCount = 6; // จำนวนรูปภาพที่ต้องการแสดง
+                    for ($i = 1; $i <= $imageCount; $i++) {
+                        echo '
+                        <div class="gallery-item flex flex-wrap p-2">
+                            <img data-gallery-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview ' . $i . '" class="w-full h-auto bg-cover">
+                        </div>';
+                    }
+                    ?>
+                </div>
+                <!-- <div class="flex flex-col lg:flex-row gap-4">
+                    <img data-gallery-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto max-w-64 bg-cover" />
+                </div> -->
+                <div class="flex justify-end">
+                    <button gallery-submit class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
+                    <button gallery-cancle class="bg-slate-100 text-black px-4 py-2 mr-2 rounded">ยกเลิก</button>
                 </div>
             </div>
         </div>
@@ -156,18 +189,103 @@ require_once __DIR__ . "/../config/configuration.php";
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
         const maxFiles = 20;
 
-        const notValidModal = document.querySelector('div[modal-file-valid]');
-        const notValidMessage = document.querySelector('div[modal-notvalid-message]');
-        const understoodButton = document.querySelector('button[modal-understood-button]');
+        // const notValidModal = document.querySelector('div[modal-file-valid]');
+        // const notValidMessage = document.querySelector('div[modal-notvalid-message]');
+        // const understoodButton = document.querySelector('button[modal-understood-button]');
 
-        async function showModal(message) {
-            notValidMessage.textContent = message;
-            notValidModal.classList.remove('hidden');
-        }
+        // async function showModal(message) {
+        //     notValidMessage.textContent = message;
+        //     notValidModal.classList.remove('hidden');
+        // }
 
-        understoodButton.addEventListener('click', () => {
-            notValidModal.classList.add('hidden');
+        // understoodButton.addEventListener('click', () => {
+        //     notValidModal.classList.add('hidden');
+        // });
+
+        const modalAddGal = document.querySelector('div[data-modal="addGal"]');
+        const openGalModal = document.querySelector('[open-gal-modal]');
+        const cancleAddGalButt = document.querySelector('[gallery-cancle]');
+        const addGaleryInput = document.querySelector('input[data-add-gal="slide"]');
+        const addGalerySubmit = document.querySelector('[gallery-submit]');
+
+        const toggleModal = (isOpen) => {
+            modalAddGal.classList.toggle('hidden', !isOpen);
+            modalAddGal.classList.toggle('flex', isOpen);
+        };
+
+        // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
+        openGalModal.addEventListener('click', (event) => {
+            event.preventDefault();
+            toggleModal(true);
         });
+
+        // ปิด modal เมื่อคลิกปุ่มยกเลิก
+        cancleAddGalButt.addEventListener('click', () => toggleModal(false));
+
+        // ปิด modal เมื่อกดนอก modal-content
+        modalAddGal.addEventListener('click', (event) => {
+            if (event.target === modalAddGal) toggleModal(false);
+        });
+
+        // ปิด modal เมื่อกดปุ่ม ESC
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') toggleModal(false);
+        });
+
+
+        // addGaleryInput.addEventListener('change', async (event) => {
+        //     const files = event.target.files;
+
+        //     // ตรวจสอบจำนวนไฟล์
+        //     if (!await checkMaxFileValid(files)) {
+        //         return;
+        //     }
+
+        //     // ตรวจสอบขนาดไฟล์
+        //     if (!await checkMaxSizeValid(files)) {
+        //         return;
+        //     }
+
+        //     // ตรวจสอบประเภทไฟล์และแปลง .heic เป็น .jpg ถ้าจำเป็น
+        //     for (let file of files) {
+        //         const isValidType = await checkFileTypeValid(file, 'image');
+        //         if (!isValidType) {
+        //             return;
+        //         }
+
+        //         // แปลงไฟล์ .heic เป็น .jpg ถ้าเป็นไฟล์ประเภทนี้
+        //         if (file.name.split('.').pop().toLowerCase() === 'heic') {
+        //             const convertedFile = await convertHeicToJpg(file);
+        //             file = convertedFile || file; // ใช้ไฟล์แปลง หรือไฟล์ต้นฉบับหากการแปลงล้มเหลว
+        //         }
+
+        //         // TODO: แสดง preview ของไฟล์ใน modal (สูงสุด 6 รูป)
+        //         displayPreview(file);
+        //     }
+        // });
+
+        // function displayPreview(file) {
+        //     const reader = new FileReader();
+        //     reader.onload = function(e) {
+        //         const imagePreview = document.querySelector('[data-gallery-preview="image"]');
+        //         const previewUrl = e.target.result;
+
+        //         // เปลี่ยน src ของ preview
+        //         imagePreview.src = previewUrl;
+
+        //         // เก็บ URL ไว้ใน dataset
+        //         imagePreview.dataset.previewUrl = previewUrl;
+        //     };
+        //     reader.readAsDataURL(file);
+        // }
+
+        // // เมื่อกดปุ่ม submit
+        // addGalerySubmit.addEventListener('click', async () => {
+        //     await SubmitButton();
+        //     // ปิด modal หลังจาก submit สำเร็จ
+        //     modalAddGal.classList.remove('flex');
+        //     modalAddGal.classList.add('hidden');
+        // });
 
 
         function updateCharacterCount() {
@@ -436,7 +554,7 @@ require_once __DIR__ . "/../config/configuration.php";
             // หากไฟล์ไม่ผ่านการตรวจสอบ
             if (!isValid) {
                 // แสดงข้อความให้ผู้ใช้ทราบ
-                await showModal(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
+                // await showModal(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
                 return false;
             }
 
