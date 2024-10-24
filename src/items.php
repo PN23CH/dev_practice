@@ -132,26 +132,22 @@ require_once __DIR__ . "/../config/configuration.php";
         <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
                 <div class="relative inline-block">
-                    <input data-add-gal="slide" type="file" id="addGalery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
+                    <input data-add-gal="slide" type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
                 </div>
-
-                <div id="gallery" class="flex">
-                    <?php
-                    $imageCount = 6; // จำนวนรูปภาพที่ต้องการแสดง
-                    for ($i = 1; $i <= $imageCount; $i++) {
-                        echo '
-                        <div class="gallery-item flex flex-wrap p-2">
-                            <img data-gallery-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview ' . $i . '" class="w-full h-auto bg-cover">
-                        </div>';
-                    }
-                    ?>
+                <!-- Add Gallery -->
+                <div data-add-gallery class="w-full min-w-min sm:w-1/2 md:w-1/3 lg:w-1/5 gap-3 mb-3">
+                    <div class="flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
+                        <div class="flex justify-center items-center relative w-[160px] h-[120px]">
+                            <img data-preview="gallery" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
+                        </div>
+                        <div class="flex flex-col w-full gap-3">
+                            <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
+                        </div>
+                    </div>
                 </div>
-                <!-- <div class="flex flex-col lg:flex-row gap-4">
-                    <img data-gallery-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto max-w-64 bg-cover" />
-                </div> -->
                 <div class="flex justify-end">
                     <button gallery-submit class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
                     <button gallery-cancle class="bg-slate-100 text-black px-4 py-2 mr-2 rounded">ยกเลิก</button>
@@ -205,8 +201,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const modalAddGal = document.querySelector('div[data-modal="addGal"]');
         const openGalModal = document.querySelector('[open-gal-modal]');
         const cancleAddGalButt = document.querySelector('[gallery-cancle]');
-        const addGaleryInput = document.querySelector('input[data-add-gal="slide"]');
-        const addGalerySubmit = document.querySelector('[gallery-submit]');
+        const addGalleryInput = document.querySelector('input[data-add-gal="slide"]');
+        const addGallerySubmit = document.querySelector('[gallery-submit]');
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -232,8 +228,11 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
+        const itemGalDemo = document.querySelector('div[data-add-gallery]');
+        console.log(itemGalDemo);
 
-        // addGaleryInput.addEventListener('change', async (event) => {
+
+        // addGalleryInput.addEventListener('change', async (event) => {
         //     const files = event.target.files;
 
         //     // ตรวจสอบจำนวนไฟล์
@@ -280,7 +279,7 @@ require_once __DIR__ . "/../config/configuration.php";
         // }
 
         // // เมื่อกดปุ่ม submit
-        // addGalerySubmit.addEventListener('click', async () => {
+        // addGallerySubmit.addEventListener('click', async () => {
         //     await SubmitButton();
         //     // ปิด modal หลังจาก submit สำเร็จ
         //     modalAddGal.classList.remove('flex');
