@@ -45,7 +45,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         <div class="flex flex-col items-center justify-center">
                             <div class="min-w-fit max-w-md mx-auto">
                                 <div data-image-slide class="w-fit bg-rose-200 rounded-xl overflow-hidden">
-                                    <img data-preview="image" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto" />
+                                    <img data-main-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto" />
                                 </div>
                                 <!-- <div
                                     class="mt-5 bg-gray-50 text-gray-600 text-base rounded w-full h-48 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed">
@@ -67,7 +67,7 @@ require_once __DIR__ . "/../config/configuration.php";
                                 <div class="relative inline-block">
                                     <!-- TODO ใช้เป็น <label> ในการ config css -->
 
-                                    <input type="file" id="fileInput" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
+                                    <input data-main-input type="file" id="fileMainInput" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
                                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
@@ -132,7 +132,7 @@ require_once __DIR__ . "/../config/configuration.php";
         <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
                 <div class="relative inline-block">
-                    <input data-add-gal="slide" type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
+                    <input data-gal-input type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
@@ -141,7 +141,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 <div data-add-gallery class="w-full min-w-min sm:w-1/2 md:w-1/3 lg:w-1/5 gap-3 mb-3">
                     <div class="flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
                         <div class="flex justify-center items-center relative w-[160px] h-[120px]">
-                            <img data-preview="gallery" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
+                            <img data-gal-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
                         </div>
                         <div class="flex flex-col w-full gap-3">
                             <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
@@ -168,8 +168,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const textLengthDisplay = document.querySelector('p[data-text-length]');
         const maxLength = linkInput.maxLength || 100;
 
-        const fileInput = document.querySelector('input[type="file"]');
-        const imagePreview = document.querySelector('[data-preview="image"]');
+        const fileMainInput = document.querySelector('[data-main-input]');
+        const imageMainPreview = document.querySelector('[data-main-preview]');
         const submitButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
@@ -201,8 +201,12 @@ require_once __DIR__ . "/../config/configuration.php";
         const modalAddGal = document.querySelector('div[data-modal="addGal"]');
         const openGalModal = document.querySelector('[open-gal-modal]');
         const cancleAddGalButt = document.querySelector('[gallery-cancle]');
-        const addGalleryInput = document.querySelector('input[data-add-gal="slide"]');
+
+        const addGalleryInput = document.querySelector('[data-gal-input]');
         const addGallerySubmit = document.querySelector('[gallery-submit]');
+
+        const itemGalDemo = document.querySelector('div[data-add-gallery]');
+        const galleryContainer = document.querySelector('[data-gal-preview]')
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -228,63 +232,30 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-        const itemGalDemo = document.querySelector('div[data-add-gallery]');
-        console.log(itemGalDemo);
+        // Gallery
+        async function addGalForm() {
+            const inputGalleryFiles = addGalleryInput.files;
 
+            for (const file of inputGalleryFiles) {
+                // ตรวจสอบประเภทไฟล์
+                const isFileTypeValid = await checkFileTypeValid(file, 'image');
+                if (!isFileTypeValid) continue;
 
-        // addGalleryInput.addEventListener('change', async (event) => {
-        //     const files = event.target.files;
+                // ตรวจสอบขนาดไฟล์
+                const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
+                if (!isMaxSizeValid) continue;
 
-        //     // ตรวจสอบจำนวนไฟล์
-        //     if (!await checkMaxFileValid(files)) {
-        //         return;
-        //     }
+                // แสดงผล preview
+                const previewImageElement = document.createElement('img');
+                await handleFilePreview(file, galleryContainer);
 
-        //     // ตรวจสอบขนาดไฟล์
-        //     if (!await checkMaxSizeValid(files)) {
-        //         return;
-        //     }
+                // เพิ่ม preview ลงใน Gallery Container
+                galleryContainer.appendChild(previewImageElement);
+            }
+        }
 
-        //     // ตรวจสอบประเภทไฟล์และแปลง .heic เป็น .jpg ถ้าจำเป็น
-        //     for (let file of files) {
-        //         const isValidType = await checkFileTypeValid(file, 'image');
-        //         if (!isValidType) {
-        //             return;
-        //         }
-
-        //         // แปลงไฟล์ .heic เป็น .jpg ถ้าเป็นไฟล์ประเภทนี้
-        //         if (file.name.split('.').pop().toLowerCase() === 'heic') {
-        //             const convertedFile = await convertHeicToJpg(file);
-        //             file = convertedFile || file; // ใช้ไฟล์แปลง หรือไฟล์ต้นฉบับหากการแปลงล้มเหลว
-        //         }
-
-        //         // TODO: แสดง preview ของไฟล์ใน modal (สูงสุด 6 รูป)
-        //         displayPreview(file);
-        //     }
-        // });
-
-        // function displayPreview(file) {
-        //     const reader = new FileReader();
-        //     reader.onload = function(e) {
-        //         const imagePreview = document.querySelector('[data-gallery-preview="image"]');
-        //         const previewUrl = e.target.result;
-
-        //         // เปลี่ยน src ของ preview
-        //         imagePreview.src = previewUrl;
-
-        //         // เก็บ URL ไว้ใน dataset
-        //         imagePreview.dataset.previewUrl = previewUrl;
-        //     };
-        //     reader.readAsDataURL(file);
-        // }
-
-        // // เมื่อกดปุ่ม submit
-        // addGallerySubmit.addEventListener('click', async () => {
-        //     await SubmitButton();
-        //     // ปิด modal หลังจาก submit สำเร็จ
-        //     modalAddGal.classList.remove('flex');
-        //     modalAddGal.classList.add('hidden');
-        // });
+        // Input ของ Gallery
+        addGalleryInput.addEventListener('change', addGalForm);
 
 
         function updateCharacterCount() {
@@ -326,9 +297,9 @@ require_once __DIR__ . "/../config/configuration.php";
         function displayItemData(item) {
             if (item.filename) {
                 // dataset old file
-                fileInput.dataset.oldfile = item.filename;
+                fileMainInput.dataset.oldfile = item.filename;
                 pathUrlFile = genUrlPath(item.filename, category);
-                imagePreview.src = pathUrlFile;
+                imageMainPreview.src = pathUrlFile;
             }
 
             const linkInput = document.querySelector('[data-link]');
@@ -425,7 +396,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        setInputAcceptType('fileInput', allowedExtensions.image); // กำหนด type ให้ input
+        setInputAcceptType('fileMainInput', allowedExtensions.image); // กำหนด type ให้ input
 
         // TODO loop ไฟล์ สำหรับหลายๆ file หลาย type
         // ฟังก์ชั่น check ประเภทของไฟล์
@@ -528,7 +499,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     currentSizeFile.classList.remove('hidden');
                     currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
                     currentSizeFile.classList.add('text-rose-700');
-                    fileInput.value = '';
+                    fileMainInput.value = '';
                     return false;
                 } else {
                     currentSizeFile.classList.remove('text-rose-700');
@@ -567,7 +538,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Preview Image
-        async function handleFilePreview(file) {
+        async function handleFilePreview(file, imageMainPreview, galleryContainer) {
             let imgPreview = '';
             if (file.name.toLowerCase().endsWith('.heic')) {
                 const convertedFile = await convertHeicToJpg(file);
@@ -577,11 +548,22 @@ require_once __DIR__ . "/../config/configuration.php";
             } else {
                 imgPreview = URL.createObjectURL(file);
             }
-            imagePreview.src = imgPreview;
+            // แสดงผลใน Main Preview
+            if (imageMainPreview) {
+                imageMainPreview.src = imgPreview;
+            }
+
+            // แสดงผลใน Gallery Preview
+            if (galleryContainer) {
+                const galleryItem = document.createElement('img');
+                galleryItem.src = imgPreview;
+                galleryContainer.appendChild(galleryItem);
+            }
         }
 
-        fileInput.addEventListener('change', async function() {
-            const inputFile = fileInput.files;
+        // Main Image
+        async function mainImageForm() {
+            const inputFile = fileMainInput.files;
             // console.log('inputFile', inputFile)
 
             // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
@@ -599,7 +581,12 @@ require_once __DIR__ . "/../config/configuration.php";
 
 
             // ทำการแสดงผล Preview ภาพ
-            await handleFilePreview(file);
+            await handleFilePreview(file, imageMainPreview);
+        }
+
+        // Input ของไฟล์หลัก
+        fileMainInput.addEventListener('change', async function() {
+            mainImageForm();
 
             // for (let i = 0; i < inputFile.length; i++) {
             //     let file = inputFile[i];
@@ -631,17 +618,17 @@ require_once __DIR__ . "/../config/configuration.php";
 
 
             // const currentFile = validFiles[0];
-            // imagePreview.src = '';
+            // imageMainPreview.src = '';
 
             // if (currentFile) {
             //     const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
 
             //     // TO_DO ทำฟังก์ชั่น 🆗
-            //     imagePreview.src = imageURL;
+            //     imageMainPreview.src = imageURL;
             //     currentSizeFile.classList.remove('hidden');
 
             // } else {
-            //     imagePreview.src = placeholderImage;
+            //     imageMainPreview.src = placeholderImage;
             //     currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
             // }
         })
@@ -670,12 +657,12 @@ require_once __DIR__ . "/../config/configuration.php";
 
             let uploadedFileName = '';
             let isFileDeleted = false;
-            const setOldFile = fileInput.dataset.oldfile;
-            const newFile = fileInput.files[0];
+            const setOldFile = fileMainInput.dataset.oldfile;
+            const newFile = fileMainInput.files[0];
 
             if (isCheck || newFile) {
                 isFileDeleted = true;
-                imagePreview.src = placeholderImage;
+                imageMainPreview.src = placeholderImage;
             }
 
             formData.append('id', currentId);
@@ -729,9 +716,8 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        submitButton.addEventListener('click', async () => {
-            SubmitButton();
-        });
+        submitButton.addEventListener('click', SubmitButton);
+
 
         async function uploadNewFile(newFile, currentId) {
             const formData = new FormData();
@@ -801,7 +787,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             if (result.filename) {
                 pathUrlFile = genUrlPath(result.filename, category);
-                imagePreview.src = pathUrlFile;
+                imageMainPreview.src = pathUrlFile;
             }
         }
 
