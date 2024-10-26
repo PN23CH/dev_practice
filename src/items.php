@@ -163,7 +163,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         const fileMainInput = document.querySelector('[data-main-input]');
         const mainContainer = document.querySelector('[data-main-preview]');
-        const SubmitMainButton = document.querySelector('[data-button-submit]');
+        const mainSubmit = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
         const slideForm = document.forms['slide'];
@@ -547,7 +547,7 @@ require_once __DIR__ . "/../config/configuration.php";
         });
 
         // Main Submit
-        async function SubmitMainButton() {
+        async function handleMainSubimt() {
             const linkValue = linkInput.value.trim();
             const formData = new FormData();
 
@@ -611,7 +611,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        SubmitMainButton.addEventListener('click', SubmitMainButton);
+        mainSubmit.addEventListener('click', handleMainSubimt);
 
 
         // Upload Main Fetch API
