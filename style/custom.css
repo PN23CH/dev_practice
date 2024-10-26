@@ -3,14 +3,14 @@ body {
 }
 .main_logo {
   position: absolute;
-  background-image: url("/ep1/image/collect1/logo.png");
+  background-image: url("/public/png/logo.png");
   background-repeat: no-repeat;
   background-position: left top;
   width: 40px;
   height: 40px;
 }
 .footer_logo {
-  background-image: url("/ep1/image/collect1/logo.png");
+  background-image: url("/public/png/logo.png");
   background-repeat: no-repeat;
   background-position: left top;
   width: 40px;
@@ -18,7 +18,7 @@ body {
 }
 .call_nayok {
   position: relative;
-  background-image: url("/ep1/image/collect1/call_nayok.png");
+  background-image: url("/public/png/call_nayok.png");
   background-repeat: no-repeat;
   background-position: left top;
   width: 200px;

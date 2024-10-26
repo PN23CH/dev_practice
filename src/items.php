@@ -138,20 +138,23 @@ require_once __DIR__ . "/../config/configuration.php";
                     </svg>
                 </div>
                 <!-- Add Gallery -->
-                <div data-add-gallery class="w-full min-w-min sm:w-1/2 md:w-1/3 lg:w-1/5 gap-3 mb-3">
-                    <div class="flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
-                        <div class="flex justify-center items-center relative w-[160px] h-[120px]">
-                            <img data-gal-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
-                        </div>
-                        <div class="flex flex-col w-full gap-3">
-                            <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
-                        </div>
-                    </div>
-                </div>
+                <div data-add-gallery="container" class="w-full min-w-min sm:w-1/2 md:w-1/3 lg:w-1/5 gap-3 mb-3"></div>
+
                 <div class="flex justify-end">
                     <button gallery-submit class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
                     <button gallery-cancle class="bg-slate-100 text-black px-4 py-2 mr-2 rounded">ยกเลิก</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- DEMO ADD GALLERY  -->
+        <div data-add-gallery="item" class="flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
+            <input type="text" name="sequent">
+            <div class="flex justify-center items-center relative w-[160px] h-[120px]">
+                <img data-gal-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
+            </div>
+            <div class="flex flex-col w-full gap-3">
+                <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
             </div>
         </div>
     </div>
@@ -169,7 +172,7 @@ require_once __DIR__ . "/../config/configuration.php";
         const maxLength = linkInput.maxLength || 100;
 
         const fileMainInput = document.querySelector('[data-main-input]');
-        const imageMainPreview = document.querySelector('[data-main-preview]');
+        const mainContainer = document.querySelector('[data-main-preview]');
         const submitButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
@@ -236,23 +239,27 @@ require_once __DIR__ . "/../config/configuration.php";
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
 
-            for (const file of inputGalleryFiles) {
-                // ตรวจสอบประเภทไฟล์
-                const isFileTypeValid = await checkFileTypeValid(file, 'image');
-                if (!isFileTypeValid) continue;
+            const isFileTypeValid = await checkFileTypeValid(file, 'image');
+            if (!isFileTypeValid) return;
 
-                // ตรวจสอบขนาดไฟล์
-                const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
-                if (!isMaxSizeValid) continue;
+            const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
+            if (!isMaxSizeValid) return;
 
-                // แสดงผล preview
-                const previewImageElement = document.createElement('img');
-                await handleFilePreview(file, galleryContainer);
 
-                // เพิ่ม preview ลงใน Gallery Container
-                galleryContainer.appendChild(previewImageElement);
-            }
+
+            // for (const file of inputGalleryFiles) {
+
+            //     // ใน clone มี preview
+            //     // // แสดงผล preview
+            //     // const previewImageElement = document.createElement('img');
+            //     // await handleFilePreview(file, galleryContainer);
+
+            //     // // เพิ่ม preview ลงใน Gallery Container
+            //     // galleryContainer.appendChild(previewImageElement);
+            // }
         }
+
+        // TODO ทำฟังก์ชั่น clone (loop ในฟังก์ชั่น) และ เอาไปใส่ addGalForm 
 
         // Input ของ Gallery
         addGalleryInput.addEventListener('change', addGalForm);
@@ -299,7 +306,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 // dataset old file
                 fileMainInput.dataset.oldfile = item.filename;
                 pathUrlFile = genUrlPath(item.filename, category);
-                imageMainPreview.src = pathUrlFile;
+                mainContainer.src = pathUrlFile;
             }
 
             const linkInput = document.querySelector('[data-link]');
@@ -538,7 +545,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Preview Image
-        async function handleFilePreview(file, imageMainPreview, galleryContainer) {
+        async function handleFilePreview(file, mainContainer, galleryContainer) {
             let imgPreview = '';
             if (file.name.toLowerCase().endsWith('.heic')) {
                 const convertedFile = await convertHeicToJpg(file);
@@ -549,8 +556,8 @@ require_once __DIR__ . "/../config/configuration.php";
                 imgPreview = URL.createObjectURL(file);
             }
             // แสดงผลใน Main Preview
-            if (imageMainPreview) {
-                imageMainPreview.src = imgPreview;
+            if (mainContainer) {
+                mainContainer.src = imgPreview;
             }
 
             // แสดงผลใน Gallery Preview
@@ -581,7 +588,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
 
             // ทำการแสดงผล Preview ภาพ
-            await handleFilePreview(file, imageMainPreview);
+            await handleFilePreview(file, mainContainer);
         }
 
         // Input ของไฟล์หลัก
@@ -618,17 +625,17 @@ require_once __DIR__ . "/../config/configuration.php";
 
 
             // const currentFile = validFiles[0];
-            // imageMainPreview.src = '';
+            // mainContainer.src = '';
 
             // if (currentFile) {
             //     const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
 
             //     // TO_DO ทำฟังก์ชั่น 🆗
-            //     imageMainPreview.src = imageURL;
+            //     mainContainer.src = imageURL;
             //     currentSizeFile.classList.remove('hidden');
 
             // } else {
-            //     imageMainPreview.src = placeholderImage;
+            //     mainContainer.src = placeholderImage;
             //     currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
             // }
         })
@@ -662,7 +669,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             if (isCheck || newFile) {
                 isFileDeleted = true;
-                imageMainPreview.src = placeholderImage;
+                mainContainer.src = placeholderImage;
             }
 
             formData.append('id', currentId);
@@ -787,7 +794,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             if (result.filename) {
                 pathUrlFile = genUrlPath(result.filename, category);
-                imageMainPreview.src = pathUrlFile;
+                mainContainer.src = pathUrlFile;
             }
         }
 
