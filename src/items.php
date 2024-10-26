@@ -177,6 +177,12 @@ require_once __DIR__ . "/../config/configuration.php";
         const currentSizeFile = document.querySelector('[data-size-file-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
         const maxFiles = 20;
+        const allowedExtensions = {
+            image: ['jpg', 'jpeg', 'png', 'gif', 'heic'],
+            document: ['doc', 'docx'],
+            pdf: ['pdf'],
+            archeiv: ['zip', 'rar']
+        };
 
         const modalAddGal = document.querySelector('div[data-modal="addGal"]');
         const openGalModal = document.querySelector('[open-gal-modal]');
@@ -192,6 +198,36 @@ require_once __DIR__ . "/../config/configuration.php";
             modalAddGal.classList.toggle('hidden', !isOpen);
             modalAddGal.classList.toggle('flex', isOpen);
         };
+
+        // ตรวจสอบนามสกุลไฟล์ และ อนุญาตไฟล์ตั้งแต่การ input
+        setInputAcceptType('fileMainInput', allowedExtensions.image); // กำหนด type ให้ input
+        // Fetch refresh load
+        fetchItemData(currentId);
+        // นับตัวอักษรใน Input
+        if (linkInput && textLengthDisplay) {
+            updateCharacterCount();
+        }
+        linkInput.addEventListener('input', updateCharacterCount);
+
+        // Input ของ Gallery
+        addGalleryInput.addEventListener('change', addGalForm);
+
+        // Input ของไฟล์หลัก
+        fileMainInput.addEventListener('change', mainImageForm);
+
+        let isCheck = false;
+        checkDelete.addEventListener('change', (event) => {
+            isCheck = event.target.checked;
+        });
+
+        deleteButton.addEventListener('click', () => {
+            checkDelete.checked ||= true; // การใช้ ||= จะตรวจสอบว่า checkDelete.checked เป็น false หรือ undefined และถ้าใช่ จะกำหนดค่าให้เป็น true
+            isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
+        });
+
+        // Main Submit
+        mainSubmit.addEventListener('click', handleMainSubimt);
+
 
         // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
         openGalModal.addEventListener('click', (event) => {
@@ -211,6 +247,7 @@ require_once __DIR__ . "/../config/configuration.php";
         document.addEventListener('keydown', (event) => {
             if (event.key === 'Escape') toggleModal(false);
         });
+
 
         // Gallery
         async function addGalForm() {
@@ -238,18 +275,12 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // TODO ทำฟังก์ชั่น clone (loop ในฟังก์ชั่น) และ เอาไปใส่ addGalForm 
 
-        // Input ของ Gallery
-        addGalleryInput.addEventListener('change', addGalForm);
 
 
         // นับตัวอักษรใน Input
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
-        }
-
-        if (linkInput && textLengthDisplay) {
-            updateCharacterCount();
         }
 
         // Fetch refresh load
@@ -278,7 +309,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     console.error('Error fetching item data:', error);
                 });
         }
-        fetchItemData(currentId);
 
         // Display dataSet
         function displayItemData(item) {
@@ -343,15 +373,7 @@ require_once __DIR__ . "/../config/configuration.php";
             return fileInfo;
         }
 
-        // ฟังก์ชันตรวจสอบนามสกุลไฟล์
-        const allowedExtensions = {
-            image: ['jpg', 'jpeg', 'png', 'gif', 'heic'],
-            document: ['doc', 'docx'],
-            pdf: ['pdf'],
-            archeiv: ['zip', 'rar']
-        };
-
-        // อนุญาตไฟล์ตั้งแต่การ input
+        // ตรวจสอบนามสกุลไฟล์ และ อนุญาตไฟล์ตั้งแต่การ input
         function setInputAcceptType(elementId, allowedTypes) {
             const acceptTypes = allowedTypes.map(type => `.${type}`).join(', ');
 
@@ -363,8 +385,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error(`Element with id "${elementId}" not found`);
             }
         }
-
-        setInputAcceptType('fileMainInput', allowedExtensions.image); // กำหนด type ให้ input
 
         // ฟังก์ชั่น check ประเภทของไฟล์
         function isValidFileType(file, type) {
@@ -522,29 +542,12 @@ require_once __DIR__ . "/../config/configuration.php";
             await handleFilePreview(file, mainContainer);
         }
 
-        // Input ของไฟล์หลัก
-        fileMainInput.addEventListener('change', async function() {
-            mainImageForm();
-        })
-
         // Gen Path URL
         function genUrlPath(filename, category) {
             const hostname = `../dnm_file`;
             const UrlPath = `${hostname}/${category}/${filename}`;
             return UrlPath;
         }
-
-        linkInput.addEventListener('input', updateCharacterCount);
-
-        let isCheck = false;
-        checkDelete.addEventListener('change', (event) => {
-            isCheck = event.target.checked;
-        });
-
-        deleteButton.addEventListener('click', () => {
-            checkDelete.checked ||= true; // การใช้ ||= จะตรวจสอบว่า checkDelete.checked เป็น false หรือ undefined และถ้าใช่ จะกำหนดค่าให้เป็น true
-            isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
-        });
 
         // Main Submit
         async function handleMainSubimt() {
@@ -610,9 +613,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error('Error during the process:', error);
             }
         }
-
-        mainSubmit.addEventListener('click', handleMainSubimt);
-
 
         // Upload Main Fetch API
         async function uploadNewFile(newFile, currentId) {
@@ -690,7 +690,6 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
     });
-
 </script>
 
 </html>
