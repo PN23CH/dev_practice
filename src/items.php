@@ -119,16 +119,6 @@ require_once __DIR__ . "/../config/configuration.php";
         <div class="bg-rose-200">FOOTER</div>
 
         <!-- MODAL -->
-        <div modal-file-valid class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-            <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
-                <div>SVG</div>
-                <div modal-notvalid-message class="text-xl font-semibold text-black"></div>
-                <div class="flex justify-end">
-                    <button modal-understood-button class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">เข้าใจแล้ว</button>
-                </div>
-            </div>
-        </div>
-
         <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
             <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
                 <div class="relative inline-block">
@@ -173,7 +163,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         const fileMainInput = document.querySelector('[data-main-input]');
         const mainContainer = document.querySelector('[data-main-preview]');
-        const submitButton = document.querySelector('[data-button-submit]');
+        const SubmitMainButton = document.querySelector('[data-button-submit]');
         const placeholderImage = '../dnm_file/slide/default-image.jpg';
         const category = "slide";
         const slideForm = document.forms['slide'];
@@ -187,19 +177,6 @@ require_once __DIR__ . "/../config/configuration.php";
         const currentSizeFile = document.querySelector('[data-size-file-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
         const maxFiles = 20;
-
-        // const notValidModal = document.querySelector('div[modal-file-valid]');
-        // const notValidMessage = document.querySelector('div[modal-notvalid-message]');
-        // const understoodButton = document.querySelector('button[modal-understood-button]');
-
-        // async function showModal(message) {
-        //     notValidMessage.textContent = message;
-        //     notValidModal.classList.remove('hidden');
-        // }
-
-        // understoodButton.addEventListener('click', () => {
-        //     notValidModal.classList.add('hidden');
-        // });
 
         const modalAddGal = document.querySelector('div[data-modal="addGal"]');
         const openGalModal = document.querySelector('[open-gal-modal]');
@@ -265,6 +242,7 @@ require_once __DIR__ . "/../config/configuration.php";
         addGalleryInput.addEventListener('change', addGalForm);
 
 
+        // นับตัวอักษรใน Input
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
@@ -274,6 +252,7 @@ require_once __DIR__ . "/../config/configuration.php";
             updateCharacterCount();
         }
 
+        // Fetch refresh load
         function fetchItemData(currentId) {
             const formData = new FormData();
             formData.append('id', currentId);
@@ -301,6 +280,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
         fetchItemData(currentId);
 
+        // Display dataSet
         function displayItemData(item) {
             if (item.filename) {
                 // dataset old file
@@ -315,25 +295,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 updateCharacterCount();
             }
         }
-
-        // const result = aa();
-
-        // result.info[1].size
-
-        // return;
-
-        // ############################# ตัวอย่าง result ของ sizefile >>>>> Loop แต่ละไฟล์เพื่อ ตรวจสอบ sizefile แต่ละไฟล์ แล้วถ้ามีไฟล์ที่ sizefile เกิน ก็ให้ผลเป็น false และ เขียนสรุป totalsizeb
-        // const fileInfo = {
-        //     isvalid: true,
-        //     totalsize: 20,
-        //     info: [
-        //         {size: 0.1, isvalid: true},
-        //         {size: 0.2, isvalid: true},
-        //         {size: 17, isvalid: false},
-        //         {size: 0, isvalid: false},
-        //         {size: 0, isvalid: false},
-        //     ]
-        // };
 
         // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
         function maxFileValid(files) {
@@ -390,7 +351,7 @@ require_once __DIR__ . "/../config/configuration.php";
             archeiv: ['zip', 'rar']
         };
 
-        // TODO ฟังก์ชั่น set input type element เพื่อกรอง type ที่ input ว่าจะอนุญาต type อะไรบ้าง เช่น accept=".png , .jpg" ใน element
+        // อนุญาตไฟล์ตั้งแต่การ input
         function setInputAcceptType(elementId, allowedTypes) {
             const acceptTypes = allowedTypes.map(type => `.${type}`).join(', ');
 
@@ -405,20 +366,12 @@ require_once __DIR__ . "/../config/configuration.php";
 
         setInputAcceptType('fileMainInput', allowedExtensions.image); // กำหนด type ให้ input
 
-        // TODO loop ไฟล์ สำหรับหลายๆ file หลาย type
         // ฟังก์ชั่น check ประเภทของไฟล์
         function isValidFileType(file, type) {
             const fileExtension = file.name.split('.').pop().toLowerCase();
             let category = null;
             console.log(file);
 
-            // const targetType = allowedExtensions[type];
-
-            // if (targetType.includes(fileExtension)) {
-            //     return true;
-            // } else {
-            //     return false;
-            // }
             // วนลูปเช็คทุกประเภทใน allowedExtensions
             for (const type in allowedExtensions) {
                 const targetType = allowedExtensions[type];
@@ -440,28 +393,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 isValid: false,
                 category: null
             };
-
-            // else if (allowedExtensions.document.includes(fileExtension)) {
-            //     category = 'document';
-            // } 
-
-            // if (category) {
-            //     // console.log(`File is a valid ${category} file.`);
-            //     // เรียกใช้ฟังก์ชันอื่นตามประเภท
-            //     if (category === 'image') {
-            //         // console.log('type = image')
-            //         // handleImageFile(file); // ส่งไฟล์ไปทำงานในฟังก์ชันจัดการรูปภาพ
-            //     } else if (category === 'document') {
-            //         // console.log('type = document')
-            //         // handleDocumentFile(file); // ส่งไฟล์ไปทำงานในฟังก์ชันจัดการเอกสาร
-            //     }
-            //     return true; // valid
-            // } else {
-            //     console.log('File type is not supported.');
-            //     return false; // invalid
-            // }
-
-            // return allowedExtensions.includes(fileExtension); // return เป็น true,false 
         }
 
         // ฟังก์ชันแปลงไฟล์ .heic เป็น .jpg
@@ -594,52 +525,9 @@ require_once __DIR__ . "/../config/configuration.php";
         // Input ของไฟล์หลัก
         fileMainInput.addEventListener('change', async function() {
             mainImageForm();
-
-            // for (let i = 0; i < inputFile.length; i++) {
-            //     let file = inputFile[i];
-
-            //     // ตรวจสอบนามสกุลไฟล์ก่อน
-            //     if (!isValidFileType(file)) {
-            //         console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
-            //         continue; // ข้ามไฟล์ที่ไม่ผ่านเงื่อนไข
-            //     }
-
-            //     // ถ้าเป็นไฟล์ .heic ให้แปลงเป็น .jpg
-            //     if (file.name.toLowerCase().endsWith('.heic')) {
-            //         const convertedFile = await convertHeicToJpg(file);
-            //         if (convertedFile) {
-            //             file = new File([convertedFile], file.name.replace('.heic', '.jpg'), {
-            //                 type: 'image/jpeg',
-            //                 lastModified: Date.now(),
-            //             });
-            //         } else {
-            //             console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
-            //             continue; // ถ้าแปลงไม่สำเร็จ ข้ามไฟล์นี้ไป
-            //         }
-            //     }
-
-            //     // เก็บไฟล์ที่ผ่านการตรวจสอบแล้วใน validFiles
-            //     validFiles.push(file);
-            //     // console.log('validFiles', validFiles);
-            // }
-
-
-            // const currentFile = validFiles[0];
-            // mainContainer.src = '';
-
-            // if (currentFile) {
-            //     const imageURL = URL.createObjectURL(currentFile); // สร้าง Blob URL
-
-            //     // TO_DO ทำฟังก์ชั่น 🆗
-            //     mainContainer.src = imageURL;
-            //     currentSizeFile.classList.remove('hidden');
-
-            // } else {
-            //     mainContainer.src = placeholderImage;
-            //     currentSizeFile.innerHTML = 'ไม่มีไฟล์ที่เลือก';
-            // }
         })
 
+        // Gen Path URL
         function genUrlPath(filename, category) {
             const hostname = `../dnm_file`;
             const UrlPath = `${hostname}/${category}/${filename}`;
@@ -658,7 +546,8 @@ require_once __DIR__ . "/../config/configuration.php";
             isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
         });
 
-        async function SubmitButton() {
+        // Main Submit
+        async function SubmitMainButton() {
             const linkValue = linkInput.value.trim();
             const formData = new FormData();
 
@@ -701,8 +590,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
                         uploadedFileName = await uploadNewFile(newFile, currentId);
                     }
-                    // console.log('uploadedFileName', uploadedFileName)
-                    // uploadedFileName = await uploadNewFile(newFile, currentId);
+
                     displayItemData({
                         filename: uploadedFileName,
                         filepath: `dnm_file/slide/${uploadedFileName}`,
@@ -723,9 +611,10 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        submitButton.addEventListener('click', SubmitButton);
+        SubmitMainButton.addEventListener('click', SubmitMainButton);
 
 
+        // Upload Main Fetch API
         async function uploadNewFile(newFile, currentId) {
             const formData = new FormData();
             formData.append('id', currentId);
@@ -750,6 +639,7 @@ require_once __DIR__ . "/../config/configuration.php";
             return result.data.filename;
         }
 
+        // Delete Main Fetch API
         async function deleteOldFile(currentFile, setOldFile) {
             const formData = new FormData();
             formData.append('webName', webName);
@@ -770,6 +660,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // Update Main Fetch API
         async function updateItemData(currentId, linkValue, uploadedFileName) {
             const formData = new FormData(slideForm);
             formData.append('id', currentId);
@@ -800,7 +691,6 @@ require_once __DIR__ . "/../config/configuration.php";
 
     });
 
-    // TODO ทำ Galley สำหรับการ upload รูปหลายๆ รูป [upload ครั้งละไม่เกิน 20 หากเกิน ไม่ให้ยิง API | ขนาดไฟล์ไม่เกืน 16MB] (input แบบ multiply) และ ทำ Preview กด Submit ยิง API 🆗
 </script>
 
 </html>
