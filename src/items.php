@@ -120,7 +120,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         <!-- MODAL -->
         <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
-            <div class="modal-content flex flex-col items-center justify-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
+            <div class="modal-content flex flex-col min-w-fit justify-start items-center justify-self-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
                 <div class="relative inline-block">
                     <input data-gal-input type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
                     <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +128,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     </svg>
                 </div>
                 <!-- Add Gallery -->
-                <div data-add-gallery="container" class="w-full min-w-min sm:w-1/2 md:w-1/3 lg:w-1/5 gap-3 mb-3"></div>
+                <div data-add-gallery="container" class="flex flex-wrap justify-center w-full gap-3 mb-3"></div>
 
                 <div class="flex justify-end">
                     <button gallery-submit class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
@@ -138,7 +138,7 @@ require_once __DIR__ . "/../config/configuration.php";
         </div>
 
         <!-- DEMO ADD GALLERY  -->
-        <div data-add-gallery="item" class="flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
+        <div data-add-gallery="item" class="hidden flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
             <input type="text" name="sequent">
             <div class="flex justify-center items-center relative w-[160px] h-[120px]">
                 <img data-gal-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
@@ -191,8 +191,9 @@ require_once __DIR__ . "/../config/configuration.php";
         const addGalleryInput = document.querySelector('[data-gal-input]');
         const addGallerySubmit = document.querySelector('[gallery-submit]');
 
-        const itemGalDemo = document.querySelector('div[data-add-gallery]');
-        const galleryContainer = document.querySelector('[data-gal-preview]')
+        const galleryContainer = document.querySelector('div[data-add-gallery="container"]');
+        const galleryItem = document.querySelector('div[data-add-gallery="item"]');
+        const galleryImagePreview = document.querySelector('[data-gal-preview]')
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -248,34 +249,58 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-
         // Gallery
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
 
-            const isFileTypeValid = await checkFileTypeValid(file, 'image');
-            if (!isFileTypeValid) return;
 
-            const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
-            if (!isMaxSizeValid) return;
+            for (const file of inputGalleryFiles) {
+                const isFileTypeValid = await checkFileTypeValid(file, 'image');
+                if (!isFileTypeValid) return;
 
-
-
-            // for (const file of inputGalleryFiles) {
-
-            //     // ใน clone มี preview
-            //     // // แสดงผล preview
-            //     // const previewImageElement = document.createElement('img');
-            //     // await handleFilePreview(file, galleryContainer);
-
-            //     // // เพิ่ม preview ลงใน Gallery Container
-            //     // galleryContainer.appendChild(previewImageElement);
-            // }
+                const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
+                if (!isMaxSizeValid) return;
+                // Clone และเพิ่ม preview ลงใน Gallery Container
+                await cloneChildElement(galleryContainer, galleryItem, file);
+            }
         }
 
-        // TODO ทำฟังก์ชั่น clone (loop ในฟังก์ชั่น) และ เอาไปใส่ addGalForm 
+        // TODO ทำฟังก์ชั่น clone (loop ในฟังก์ชั่น) และ เอาไปใส่ addGalForm
 
+        // clone Element สำหรับ Gallery
+        function cloneChildElement(parentContainer, galleryItem, file) {
+            return new Promise(async (resolve, reject) => {
+                if (!galleryItem) {
+                    reject("Demo item not found");
+                    return;
+                }
+                if (!parentContainer) {
+                    reject("ParentContainer element not found");
+                    return;
+                }
 
+                const clonedItem = galleryItem.cloneNode(true);
+                clonedItem.classList.remove("hidden");
+
+                // ค้นหา element ภายใน clonedItem ที่จะใช้แสดง preview
+                const imagePreview = clonedItem.querySelector('[data-gal-preview]');
+                if (imagePreview) {
+                    let imgPreview = '';
+                    if (file.name.toLowerCase().endsWith('.heic')) {
+                        const convertedFile = await convertHeicToJpg(file);
+                        if (convertedFile) {
+                            imgPreview = URL.createObjectURL(convertedFile);
+                        }
+                    } else {
+                        imgPreview = URL.createObjectURL(file);
+                    }
+                    imagePreview.src = imgPreview;
+                }
+
+                parentContainer.appendChild(clonedItem);
+                resolve(clonedItem);
+            });
+        }
 
         // นับตัวอักษรใน Input
         function updateCharacterCount() {
@@ -496,7 +521,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Preview Image
-        async function handleFilePreview(file, mainContainer, galleryContainer) {
+        async function handleFilePreview(file, mainContainer, galleryImagePreview) {
             let imgPreview = '';
             if (file.name.toLowerCase().endsWith('.heic')) {
                 const convertedFile = await convertHeicToJpg(file);
@@ -512,10 +537,10 @@ require_once __DIR__ . "/../config/configuration.php";
             }
 
             // แสดงผลใน Gallery Preview
-            if (galleryContainer) {
+            if (galleryImagePreview) {
                 const galleryItem = document.createElement('img');
                 galleryItem.src = imgPreview;
-                galleryContainer.appendChild(galleryItem);
+                galleryImagePreview.appendChild(galleryItem);
             }
         }
 
