@@ -229,6 +229,8 @@ require_once __DIR__ . "/../config/configuration.php";
         // Main Submit
         mainSubmit.addEventListener('click', handleMainSubimt);
 
+        // Gallery Submit
+        addGallerySubmit.addEventListener('click', handleGallerySubmit);
 
         // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
         openGalModal.addEventListener('click', (event) => {
@@ -249,9 +251,11 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
+
         // Gallery
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
+
 
 
             for (const file of inputGalleryFiles) {
@@ -262,6 +266,74 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (!isMaxSizeValid) return;
                 // Clone และเพิ่ม preview ลงใน Gallery Container
                 await cloneChildElement(galleryContainer, galleryItem, file);
+            }
+        }
+
+        async function handleGallerySubmit() {
+            const formData = new FormData();
+            const inputGalleryFiles = addGalleryInput.files;
+            // const inputGalleryFilesName = addGalleryInput.files.name;
+            // console.log(inputGalleryFilesName);
+
+            formData.append('id', currentId);
+            formData.append('category', 'slide');
+            formData.append('action', 'updateGallery');
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
+
+            try {
+                for (const file of inputGalleryFiles) {
+                    const isFileTypeValid = await checkFileTypeValid(file, 'image');
+                    if (!isFileTypeValid) {
+                        throw new Error(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
+                    }
+
+                    const isMaxSizeValid = await checkMaxSizeValid([file]);
+                    if (!isMaxSizeValid) {
+                        throw new Error(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
+                    }
+
+                    formData.append('galleryFileNames[]', file.name);
+
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
+                    let uploadedFileName = '';
+
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        throw new Error(`นามสกุลไฟล์ ${fileExtension} ไม่ได้รับอนุญาต`);
+                    }
+
+                    if (fileExtension === 'heic') {
+                        const convertedFile = await convertHeicToJpg(file);
+                        if (convertedFile) {
+                            uploadedFileName = await uploadNewFile(convertedFile);
+                        } else {
+                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
+                        }
+                    } else {
+                        uploadedFileName = await uploadNewFile(file, currentId, true);
+                    }
+
+                    // // Append ข้อมูลของไฟล์ที่อัปโหลดสำเร็จไปยัง formData
+                    // formData.append('galleryFiles[]', uploadedFileName);
+                }
+
+                // ส่งข้อมูล formData ไปยัง API
+                const response = await fetch('../api/gallery_api.php', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                });
+
+                const result = await response.json();
+                if (result.result) {
+                    console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data);
+                    // displayGallery(result.data.info); // แสดงผลข้อมูลแกลเลอรี่ที่ได้รับ
+                } else {
+                    throw new Error('การอัพเดตแกลเลอรี่ล้มเหลว');
+                }
+            } catch (error) {
+                console.error('Error during gallery submit:', error);
             }
         }
 
@@ -640,14 +712,22 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Upload Main Fetch API
-        async function uploadNewFile(newFile, currentId) {
+        async function uploadNewFile(newFile, currentId, isGallery = false) {
             const formData = new FormData();
             formData.append('id', currentId);
             formData.append('category', 'slide');
-            formData.append('action', 'updateItem');
+            formData.append('action', isGallery ? 'addGalleryItem' : 'updateItem');
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
             formData.append('file', newFile);
+
+            // สำหรับการอัปโหลด gallery
+            if (isGallery) {
+                formData.append('galleryFiles[]', newFile);
+            } else {
+                formData.append('currentFile', currentFile); // ใช้สำหรับ Main Image
+                formData.append('file', newFile);
+            }
 
             const response = await fetch('../api/slide_api_uploadfile.php', {
                 method: 'POST',
