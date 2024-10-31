@@ -6,20 +6,20 @@
 {
 "id": 221,
 "sequent": 1,
-"filename": "37_201212201056321.jpg",
-"filepath": "dnm_file/slide/37_201212201056321.jpg",
-"link": "55fgfdgdgdfg",
+"filename": "sample1.heic",
+"filepath": "dnm_file/slide/sample1.heic",
+"link": "aaaaaaaaa",
 "filesize": "196",
-"category": "slide"
+"category": "gallery"
 },
 {
 "id": 222,
 "sequent": 2,
-"filename": "37_201212201056321.jpg",
-"filepath": "dnm_file/slide/37_201212201056321.jpg",
-"link": "55fgfdgdgdfg",
+"filename": "sakura.jpg",
+"filepath": "dnm_file/slide/sakura.jpg",
+"link": "bbbbbbbbb",
 "filesize": "196",
-"category": "slide"
+"category": "gallery"
 }
 ]
 },

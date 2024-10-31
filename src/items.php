@@ -315,6 +315,7 @@ require_once __DIR__ . "/../config/configuration.php";
             const inputGalleryFiles = addGalleryInput.files;
             const galleryStorage = document.querySelector('[data-gallery="storage"]');
             const galleryTemplate = document.querySelector('[data-item-gallery]');
+            const imageGalleryElement = document.querySelector('[data-image-gallery]');
 
             formData.append('id', currentId);
             formData.append('category', 'slide');
@@ -326,6 +327,8 @@ require_once __DIR__ . "/../config/configuration.php";
 
             try {
                 for (const file of inputGalleryFiles) {
+                    await handleFilePreview(file, null, galleryImagePreview);
+
                     const isFileTypeValid = await checkFileTypeValid(file, 'image');
                     if (!isFileTypeValid) {
                         throw new Error(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
@@ -336,7 +339,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         throw new Error(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
                     }
 
-                    formData.append('galleryFileNames[]', file.name);
+                    // formData.append('galleryFileNames[]', file.name);
 
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
@@ -364,6 +367,8 @@ require_once __DIR__ . "/../config/configuration.php";
                     });
                     formData.append('galleryFileNames[]', uploadedFileName);
 
+                    console.log(uploadedGalFiles);
+
                 }
 
                 // ส่งข้อมูล formData ไปยัง API
@@ -376,19 +381,23 @@ require_once __DIR__ . "/../config/configuration.php";
                 const result = await response.json();
                 if (result.result) {
                     console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data);
+
                     const newGalleryItem = galleryTemplate.cloneNode(true);
                     newGalleryItem.classList.remove('hidden');
 
-                    const imageElement = galleryItem.querySelector('[data-image-gallery]');
+                    const newImagePath = `../dnm_file/slide/${result.data.filename}`;
+                    const imageElement = newGalleryItem.querySelector('[data-image-gallery]');
                     if (imageElement) {
-                        imageElement.src = `../dnm_file/slide/${fileData.filename}`;
+                        imageElement.src = newImagePath;
                     }
-
-
-                    toggleModal(false);
 
                     // แสดง item ใหม่ใน storage
                     galleryStorage.appendChild(newGalleryItem);
+
+                    // อัปเดตภาพหลักที่แสดงจาก path ของภาพที่อัปโหลดใหม่
+                    imageGalleryElement.src = newImagePath;
+
+                    toggleModal(false);
 
 
                 } else {
