@@ -307,6 +307,8 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (!isMaxSizeValid) return;
                 // Clone และเพิ่ม preview ลงใน Gallery Container
                 await cloneChildElement(galleryContainer, galleryItem, file);
+
+                //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
             }
         }
 
@@ -327,19 +329,21 @@ require_once __DIR__ . "/../config/configuration.php";
 
             try {
                 for (const file of inputGalleryFiles) {
-                    await handleFilePreview(file, null, galleryImagePreview);
 
+                    // ตรวจสอบนามสกุลไฟล์
                     const isFileTypeValid = await checkFileTypeValid(file, 'image');
                     if (!isFileTypeValid) {
                         throw new Error(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
                     }
 
+                    // Preview Image
+                    await handleFilePreview(file, null, galleryStorage); // Preview file
+
+                    // ตรวจสอบขนาดไฟล์
                     const isMaxSizeValid = await checkMaxSizeValid([file]);
                     if (!isMaxSizeValid) {
                         throw new Error(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
                     }
-
-                    // formData.append('galleryFileNames[]', file.name);
 
                     const fileExtension = file.name.split('.').pop().toLowerCase();
                     const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
@@ -360,14 +364,13 @@ require_once __DIR__ . "/../config/configuration.php";
                         uploadedFileName = await uploadNewFile(file, currentId, true);
                     }
 
-                    // เก็บชื่อไฟล์ที่อัปโหลดไว้ใน array
                     uploadedGalFiles.push({
                         name: file.name,
                         path: `../dnm_file/slide/${uploadedFileName}`
                     });
                     formData.append('galleryFileNames[]', uploadedFileName);
 
-                    console.log(uploadedGalFiles);
+                    // console.log(uploadedGalFiles);
 
                 }
 
@@ -381,21 +384,31 @@ require_once __DIR__ . "/../config/configuration.php";
                 const result = await response.json();
                 if (result.result) {
                     console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data);
+                    console.log('result.data', result.data.info)
+
+                    uploadedGalFiles.forEach((fileData, index) => {
+                        displayItemData({
+                            filename: fileData.filename,
+                            filepath: fileData.filepath,
+                            link: fileData.link,
+                            // dateAdd: new Date().toISOString()
+                        });
+                    });
 
                     const newGalleryItem = galleryTemplate.cloneNode(true);
                     newGalleryItem.classList.remove('hidden');
 
-                    const newImagePath = `../dnm_file/slide/${result.data.filename}`;
+                    const newImagePath = `../${fileData.filepath}`;
                     const imageElement = newGalleryItem.querySelector('[data-image-gallery]');
                     if (imageElement) {
                         imageElement.src = newImagePath;
                     }
-
+                    imageGalleryElement.src = uploadedGalFiles[0].path;
                     // แสดง item ใหม่ใน storage
                     galleryStorage.appendChild(newGalleryItem);
 
                     // อัปเดตภาพหลักที่แสดงจาก path ของภาพที่อัปโหลดใหม่
-                    imageGalleryElement.src = newImagePath;
+                    // imageGalleryElement.src = newImagePath;
 
                     toggleModal(false);
 
@@ -408,8 +421,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        // TODO ทำฟังก์ชั่น clone (loop ในฟังก์ชั่น) และ เอาไปใส่ addGalForm
-
+        //TODO ปรับฟังก์ชั่น clone ให้ clone แค่ Element ยังไม่ต้องแสดง data 
         // clone Element สำหรับ Gallery
         function cloneChildElement(parentContainer, galleryItem, file) {
             return new Promise(async (resolve, reject) => {
@@ -564,10 +576,10 @@ require_once __DIR__ . "/../config/configuration.php";
             for (const type in allowedExtensions) {
                 const targetType = allowedExtensions[type];
 
-                console.log('targetType1', targetType.includes(fileExtension));
+                // console.log('targetType1', targetType.includes(fileExtension));
 
                 if (targetType.includes(fileExtension)) {
-                    console.log('targetType2', targetType.includes(fileExtension));
+                    // console.log('targetType2', targetType.includes(fileExtension));
                     category = type; // เก็บประเภทที่ตรงกับไฟล์นี้
                     return {
                         isValid: true,
@@ -645,12 +657,10 @@ require_once __DIR__ . "/../config/configuration.php";
                 category
             } = isValidFileType(file);
 
-            console.log(isValid);
+            // console.log(isValid);
 
             // หากไฟล์ไม่ผ่านการตรวจสอบ
             if (!isValid) {
-                // แสดงข้อความให้ผู้ใช้ทราบ
-                // await showModal(`ไฟล์ "${file.name}" ไม่ได้รับการอนุญาต\nกรุณาอัปโหลดไฟล์ประเภท: ${allowedExtensions[type].join(', ')}`);
                 return false;
             }
 
@@ -783,22 +793,22 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Upload Main Fetch API
-        async function uploadNewFile(newFile, currentId, isGallery = false) {
+        async function uploadNewFile(newFile, currentId) {
             const formData = new FormData();
             formData.append('id', currentId);
             formData.append('category', 'slide');
-            formData.append('action', isGallery ? 'addGalleryItem' : 'updateItem');
+            formData.append('action', 'uploadFile');
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
             formData.append('file', newFile);
 
             // สำหรับการอัปโหลด gallery
-            if (isGallery) {
-                formData.append('galleryFiles[]', newFile);
-            } else {
-                formData.append('currentFile', currentFile); // ใช้สำหรับ Main Image
-                formData.append('file', newFile);
-            }
+            // if (isGallery) {
+            //     formData.append('galleryFiles[]', newFile);
+            // } else {
+            //     formData.append('currentFile', currentFile); // ใช้สำหรับ Main Image
+            //     formData.append('file', newFile);
+            // }
 
             const response = await fetch('../api/slide_api_uploadfile.php', {
                 method: 'POST',
@@ -836,6 +846,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Main Fetch API
         async function updateItemData(currentId, linkValue, uploadedFileName) {
             const formData = new FormData(slideForm);
