@@ -237,6 +237,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const galleryContainer = document.querySelector('div[data-add-gallery="container"]');
         const galleryItem = document.querySelector('div[data-add-gallery="item"]');
         const galleryImagePreview = document.querySelector('[data-gal-preview]')
+        const galleryStorage = document.querySelector('[data-gallery="storage"]');
+        const galleryTemplate = document.querySelector('[data-item-gallery]');
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -252,6 +254,9 @@ require_once __DIR__ . "/../config/configuration.php";
             updateCharacterCount();
         }
         linkInput.addEventListener('input', updateCharacterCount);
+
+        //Start Default Gallery
+        displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage);
 
         // Input ของ Gallery
         addGalleryInput.addEventListener('change', addGalForm);
@@ -294,6 +299,27 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
+        // แสดง default images ใน Gallery Storage
+        async function displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage) {
+            for (let i = 0; i < 3; i++) {
+                const clonedElement = await cloneChildElement(galleryStorage, galleryTemplate);
+                const imageElement = clonedElement.querySelector('[data-image-gallery]');
+                if (imageElement) {
+                    imageElement.src = placeholderImage;
+                    imageElement.dataset.imageGalleryDefault = "demo";
+                    console.log('imageElement', imageElement.dataset.imageGalleryDefault);
+                }
+            }
+        }
+
+        // ฟังก์ชันเพื่อลบหรือซ่อนภาพ default
+        function removeDefaultImages(galleryStorage) {
+            const defaultImages = galleryStorage.querySelectorAll('[data-image-gallery="demo"]');
+            defaultImages.forEach((img) => {
+                const parentElement = img.closest('[data-item-gallery]');
+                if (parentElement) parentElement.remove(); // ลบ default image
+            });
+        }
 
         // Gallery
         async function addGalForm() {
@@ -320,11 +346,10 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // Gallery Submit
         async function handleGallerySubmit() {
             const formData = new FormData();
             const inputGalleryFiles = addGalleryInput.files;
-            const galleryStorage = document.querySelector('[data-gallery="storage"]');
-            const galleryTemplate = document.querySelector('[data-item-gallery]');
             const imageGalleryElement = document.querySelector('[data-image-gallery]');
 
             formData.append('id', currentId);
@@ -362,17 +387,21 @@ require_once __DIR__ . "/../config/configuration.php";
                         uploadedFileName = await uploadNewFile(file);
                     }
 
-                    uploadedGalFiles.push({
-                        name: file.name,
-                        path: `../dnm_file/slide/${uploadedFileName}`
-                    });
-                    console.log("uploadedGalFiles", uploadedGalFiles);
-                    console.log("uploadedFileName", uploadedFileName);
+                    // uploadedGalFiles.push({
+                    //     name: file.name,
+                    //     path: `../dnm_file/slide/${uploadedFileName}`
+                    // });
 
-                    formData.append('galleryFileNames[]', uploadedFileName);
+                    // formData.append('galleryFileNames[]', uploadedFileName);
 
                     // Clone Element และเพิ่ม Preview
+                    // uploadedGalFiles.push({
+                    //     path: `../dnm_file/slide/${uploadedFileName}`
+                    // });
+
+                    // Clone และแสดง Preview
                     const clonedElement = await cloneChildElement(galleryStorage, galleryTemplate);
+
                     await handleFilePreview(file, null, clonedElement.querySelector('[data-image-gallery]'));
 
                 }
@@ -387,6 +416,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 const result = await response.json();
                 if (result.result) {
                     console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data.info);
+                    removeDefaultImages(galleryStorage); // ลบภาพ default
 
                     // Loop ผ่านข้อมูลที่อัปเดตแล้ว และแสดงใน storage
                     for (const fileData of result.data.info) {
@@ -397,18 +427,13 @@ require_once __DIR__ . "/../config/configuration.php";
                         });
 
                         // Clone และเพิ่ม preview image
-                        const newGalleryItem = await cloneChildElement(galleryStorage, galleryTemplate);
-                        const imageElement = newGalleryItem.querySelector('[data-image-gallery]');
-                        if (imageElement) {
-                            imageElement.src = genUrlPath(fileData.filepath, 'gallery');
-                        }
+                        // const newGalleryItem = await cloneChildElement(galleryStorage, galleryTemplate);
                     }
 
                     // แสดงภาพแรกใน Gallery
                     if (uploadedGalFiles.length > 0) {
                         imageGalleryElement.src = uploadedGalFiles[0].path;
                     }
-                    console.log('uploadedGalFiles', uploadedGalFiles);
 
                     // ปิด Modal
                     toggleModal(false);
@@ -829,7 +854,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Main Fetch API
         async function updateItemData(currentId, linkValue, uploadedFileName) {
             const formData = new FormData(slideForm);
@@ -860,6 +884,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         }
 
+        //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Gallery Data
         async function updateGalleryItemData(currentId, linkValue, uploadedFileName) {
             const data = {
@@ -896,6 +921,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (result.filename) {
                     const newImagePath = genUrlPath(result.filename, 'gallery');
                     const targetImage = document.querySelector(`[data-gallery-id="${currentId}"] [data-image-gallery]`);
+
                     if (targetImage) {
                         targetImage.src = newImagePath;
                     }
