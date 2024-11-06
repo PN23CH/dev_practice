@@ -76,7 +76,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         </div>
                         <div class="flex items-start gap-x-4">
                             <input type="checkbox" data-check-delete class="mt-3">
-                            <button type="button" data-delete-item class="flex items-center gap-x-3">
+                            <button type="button" data-delete-item="slide" class="flex items-center gap-x-3">
                                 <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_1016_6844)">
                                         <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
@@ -240,7 +240,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         const imageSlideDiv = document.querySelector('[data-image-slide] img');
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
-        const deleteButton = document.querySelector('[data-delete-item]');
+        const DeleteSlideButton = document.querySelector('[data-delete-item="slide"]');
         const checkDelete = document.querySelector('[data-check-delete]');
         const currentSizeFile = document.querySelector('[data-size-file-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
@@ -265,7 +265,9 @@ require_once __DIR__ . "/../config/configuration.php";
         const galleryStorage = document.querySelector('[data-gallery="storage"]');
         const galleryTemplate = document.querySelector('[data-item-gallery]');
 
-
+        const selectAllGalleryCheckbox  = document.querySelector('[select-all-gal]');
+        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+        
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
             modalAddGal.classList.toggle('flex', isOpen);
@@ -281,7 +283,6 @@ require_once __DIR__ . "/../config/configuration.php";
         }
         linkInput.addEventListener('input', updateCharacterCount);
 
-
         //Start Default Gallery
         displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage);
 
@@ -296,7 +297,7 @@ require_once __DIR__ . "/../config/configuration.php";
             isCheck = event.target.checked;
         });
 
-        deleteButton.addEventListener('click', () => {
+        DeleteSlideButton.addEventListener('click', () => {
             checkDelete.checked ||= true; // การใช้ ||= จะตรวจสอบว่า checkDelete.checked เป็น false หรือ undefined และถ้าใช่ จะกำหนดค่าให้เป็น true
             isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
         });
@@ -326,40 +327,8 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-        const selectAllCheckbox = document.querySelector('[select-all-gal]');
-
         // ล้างค่า checked เมื่อโหลดหน้าใหม่
-        selectAllCheckbox.checked = false;
-
-        // เรียก updateItemCheckboxes ครั้งแรก
-        updateItemCheckboxes();
-
-        // ฟังก์ชันสำหรับการอัปเดต itemCheckboxes ใหม่ทุกครั้งที่มีการ clone
-        function updateItemCheckboxes() {
-            const itemCheckboxes = Array.from(document.querySelectorAll('[data-check-delete="gallery"]'))
-                .filter(item => !item.hasAttribute('data-image-gallery-default')); // กรองเฉพาะ items ที่ไม่ใช่ default
-
-            // ล้างค่า checked ของ item ใหม่ทุกอันเมื่อมีการโหลดครั้งแรกหรือเมื่อเพิ่มใหม่
-            itemCheckboxes.forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-            // ฟังก์ชันเลือก/ยกเลิกเลือก checkbox ทั้งหมด
-            selectAllCheckbox.addEventListener('change', function() {
-                const isChecked = selectAllCheckbox.checked;
-                itemCheckboxes.forEach(checkbox => {
-                    checkbox.checked = isChecked;
-                });
-            });
-
-            // ฟังก์ชันตรวจสอบสถานะ checkbox แต่ละอัน
-            itemCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
-                    const allChecked = Array.from(itemCheckboxes).every(item => item.checked);
-                    selectAllCheckbox.checked = allChecked;
-                });
-            });
-        }
+        selectAllGalleryCheckbox.checked = false;
 
         // แสดง default images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage) {
@@ -371,8 +340,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     imageElement.dataset.imageGalleryDefault = "demo";
                 }
             }
-            // อัปเดต itemCheckboxes หลังจาก clone เสร็จ
-            updateItemCheckboxes();
         }
 
         // ฟังก์ชันเพื่อลบหรือซ่อนภาพ default
@@ -388,7 +355,7 @@ require_once __DIR__ . "/../config/configuration.php";
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
 
-            removeDefaultImages(galleryContainer);
+            removeDefaultImages(galleryStorage);
 
             for (const file of inputGalleryFiles) {
                 const isFileTypeValid = await checkFileTypeValid(file, 'image');
@@ -418,8 +385,6 @@ require_once __DIR__ . "/../config/configuration.php";
                         console.error("Error during gallery item clone or preview:", error);
                     });
             }
-            // อัปเดต itemCheckboxes หลังจากเพิ่มภาพใหม่
-            updateItemCheckboxes();
         }
 
         // Gallery Submit
@@ -644,7 +609,7 @@ require_once __DIR__ . "/../config/configuration.php";
         function isValidFileType(file, type) {
             const fileExtension = file.name.split('.').pop().toLowerCase();
             let category = null;
-            console.log(file);
+            // console.log(file);
 
             // วนลูปเช็คทุกประเภทใน allowedExtensions
             for (const type in allowedExtensions) {
@@ -953,7 +918,7 @@ require_once __DIR__ . "/../config/configuration.php";
         async function updateGalleryItemData(currentId, linkValue, uploadedFileName) {
             const data = {
                 id: currentId,
-                category: 'gallery',
+                dataType: 'gallery',
                 action: 'updateItem'
             };
 
