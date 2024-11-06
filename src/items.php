@@ -265,9 +265,10 @@ require_once __DIR__ . "/../config/configuration.php";
         const galleryStorage = document.querySelector('[data-gallery="storage"]');
         const galleryTemplate = document.querySelector('[data-item-gallery]');
 
-        const selectAllGalleryCheckbox  = document.querySelector('[select-all-gal]');
+        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
         const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-        
+        const checkGallery = document.querySelector('[data-check-delete="gallery"]');
+
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
             modalAddGal.classList.toggle('flex', isOpen);
@@ -327,8 +328,70 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-        // ล้างค่า checked เมื่อโหลดหน้าใหม่
-        selectAllGalleryCheckbox.checked = false;
+        manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
+
+        function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
+            document.addEventListener("change", function(event) {
+                if (!checkAllElement || !buttonDeleteGallery) return;
+
+                if (
+                    event.target.matches(`input[type="checkbox"][${datatype}]`) ||
+                    event.target === checkAllElement
+                ) {
+                    const checkboxes = document.querySelectorAll(
+                        `input[type="checkbox"][${datatype}]`
+                    );
+
+                    if (checkboxes.length === 0) return;
+
+                    if (event.target === checkAllElement) {
+                        checkboxes.forEach(
+                            (checkbox) => (checkbox.checked = checkAllElement.checked)
+                        );
+                    } else {
+                        const allChecked = Array.from(checkboxes).every(
+                            (checkbox) => checkbox.checked
+                        );
+                        checkAllElement.checked = allChecked;
+                    }
+                    toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery);
+                }
+            });
+        }
+
+        function resetChecked(checkAllElement = null, buttonDeleteGallery = null) {
+            if (!checkAllElement) {
+                checkAllElement = document.getElementById("select-all");
+            }
+            if (checkAllElement) {
+                checkAllElement.checked = false;
+            }
+
+            if (!buttonDeleteGallery) {
+                buttonDeleteGallery = document.querySelector(`button[data-button="delete"]`);
+            }
+            if (buttonDeleteGallery) {
+                buttonDeleteGallery.classList.add("invisible");
+            }
+        }
+
+        function toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery) {
+            if (!checkAllElement || !buttonDeleteGallery) return;
+
+            const checkboxes = document.querySelectorAll(
+                `input[type="checkbox"][${datatype}]`
+            );
+
+            const anyChecked = Array.from(checkboxes).some(
+                (checkbox) => checkbox.checked
+            );
+
+            if (anyChecked || checkAllElement.checked) {
+                buttonDeleteGallery.classList.remove("invisible");
+            } else {
+                buttonDeleteGallery.classList.add("invisible");
+            }
+        }
 
         // แสดง default images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage) {
@@ -380,6 +443,14 @@ require_once __DIR__ . "/../config/configuration.php";
                         }
 
                         return handleFilePreview(file, null, imagePreview);
+                    })
+                    .then(() => {
+                        // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
+                        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
+                        const buttonDeleteGallery = document.querySelector('button[data-delete-item="gallery"]');
+
+                        // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
+                        manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
                     })
                     .catch(error => {
                         console.error("Error during gallery item clone or preview:", error);
