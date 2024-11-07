@@ -215,6 +215,7 @@ require_once __DIR__ . "/../config/configuration.php";
         <div class="flex flex-col w-full gap-3">
             <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
         </div>
+        <div data-size-file-gal-show class="hidden absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
     </div>
 </body>
 
@@ -242,7 +243,8 @@ require_once __DIR__ . "/../config/configuration.php";
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
         const DeleteSlideButton = document.querySelector('[data-delete-item="slide"]');
         const checkDelete = document.querySelector('[data-check-delete]');
-        const currentSizeFile = document.querySelector('[data-size-file-show]');
+        const currentMainSizeFile = document.querySelector('[data-size-file-show]');
+        const currentGalSizeFile = document.querySelector('[data-size-file-gal-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
         const maxFiles = 20;
         const allowedExtensions = {
@@ -330,6 +332,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
 
+        // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
             document.addEventListener("change", function(event) {
                 if (!checkAllElement || !buttonDeleteGallery) return;
@@ -359,6 +362,7 @@ require_once __DIR__ . "/../config/configuration.php";
             });
         }
 
+        // reset All Check
         function resetChecked(checkAllElement = null, buttonDeleteGallery = null) {
             if (!checkAllElement) {
                 checkAllElement = document.getElementById("select-all");
@@ -375,6 +379,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // Toggle Delete ของ Gallery
         function toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery) {
             if (!checkAllElement || !buttonDeleteGallery) return;
 
@@ -385,11 +390,14 @@ require_once __DIR__ . "/../config/configuration.php";
             const anyChecked = Array.from(checkboxes).some(
                 (checkbox) => checkbox.checked
             );
+            console.log('anyChecked', anyChecked);
 
             if (anyChecked || checkAllElement.checked) {
+                console.log('buttonDeleteGallery', buttonDeleteGallery);
+
                 buttonDeleteGallery.classList.remove("invisible");
             } else {
-                buttonDeleteGallery.classList.add("invisible");
+                buttonDeleteGallery.classList.add("visible");
             }
         }
 
@@ -423,6 +431,9 @@ require_once __DIR__ . "/../config/configuration.php";
             for (const file of inputGalleryFiles) {
                 const isFileTypeValid = await checkFileTypeValid(file, 'image');
                 if (!isFileTypeValid) return;
+
+                const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile);
+                if (!isMaxFileValid) return;
 
                 const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
                 if (!isMaxSizeValid) return;
@@ -476,7 +487,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 for (const file of inputGalleryFiles) {
 
                     // ตรวจสอบนามสกุลไฟล์
-                    const isFileTypeValid = await checkFileTypeValid(file, 'image');
+                    const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
                     if (!isFileTypeValid) {
                         throw new Error(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
                     }
@@ -722,14 +733,18 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // ฟังก์ชันสำหรับตรวจสอบจำนวนไฟล์
-        async function checkMaxFileValid(inputFile) {
+        async function checkMaxFileValid(inputFile, sizeElement) {
             let resultMaxFile = null;
+
             try {
                 resultMaxFile = await maxFileValid(inputFile);
                 if (!resultMaxFile) {
-                    currentSizeFile.innerHTML = `คุณใส่ไฟล์เกิน ${maxFiles} ไฟล์`;
-                    currentSizeFile.classList.add('text-rose-700');
+                    sizeElement.innerHTML = `คุณใส่ไฟล์เกิน ${maxFiles} ไฟล์`;
+                    sizeElement.classList.add('text-rose-700');
+                    sizeElement.classList.remove('hidden');
                     return false;
+                } else {
+                    sizeElement.classList.add('hidden'); // ซ่อนข้อความหากไม่มี error
                 }
                 return true;
             } catch (error) {
@@ -744,14 +759,14 @@ require_once __DIR__ . "/../config/configuration.php";
             try {
                 resultMaxSize = await maxSizeValid(inputFile);
                 if (!resultMaxSize.isvalid) {
-                    currentSizeFile.classList.remove('hidden');
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
-                    currentSizeFile.classList.add('text-rose-700');
+                    currentMainSizeFile.classList.remove('hidden');
+                    currentMainSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
+                    currentMainSizeFile.classList.add('text-rose-700');
                     fileMainInput.value = '';
                     return false;
                 } else {
-                    currentSizeFile.classList.remove('text-rose-700');
-                    currentSizeFile.innerHTML = `ขนาดไฟล์ ${resultMaxSize.totalsize} MB`;
+                    currentMainSizeFile.classList.remove('text-rose-700');
+                    currentMainSizeFile.innerHTML = `ขนาดไฟล์ ${resultMaxSize.totalsize} MB`;
                     return true;
                 }
             } catch (error) {
@@ -808,8 +823,6 @@ require_once __DIR__ . "/../config/configuration.php";
         // Main Image
         async function mainImageForm() {
             const inputFile = fileMainInput.files;
-            // console.log('inputFile', inputFile)
-
             // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
             const file = inputFile[0];
             const isFileTypeValid = await checkFileTypeValid(file, 'image');
