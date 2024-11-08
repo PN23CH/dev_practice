@@ -75,7 +75,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div data-size-file-show class="hidden absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
                         </div>
                         <div class="flex items-start gap-x-4">
-                            <input type="checkbox" data-check-delete class="mt-3">
+                            <input type="checkbox" data-check-slide class="mt-3">
                             <button type="button" data-delete-item="slide" class="flex items-center gap-x-3">
                                 <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_1016_6844)">
@@ -144,7 +144,7 @@ require_once __DIR__ . "/../config/configuration.php";
             <div data-image="item-gallery" class="hidden min-w-[220px] sm:w-1/3 md:w-1/4 lg:w-1/6">
                 <div class="flex flex-col bg-sky-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
                     <div class="flex justify-between items-center w-full px-3">
-                        <input type="checkbox" data-check-delete="gallery">
+                        <input type="checkbox" data-check-gallery>
                         <label>ลำดับ</label>
                     </div>
                     <div class="flex justify-center items-center relative w-[160px] h-[120px]">
@@ -241,8 +241,8 @@ require_once __DIR__ . "/../config/configuration.php";
 
         const imageSlideDiv = document.querySelector('[data-image-slide] img');
         imageSlideDiv.src = '../dnm_file/slide/default-image.jpg';
-        const DeleteSlideButton = document.querySelector('[data-delete-item="slide"]');
-        const checkDelete = document.querySelector('[data-check-delete]');
+        const deleteSlideButton = document.querySelector('[data-delete-item="slide"]');
+        const checkDelete = document.querySelector('[data-check-slide]');
         const currentMainSizeFile = document.querySelector('[data-size-file-show]');
         const currentGalSizeFile = document.querySelector('[data-size-file-gal-show]');
         const maxSizeMB = 4; // ขนาดสูงสุดที่อนุญาตใน MB
@@ -258,6 +258,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const openGalModal = document.querySelector('[open-gal-modal]');
         const cancleAddGalButt = document.querySelector('[gallery-cancle]');
 
+        const formGallery = document.querySelector(`form[data-form="gallery"]`)
+
         const addGalleryInput = document.querySelector('[data-input-gallery]');
         const addGallerySubmit = document.querySelector('[data-submit-gallery]');
 
@@ -267,9 +269,8 @@ require_once __DIR__ . "/../config/configuration.php";
         const galleryStorage = document.querySelector('[data-storage-gallery]');
         const galleryItem = document.querySelector('[data-image="item-gallery"]');
 
-        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
+        const selectAllGalleryCheckbox = formGallery.querySelector('[select-all-gal]');
         const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-        const checkGallery = document.querySelector('[data-check-delete="gallery"]');
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -300,9 +301,9 @@ require_once __DIR__ . "/../config/configuration.php";
             isCheck = event.target.checked;
         });
 
-        DeleteSlideButton.addEventListener('click', () => {
-            checkDelete.checked ||= true; // การใช้ ||= จะตรวจสอบว่า checkDelete.checked เป็น false หรือ undefined และถ้าใช่ จะกำหนดค่าให้เป็น true
-            isCheck = checkDelete.checked; // อัพเดทค่า isCheck หลังจากเปลี่ยนสถานะ checkbox
+        deleteSlideButton.addEventListener('click', () => {
+            checkDelete.checked ||= true;
+            isCheck = checkDelete.checked;
         });
 
         // Main Submit
@@ -330,7 +331,7 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-        manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
+        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
 
         // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
@@ -372,15 +373,13 @@ require_once __DIR__ . "/../config/configuration.php";
             }
 
             if (!buttonDeleteGallery) {
-                buttonDeleteGallery = document.querySelector(`button[data-button="delete"]`);
-            }
-            if (buttonDeleteGallery) {
-                buttonDeleteGallery.classList.add("invisible");
+                buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
             }
         }
 
         // Toggle Delete ของ Gallery
         function toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery) {
+
             if (!checkAllElement || !buttonDeleteGallery) return;
 
             const checkboxes = document.querySelectorAll(
@@ -392,13 +391,10 @@ require_once __DIR__ . "/../config/configuration.php";
             );
 
             if (anyChecked || checkAllElement.checked) {
-                console.log('buttonDeleteGallery', buttonDeleteGallery);
-
-                buttonDeleteGallery.classList.remove("invisible");
-            } else {
-                buttonDeleteGallery.classList.add("visible");
+                buttonDeleteGallery.classList.remove("hidden");
             }
         }
+
 
         // แสดง default images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
@@ -410,8 +406,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     imageElement.dataset.imageGalleryDefault = "demo";
                 }
             }
-            const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-            buttonDeleteGallery.classList.remove('hidden');
         }
         // ฟังก์ชันเพื่อลบหรือซ่อนภาพ default
         function removeDefaultImages(galleryStorage, buttonDeleteGallery) {
@@ -426,8 +420,6 @@ require_once __DIR__ . "/../config/configuration.php";
             const remainingImages = galleryStorage.querySelectorAll('[data-image-gallery]');
             if (remainingImages.length > 0) {
                 buttonDeleteGallery.classList.remove('hidden'); // แสดงปุ่ม delete
-            } else {
-                buttonDeleteGallery.classList.add('hidden'); // ซ่อนปุ่ม delete หากไม่มีรูปใดๆ
             }
         }
 
@@ -457,7 +449,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
                         const checkbox = clonedItem.querySelector('input[type="checkbox"]');
                         if (checkbox) {
-                            checkbox.setAttribute('data-check-delete', 'gallery');
+                            checkbox.setAttribute('data-check-slide', 'gallery');
                         } else {
                             console.warn("Checkbox not found in cloned item");
                         }
@@ -470,7 +462,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
 
                         // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
-                        manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
+                        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
 
                         buttonDeleteGallery.classList.remove('hidden');
                     })
