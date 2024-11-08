@@ -126,7 +126,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         <label>Delete All</label>
                     </div>
                     <!-- Gallery Container Show -->
-                    <div data-gallery="storage" class="flex flex-wrap justify-center w-full mt-3 gap-3"></div>
+                    <div data-storage-gallery class="flex flex-wrap justify-center w-full mt-3 gap-3"></div>
 
                     <div class="flex justify-between items-center mt-5">
                         <button open-gal-modal class="bg-slate-300 hover:bg-slate-600 rounded-xl text-black hover:text-white px-3 py-2">Add Gallery</button>
@@ -141,7 +141,7 @@ require_once __DIR__ . "/../config/configuration.php";
             </form>
 
             <!-- item from gallery -->
-            <div data-item-gallery class="hidden min-w-[220px] sm:w-1/3 md:w-1/4 lg:w-1/6">
+            <div data-image="item-gallery" class="hidden min-w-[220px] sm:w-1/3 md:w-1/4 lg:w-1/6">
                 <div class="flex flex-col bg-sky-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
                     <div class="flex justify-between items-center w-full px-3">
                         <input type="checkbox" data-check-delete="gallery">
@@ -154,7 +154,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         <input type="text" data-item-caption maxlength="50" class="w-full border border-gray-400 rounded-lg p-1">
                         <div class="flex justify-between items-center">
                             <p>0/50 ตัวอักษร</p>
-                            <button type="button" data-delete-item="gallery" class="flex items-center gap-x-3">
+                            <button type="button" data-delete-item="gallery" class="hidden flex items-center gap-x-3">
                                 <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_1016_6844)">
                                         <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
@@ -191,26 +191,26 @@ require_once __DIR__ . "/../config/configuration.php";
     <div data-modal="addGal" class="modal hidden fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-50">
         <div class="modal-content flex flex-col min-w-fit justify-start items-center justify-self-center bg-white p-6 rounded-xl shadow-lg gap-y-5">
             <div class="relative inline-block">
-                <input data-gal-input type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
+                <input data-input-gallery type="file" id="addGallery" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200">
                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M9.61516 4.39062V15.6092M4.00586 9.99992H15.2245" stroke="white" stroke-width="1.60586" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
             </div>
             <!-- Add Gallery -->
-            <div data-add-gallery="container" class="flex flex-wrap justify-center w-full gap-3 mb-3"></div>
+            <div data-container="gallery" class="flex flex-wrap justify-center w-full gap-3 mb-3"></div>
 
             <div class="flex justify-end">
-                <button gallery-submit class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
+                <button data-submit-gallery class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
                 <button gallery-cancle class="bg-slate-100 text-black px-4 py-2 mr-2 rounded">ยกเลิก</button>
             </div>
         </div>
     </div>
 
     <!-- DEMO ADD GALLERY  -->
-    <div data-add-gallery="item" class="hidden flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
+    <div data-image="add-gallery" class="hidden flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
         <input type="text" name="sequent">
         <div class="flex justify-center items-center relative w-[160px] h-[120px]">
-            <img data-gal-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
+            <img data-pre-image="gallery" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
         </div>
         <div class="flex flex-col w-full gap-3">
             <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
@@ -258,14 +258,14 @@ require_once __DIR__ . "/../config/configuration.php";
         const openGalModal = document.querySelector('[open-gal-modal]');
         const cancleAddGalButt = document.querySelector('[gallery-cancle]');
 
-        const addGalleryInput = document.querySelector('[data-gal-input]');
-        const addGallerySubmit = document.querySelector('[gallery-submit]');
+        const addGalleryInput = document.querySelector('[data-input-gallery]');
+        const addGallerySubmit = document.querySelector('[data-submit-gallery]');
 
-        const galleryContainer = document.querySelector('div[data-add-gallery="container"]');
-        const galleryItem = document.querySelector('div[data-add-gallery="item"]');
-        const galleryImagePreview = document.querySelector('[data-gal-preview]')
-        const galleryStorage = document.querySelector('[data-gallery="storage"]');
-        const galleryTemplate = document.querySelector('[data-item-gallery]');
+        const galleryContainer = document.querySelector('[data-container="gallery"]');
+        const galleryAdd = document.querySelector('[data-image="add-gallery"]');
+        const galleryImagePreview = document.querySelector('[data-pre-image="gallery"]')
+        const galleryStorage = document.querySelector('[data-storage-gallery]');
+        const galleryItem = document.querySelector('[data-image="item-gallery"]');
 
         const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
         const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
@@ -287,7 +287,7 @@ require_once __DIR__ . "/../config/configuration.php";
         linkInput.addEventListener('input', updateCharacterCount);
 
         //Start Default Gallery
-        displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage);
+        displayDefaultImages(galleryStorage, galleryItem, placeholderImage);
 
         // Input ของ Gallery
         addGalleryInput.addEventListener('change', addGalForm);
@@ -390,7 +390,6 @@ require_once __DIR__ . "/../config/configuration.php";
             const anyChecked = Array.from(checkboxes).some(
                 (checkbox) => checkbox.checked
             );
-            console.log('anyChecked', anyChecked);
 
             if (anyChecked || checkAllElement.checked) {
                 console.log('buttonDeleteGallery', buttonDeleteGallery);
@@ -402,31 +401,41 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // แสดง default images ใน Gallery Storage
-        async function displayDefaultImages(galleryStorage, galleryTemplate, placeholderImage) {
+        async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
             for (let i = 0; i < 3; i++) {
-                const clonedElement = await cloneChildElement(galleryStorage, galleryTemplate);
+                const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
                 const imageElement = clonedElement.querySelector('[data-image-gallery]');
                 if (imageElement) {
                     imageElement.src = placeholderImage;
                     imageElement.dataset.imageGalleryDefault = "demo";
                 }
             }
+            const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+            buttonDeleteGallery.classList.remove('hidden');
         }
-
         // ฟังก์ชันเพื่อลบหรือซ่อนภาพ default
-        function removeDefaultImages(galleryStorage) {
+        function removeDefaultImages(galleryStorage, buttonDeleteGallery) {
             const defaultImages = galleryStorage.querySelectorAll('[data-image-gallery-default="demo"]');
+
             defaultImages.forEach((img) => {
-                const parentElement = img.closest('[data-item-gallery]');
+                const parentElement = img.closest('[data-image="item-gallery"]');
                 if (parentElement) parentElement.remove(); // ลบ default image
             });
+
+            // ตรวจสอบหลังจากลบภาพ default หากมีรูปอื่นๆ แสดงให้ปุ่ม delete ปรากฏ
+            const remainingImages = galleryStorage.querySelectorAll('[data-image-gallery]');
+            if (remainingImages.length > 0) {
+                buttonDeleteGallery.classList.remove('hidden'); // แสดงปุ่ม delete
+            } else {
+                buttonDeleteGallery.classList.add('hidden'); // ซ่อนปุ่ม delete หากไม่มีรูปใดๆ
+            }
         }
 
         // Gallery
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
 
-            removeDefaultImages(galleryStorage);
+            removeDefaultImages(galleryStorage, buttonDeleteGallery);
 
             for (const file of inputGalleryFiles) {
                 const isFileTypeValid = await checkFileTypeValid(file, 'image');
@@ -440,10 +449,10 @@ require_once __DIR__ . "/../config/configuration.php";
 
                 //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
                 // Clone และเพิ่ม preview ลงใน Gallery Container
-                cloneChildElement(galleryContainer, galleryItem)
+                cloneChildElement(galleryContainer, galleryAdd)
                     .then(clonedItem => {
                         // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
-                        const imagePreview = clonedItem.querySelector('[data-gal-preview]');
+                        const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
 
                         // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
                         const checkbox = clonedItem.querySelector('input[type="checkbox"]');
@@ -458,10 +467,12 @@ require_once __DIR__ . "/../config/configuration.php";
                     .then(() => {
                         // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
                         const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
-                        const buttonDeleteGallery = document.querySelector('button[data-delete-item="gallery"]');
+                        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
 
                         // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
                         manageCheckedDelete('data-check-delete="gallery"', selectAllGalleryCheckbox, buttonDeleteGallery);
+
+                        buttonDeleteGallery.classList.remove('hidden');
                     })
                     .catch(error => {
                         console.error("Error during gallery item clone or preview:", error);
@@ -511,7 +522,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     }
 
                     // Clone และแสดง Preview
-                    const clonedElement = await cloneChildElement(galleryStorage, galleryTemplate);
+                    const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
 
                     await handleFilePreview(file, null, clonedElement.querySelector('[data-image-gallery]'));
 
@@ -527,7 +538,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 const result = await response.json();
                 if (result.result) {
                     console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data.info);
-                    removeDefaultImages(galleryStorage); // ลบภาพ default
+                    removeDefaultImages(galleryStorage, buttonDeleteGallery); // ลบภาพ default
 
                     // Loop ผ่านข้อมูลที่อัปเดตแล้ว และแสดงใน storage
                     for (const fileData of result.data.info) {
@@ -538,7 +549,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         });
 
                         // Clone และเพิ่ม preview image
-                        // const newGalleryItem = await cloneChildElement(galleryStorage, galleryTemplate);
+                        // const newGalleryItem = await cloneChildElement(galleryStorage, galleryItem);
                     }
 
                     // แสดงภาพแรกใน Gallery
@@ -559,9 +570,9 @@ require_once __DIR__ . "/../config/configuration.php";
 
         //TODO ปรับฟังก์ชั่น clone ให้ clone แค่ Element ยังไม่ต้องแสดง data 
         // clone Element สำหรับ Gallery
-        function cloneChildElement(parentContainer, galleryItem) {
+        function cloneChildElement(parentContainer, galleryAdd) {
             return new Promise(async (resolve, reject) => {
-                if (!galleryItem) {
+                if (!galleryAdd) {
                     reject("Demo item not found");
                     return;
                 }
@@ -570,7 +581,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     return;
                 }
 
-                const clonedItem = galleryItem.cloneNode(true);
+                const clonedItem = galleryAdd.cloneNode(true);
                 clonedItem.classList.remove("hidden");
 
                 parentContainer.appendChild(clonedItem);
