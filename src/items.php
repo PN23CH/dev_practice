@@ -213,7 +213,7 @@ require_once __DIR__ . "/../config/configuration.php";
             <img data-pre-image="gallery" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
         </div>
         <div class="flex flex-col w-full gap-3">
-            <input type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
+            <input data-link-gallery type="text" placeholder="รายละเอียดรูป" class="rounded-lg p-2">
         </div>
         <div data-size-file-gal-show class="hidden absolute text-sm">ขนาดไฟล์ไม่เกิน 16MB</div>
     </div>
@@ -426,6 +426,7 @@ require_once __DIR__ . "/../config/configuration.php";
         // Gallery
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
+            const type = 'gallery';
 
             removeDefaultImages(galleryStorage, buttonDeleteGallery);
 
@@ -538,7 +539,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             filename: fileData.filename,
                             filepath: fileData.filepath,
                             link: fileData.link,
-                        });
+                        }, 'gallery');
 
                         // Clone และเพิ่ม preview image
                         // const newGalleryItem = await cloneChildElement(galleryStorage, galleryItem);
@@ -615,19 +616,47 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Display dataSet
-        function displayItemData(item) {
-            if (item.filename) {
-                // dataset old file
-                fileMainInput.dataset.oldfile = item.filename;
-                pathUrlFile = genUrlPath(item.filename, category);
-                mainContainer.src = pathUrlFile;
-            }
+        function displayItemData(item, type) {
 
-            const linkInput = document.querySelector('[data-link]');
-            if (item.link && linkInput) {
-                linkInput.value = item.link || '';
-                updateCharacterCount();
+            if (type === "main") {
+                if (item.filename) {
+                    // จัดการสำหรับ fileMainInput
+                    fileMainInput.dataset.oldfile = item.filename;
+                    const pathUrlFile = genUrlPath(item.filename, category);
+                    mainContainer.src = pathUrlFile;
+                }
+
+                const linkInput = document.querySelector('[data-link]');
+                if (item.link && linkInput) {
+                    linkInput.value = item.link || '';
+                    updateCharacterCount();
+                }
+            } else if (type === "gallery") {
+                if (item.filename) {
+                    // จัดการสำหรับ galleryContainer
+                    const galleryImageElement = document.createElement("img");
+                    galleryImageElement.src = genUrlPath(item.filename, category);
+                    galleryImageElement.dataset.imageGallery = true;
+                    galleryContainer.appendChild(galleryImageElement);
+                }
+
+                const linkInputGallery = document.querySelector('[data-link-gallery]');
+                if (item.link && linkInputGallery) {
+                    linkInputGallery.value = item.link || '';
+                }
             }
+            // if (item.filename) {
+            //     // dataset old file
+            //     fileMainInput.dataset.oldfile = item.filename;
+            //     pathUrlFile = genUrlPath(item.filename, category);
+            //     mainContainer.src = pathUrlFile;
+            // }
+
+            // const linkInput = document.querySelector('[data-link]');
+            // if (item.link && linkInput) {
+            //     linkInput.value = item.link || '';
+            //     updateCharacterCount();
+            // }
         }
 
         // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
@@ -826,8 +855,9 @@ require_once __DIR__ . "/../config/configuration.php";
         // Main Image
         async function mainImageForm() {
             const inputFile = fileMainInput.files;
-            // ตรวจสอบประเภทไฟล์ (ใช้ไฟล์แรกเป็นตัวอย่าง)
             const file = inputFile[0];
+            const type = 'main';
+
             const isFileTypeValid = await checkFileTypeValid(file, 'image');
             if (!isFileTypeValid) return;
 
@@ -901,7 +931,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         filepath: `dnm_file/slide/${uploadedFileName}`,
                         link: linkValue,
                         dateAdd: new Date().toISOString()
-                    });
+                    }, 'main');
                 }
 
                 //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
