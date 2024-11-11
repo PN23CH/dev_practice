@@ -395,7 +395,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-
         // แสดง default images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
             for (let i = 0; i < 3; i++) {
@@ -427,49 +426,67 @@ require_once __DIR__ . "/../config/configuration.php";
         async function addGalForm() {
             const inputGalleryFiles = addGalleryInput.files;
             const type = 'gallery';
+            const validGalleryFiles = [];
 
-            removeDefaultImages(galleryStorage, buttonDeleteGallery);
+            // removeDefaultImages(galleryStorage, buttonDeleteGallery);
 
             for (const file of inputGalleryFiles) {
-                const isFileTypeValid = await checkFileTypeValid(file, 'image');
+                const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
                 if (!isFileTypeValid) return;
 
-                const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile);
+                const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile, 'gallery');
                 if (!isMaxFileValid) return;
 
-                const isMaxSizeValid = await checkMaxSizeValid([file]); // เช็คแต่ละไฟล์แยก
+                const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery'); // เช็คแต่ละไฟล์แยก
                 if (!isMaxSizeValid) return;
+
+                // หากไฟล์ไม่ผ่านเงื่อนไขใดๆ ให้หยุดการทำงานและคงค่าเดิมไว้
+                if (isFileTypeValid && isMaxFileValid && isMaxSizeValid) {
+                    validGalleryFiles.push(file);
+                }
+
+                if (validGalleryFiles.length > 0) {
+                    removeDefaultImages(galleryStorage, buttonDeleteGallery);
+
+                    for (const validFile of validGalleryFiles) {
+                        cloneChildElement(galleryContainer, galleryAdd)
+                            .then(clonedItem => {
+                                // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
+                                const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
+
+                                // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
+                                const checkbox = clonedItem.querySelector('input[type="checkbox"]');
+                                if (checkbox) {
+                                    checkbox.setAttribute('data-check-slide', 'gallery');
+                                } else {
+                                    console.warn("Checkbox not found in cloned item");
+                                }
+
+                                return handleFilePreview(file, null, imagePreview);
+                            })
+                            .then(() => {
+                                // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
+                                const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
+                                const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+
+                                // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
+                                manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+
+                                buttonDeleteGallery.classList.remove('hidden');
+                            })
+                            .catch(error => {
+                                console.error("Error during gallery item clone or preview:", error);
+                            });
+                    }
+                } else {
+                    console.warn("No files passed validation.");
+                }
+                // ลบ default images เมื่อไฟล์ผ่านทุกการตรวจสอบ
 
                 //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
                 // Clone และเพิ่ม preview ลงใน Gallery Container
-                cloneChildElement(galleryContainer, galleryAdd)
-                    .then(clonedItem => {
-                        // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
-                        const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
 
-                        // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
-                        const checkbox = clonedItem.querySelector('input[type="checkbox"]');
-                        if (checkbox) {
-                            checkbox.setAttribute('data-check-slide', 'gallery');
-                        } else {
-                            console.warn("Checkbox not found in cloned item");
-                        }
 
-                        return handleFilePreview(file, null, imagePreview);
-                    })
-                    .then(() => {
-                        // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
-                        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
-                        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-
-                        // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
-                        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
-
-                        buttonDeleteGallery.classList.remove('hidden');
-                    })
-                    .catch(error => {
-                        console.error("Error during gallery item clone or preview:", error);
-                    });
             }
         }
 
@@ -496,66 +513,82 @@ require_once __DIR__ . "/../config/configuration.php";
                         throw new Error(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
                     }
                     // ตรวจสอบขนาดไฟล์
-                    const isMaxSizeValid = await checkMaxSizeValid([file]);
+                    const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery');
                     if (!isMaxSizeValid) {
                         throw new Error(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
                     }
 
-                    // Upload ไฟล์และเตรียมข้อมูล
-                    let uploadedFileName = '';
-                    if (file.name.toLowerCase().endsWith('.heic')) {
-                        const convertedFile = await convertHeicToJpg(file);
-                        if (convertedFile) {
-                            uploadedFileName = await uploadNewFile(convertedFile);
+                    if (isFileTypeValid && isMaxSizeValid) {
+
+                        let uploadedFileName = '';
+
+                        if (file.name.toLowerCase().endsWith('.heic')) {
+                            const convertedFile = await convertHeicToJpg(file);
+                            if (convertedFile) {
+                                uploadedFileName = await uploadNewFile(convertedFile);
+                            } else {
+                                console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
+                            }
                         } else {
-                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
+                            uploadedFileName = await uploadNewFile(file);
                         }
+                        uploadedGalFiles.push({
+                            name: uploadedFileName,
+                            file
+                        });
+
+                        // Clone และแสดง Preview
+                        const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
+                        await handleFilePreview(file, null, clonedElement.querySelector('[data-image-gallery]'));
+
                     } else {
-                        uploadedFileName = await uploadNewFile(file);
+                        console.warn(`ไฟล์ ${file.name} ไม่ผ่านการตรวจสอบ`);
                     }
-
-                    // Clone และแสดง Preview
-                    const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
-
-                    await handleFilePreview(file, null, clonedElement.querySelector('[data-image-gallery]'));
 
                 }
 
-                // ส่งข้อมูล formData ไปยัง API
-                const response = await fetch('../api/gallery_api.php', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData,
-                });
+                if (uploadedGalFiles.length > 0) {
+                    // ส่งข้อมูล formData ไปยัง API
+                    const response = await fetch('../api/gallery_api.php', {
+                        method: 'POST',
+                        credentials: 'include',
+                        body: formData,
+                    });
+                    const result = await response.json();
 
-                const result = await response.json();
-                if (result.result) {
-                    console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data.info);
-                    removeDefaultImages(galleryStorage, buttonDeleteGallery); // ลบภาพ default
+                    if (result.result) {
+                        console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data.info);
+                        removeDefaultImages(galleryStorage, buttonDeleteGallery); // ลบภาพ default
 
-                    // Loop ผ่านข้อมูลที่อัปเดตแล้ว และแสดงใน storage
-                    for (const fileData of result.data.info) {
-                        displayItemData({
-                            filename: fileData.filename,
-                            filepath: fileData.filepath,
-                            link: fileData.link,
-                        }, 'gallery');
+                        // Loop ผ่านข้อมูลที่อัปเดตแล้ว และแสดงใน storage
+                        for (const fileData of result.data.info) {
+                            displayItemData({
+                                filename: fileData.filename,
+                                filepath: fileData.filepath,
+                                link: fileData.link,
+                            }, 'gallery');
 
-                        // Clone และเพิ่ม preview image
-                        // const newGalleryItem = await cloneChildElement(galleryStorage, galleryItem);
+                            // Clone และเพิ่ม preview image
+                            // const newGalleryItem = await cloneChildElement(galleryStorage, galleryItem);
+                        }
+
+                        // แสดงภาพแรกใน Gallery
+                        if (uploadedGalFiles.length > 0) {
+                            imageGalleryElement.src = uploadedGalFiles[0].path;
+                        }
+                        
+                        // ปิด Modal
+                        toggleModal(false);
+
+                    } else {
+                        throw new Error('การอัพเดตแกลเลอรี่ล้มเหลว');
                     }
-
-                    // แสดงภาพแรกใน Gallery
-                    if (uploadedGalFiles.length > 0) {
-                        imageGalleryElement.src = uploadedGalFiles[0].path;
-                    }
-
-                    // ปิด Modal
-                    toggleModal(false);
 
                 } else {
-                    throw new Error('การอัพเดตแกลเลอรี่ล้มเหลว');
+                    console.warn("ไม่มีไฟล์ที่ผ่านการตรวจสอบหรืออัปโหลดสำเร็จ");
+                    alert("ไม่มีไฟล์ที่ผ่านเกณฑ์ กรุณาตรวจสอบไฟล์ของคุณ");
                 }
+
             } catch (error) {
                 console.error('Error during gallery submit:', error);
             }
@@ -604,7 +637,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 .then(result => {
                     if (result.result) {
                         const item = result.data.info[0];
-                        displayItemData(item);
+                        displayItemData(item, 'main');
 
                     } else {
                         console.error('Error fetching item data:', result.message);
@@ -622,8 +655,8 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (item.filename) {
                     // จัดการสำหรับ fileMainInput
                     fileMainInput.dataset.oldfile = item.filename;
-                    const pathUrlFile = genUrlPath(item.filename, category);
-                    mainContainer.src = pathUrlFile;
+                    const pathUrlMainFile = genUrlPath(item.filename, category);
+                    mainContainer.src = pathUrlMainFile;
                 }
 
                 const linkInput = document.querySelector('[data-link]');
@@ -765,7 +798,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // ฟังก์ชันสำหรับตรวจสอบจำนวนไฟล์
-        async function checkMaxFileValid(inputFile, sizeElement) {
+        async function checkMaxFileValid(inputFile, sizeElement, type) {
             let resultMaxFile = null;
 
             try {
@@ -786,19 +819,19 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // ฟังก์ชันสำหรับตรวจสอบขนาดไฟล์
-        async function checkMaxSizeValid(inputFile) {
+        async function checkMaxSizeValid(inputFile, sizeFile, type) {
             let resultMaxSize = null;
             try {
                 resultMaxSize = await maxSizeValid(inputFile);
                 if (!resultMaxSize.isvalid) {
-                    currentMainSizeFile.classList.remove('hidden');
-                    currentMainSizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
-                    currentMainSizeFile.classList.add('text-rose-700');
+                    sizeFile.classList.remove('hidden');
+                    sizeFile.innerHTML = `ขนาดไฟล์ของคุณใหญ่กว่า ${maxSizeMB} MB`;
+                    sizeFile.classList.add('text-rose-700');
                     fileMainInput.value = '';
                     return false;
                 } else {
-                    currentMainSizeFile.classList.remove('text-rose-700');
-                    currentMainSizeFile.innerHTML = `ขนาดไฟล์ ${resultMaxSize.totalsize} MB`;
+                    sizeFile.classList.remove('text-rose-700');
+                    sizeFile.innerHTML = `ขนาดไฟล์ ${resultMaxSize.totalsize} MB`;
                     return true;
                 }
             } catch (error) {
@@ -862,11 +895,11 @@ require_once __DIR__ . "/../config/configuration.php";
             if (!isFileTypeValid) return;
 
             // ตรวจสอบจำนวนไฟล์
-            const isMaxFileValid = await checkMaxFileValid(inputFile);
+            const isMaxFileValid = await checkMaxFileValid(inputFile, currentMainSizeFile, 'main');
             if (!isMaxFileValid) return;
 
             // ตรวจสอบขนาดไฟล์
-            const isMaxSizeValid = await checkMaxSizeValid(inputFile);
+            const isMaxSizeValid = await checkMaxSizeValid(inputFile, currentMainSizeFile, 'main');
             if (!isMaxSizeValid) return;
 
 
