@@ -291,7 +291,10 @@ require_once __DIR__ . "/../config/configuration.php";
         displayDefaultImages(galleryStorage, galleryItem, placeholderImage);
 
         // Input ของ Gallery
-        addGalleryInput.addEventListener('change', addGalForm);
+        // addGalleryInput.addEventListener('change', addGalForm);
+        addGalleryInput.addEventListener('change', function() {
+            addGalForm(this);
+        })
 
         // Input ของไฟล์หลัก
         fileMainInput.addEventListener('change', mainImageForm);
@@ -423,12 +426,11 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Gallery
-        async function addGalForm() {
+        async function addGalForm(addGalleryInput) {
             const inputGalleryFiles = addGalleryInput.files;
             const type = 'gallery';
-            const validGalleryFiles = [];
 
-            // removeDefaultImages(galleryStorage, buttonDeleteGallery);
+            removeDefaultImages(galleryStorage, buttonDeleteGallery);
 
             for (const file of inputGalleryFiles) {
                 const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
@@ -440,48 +442,34 @@ require_once __DIR__ . "/../config/configuration.php";
                 const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery'); // เช็คแต่ละไฟล์แยก
                 if (!isMaxSizeValid) return;
 
-                // หากไฟล์ไม่ผ่านเงื่อนไขใดๆ ให้หยุดการทำงานและคงค่าเดิมไว้
-                if (isFileTypeValid && isMaxFileValid && isMaxSizeValid) {
-                    validGalleryFiles.push(file);
-                }
+                cloneChildElement(galleryContainer, galleryAdd)
+                    .then(clonedItem => {
+                        // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
+                        const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
 
-                if (validGalleryFiles.length > 0) {
-                    removeDefaultImages(galleryStorage, buttonDeleteGallery);
+                        // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
+                        const checkbox = clonedItem.querySelector('input[type="checkbox"]');
+                        if (checkbox) {
+                            checkbox.setAttribute('data-check-slide', 'gallery');
+                        } else {
+                            console.warn("Checkbox not found in cloned item");
+                        }
 
-                    for (const validFile of validGalleryFiles) {
-                        cloneChildElement(galleryContainer, galleryAdd)
-                            .then(clonedItem => {
-                                // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
-                                const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
+                        return handleFilePreview(file, null, imagePreview);
+                    })
+                    .then(() => {
+                        // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
+                        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
+                        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
 
-                                // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
-                                const checkbox = clonedItem.querySelector('input[type="checkbox"]');
-                                if (checkbox) {
-                                    checkbox.setAttribute('data-check-slide', 'gallery');
-                                } else {
-                                    console.warn("Checkbox not found in cloned item");
-                                }
+                        // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
+                        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
 
-                                return handleFilePreview(file, null, imagePreview);
-                            })
-                            .then(() => {
-                                // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
-                                const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
-                                const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-
-                                // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
-                                manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
-
-                                buttonDeleteGallery.classList.remove('hidden');
-                            })
-                            .catch(error => {
-                                console.error("Error during gallery item clone or preview:", error);
-                            });
-                    }
-                } else {
-                    console.warn("No files passed validation.");
-                }
-                // ลบ default images เมื่อไฟล์ผ่านทุกการตรวจสอบ
+                        buttonDeleteGallery.classList.remove('hidden');
+                    })
+                    .catch(error => {
+                        console.error("Error during gallery item clone or preview:", error);
+                    });
 
                 //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
                 // Clone และเพิ่ม preview ลงใน Gallery Container
@@ -576,7 +564,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         if (uploadedGalFiles.length > 0) {
                             imageGalleryElement.src = uploadedGalFiles[0].path;
                         }
-                        
+
                         // ปิด Modal
                         toggleModal(false);
 
