@@ -484,8 +484,9 @@ require_once __DIR__ . "/../config/configuration.php";
             const inputGalleryFiles = addGalleryInput.files;
             const imageGalleryElement = document.querySelector('[data-image-gallery]');
 
+            // if()
             formData.append('id', currentId);
-            formData.append('category', 'gallery');
+            formData.append('category', 'slide');
             formData.append('action', 'updateGallery');
             formData.append('webName', webName);
             formData.append('currentFile', currentFile);
@@ -537,12 +538,12 @@ require_once __DIR__ . "/../config/configuration.php";
 
                 if (uploadedGalFiles.length > 0) {
                     // ส่งข้อมูล formData ไปยัง API
-                    const response = await fetch('../api/gallery_api.php', {
-                        method: 'POST',
-                        credentials: 'include',
-                        body: formData,
-                    });
-                    const result = await response.json();
+                    // const response = await fetch('../api/gallery_api.php', {
+                    //     method: 'POST',
+                    //     credentials: 'include',
+                    //     body: formData,
+                    // });
+                    // const result = await response.json();
 
                     if (result.result) {
                         console.log('อัพเดตแกลเลอรี่สำเร็จ:', result.data.info);
@@ -616,24 +617,24 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('type', 'slide');
             formData.append('action', 'getItem');
 
-            fetch('../api/slide_api_item.php', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData,
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.result) {
-                        const item = result.data.info[0];
-                        displayItemData(item, 'main');
+            // fetch('../api/slide_api_item.php', {
+            //         method: 'POST',
+            //         credentials: 'include',
+            //         body: formData,
+            //     })
+            //     .then(response => response.json())
+            //     .then(result => {
+            //         if (result.result) {
+            //             const item = result.data.info[0];
+            //             displayItemData(item, 'main');
 
-                    } else {
-                        console.error('Error fetching item data:', result.message);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching item data:', error);
-                });
+            //         } else {
+            //             console.error('Error fetching item data:', result.message);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('Error fetching item data:', error);
+            //     });
         }
 
         // Display dataSet
@@ -985,13 +986,13 @@ require_once __DIR__ . "/../config/configuration.php";
             //     formData.append('file', newFile);
             // }
 
-            const response = await fetch('../api/slide_api_uploadfile.php', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
+            // const response = await fetch('../api/slide_api_uploadfile.php', {
+            //     method: 'POST',
+            //     credentials: 'include',
+            //     body: formData,
+            // });
 
-            const result = await response.json();
+            // const result = await response.json();
 
             if (!result.result) {
                 throw new Error('Upload failed: ' + result.message);
@@ -1009,16 +1010,16 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('category', 'slide');
             formData.append('action', 'remove');
 
-            const response = await fetch('../api/slide_api_removefile.php', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
-            const result = await response.json();
+            // const response = await fetch('../api/slide_api_removefile.php', {
+            //     method: 'POST',
+            //     credentials: 'include',
+            //     body: formData,
+            // });
+            // const result = await response.json();
 
-            if (!result.result) {
-                throw new Error('Delete failed: ' + result.message);
-            }
+            // if (!result.result) {
+            //     throw new Error('Delete failed: ' + result.message);
+            // }
         }
 
         // Update Main Fetch API
@@ -1032,24 +1033,51 @@ require_once __DIR__ . "/../config/configuration.php";
                 formData.append('filename', uploadedFileName);
             }
 
-            const response = await fetch('../api/slide_api_updateitem.php', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
-            const result = await response.json();
+            // const response = await fetch('../api/slide_api_updateitem.php', {
+            //     method: 'POST',
+            //     credentials: 'include',
+            //     body: formData,
+            // });
+            // const result = await response.json();
 
-            if (!result.result) {
-                throw new Error('Update failed: ' + result.message);
-            }
+            // if (!result.result) {
+            //     throw new Error('Update failed: ' + result.message);
+            // }
 
-            if (result.filename) {
-                pathUrlFile = genUrlPath(result.filename, category);
-                mainContainer.src = pathUrlFile;
-            }
+            // if (result.filename) {
+            //     pathUrlFile = genUrlPath(result.filename, category);
+            //     mainContainer.src = pathUrlFile;
+            // }
 
 
         }
+
+        // fileupload('test', '/../api/slide_api_updateitem.php')
+
+        // async function fileupload(file, enpointApi) {
+        //     const formData = new FormData();
+        //     formData.append('id', currentId);
+        //     formData.append('category', 'slide');
+        //     formData.append('action', 'uploadFile');
+        //     formData.append('webName', webName);
+        //     formData.append('currentFile', currentFile);
+        //     formData.append('file', file);
+
+        //     const response = await fetch(enpointApi, {
+        //         method: 'POST',
+        //         credentials: 'include',
+        //         body: formData,
+        //     });
+
+        //     const result = await response.json();
+
+        //     if (!result.result) {
+        //         throw new Error('Upload failed: ' + result.message);
+        //     }
+
+        //     return result.data;
+
+        // }
 
         //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Gallery Data
