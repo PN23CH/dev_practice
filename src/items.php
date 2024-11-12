@@ -617,24 +617,31 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('type', 'slide');
             formData.append('action', 'getItem');
 
-            // fetch('../api/slide_api_item.php', {
-            //         method: 'POST',
-            //         credentials: 'include',
-            //         body: formData,
-            //     })
-            //     .then(response => response.json())
-            //     .then(result => {
-            //         if (result.result) {
-            //             const item = result.data.info[0];
-            //             displayItemData(item, 'main');
+            fetch('../api/fetch_api.json', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.result) {
+                        const data = result.data;
 
-            //         } else {
-            //             console.error('Error fetching item data:', result.message);
-            //         }
-            //     })
-            //     .catch(error => {
-            //         console.error('Error fetching item data:', error);
-            //     });
+                        // main
+                        displayItemData(data.info, 'main');
+
+                        // gallery
+                        data.gallery.forEach(galleryItem => {
+                            displayItemData(galleryItem, 'gallery');
+                        });
+
+                    } else {
+                        console.error('Error fetching item data:', result.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching item data:', error);
+                });
         }
 
         // Display dataSet
