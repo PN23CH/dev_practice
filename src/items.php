@@ -291,13 +291,14 @@ require_once __DIR__ . "/../config/configuration.php";
         displayDefaultImages(galleryStorage, galleryItem, placeholderImage);
 
         // Input ของ Gallery
+        addGalleryInput.addEventListener('change', () => inputGallery(addGalleryInput));
         // addGalleryInput.addEventListener('change', addGalForm);
-        addGalleryInput.addEventListener('change', function() {
-            addGalForm(this);
-        })
+        // addGalleryInput.addEventListener('change', function() {
+        //     inputGallery(this);
+        // })
 
         // Input ของไฟล์หลัก
-        fileMainInput.addEventListener('change', mainImageForm);
+        fileMainInput.addEventListener('change', inputMain);
 
         let isCheck = false;
         checkDelete.addEventListener('change', (event) => {
@@ -335,6 +336,245 @@ require_once __DIR__ . "/../config/configuration.php";
         });
 
         manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+
+        // Input Button
+        async function fileUpload(file, endpoint) {
+            const formData = new FormData();
+
+            // กำหนดข้อมูลที่ต้องส่งไปยัง API
+            formData.append('id', currentId);
+            formData.append('category', 'slide');
+            formData.append('action', 'uploadFile');
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
+            formData.append('file', file);
+
+            // ระบุ API URL
+            const apiUrl = endpoint === 'upload_main' ? '../api/upload_file_main.json' : '../api/upload_file_gallery.json';
+
+            try {
+                // เรียกใช้งาน API ด้วย Fetch
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Failed to upload file: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                // ตรวจสอบผลลัพธ์จาก API
+                if (!result.result) {
+                    throw new Error('Upload failed: ' + result.message);
+                }
+
+                return result.data; // ส่งคืนชื่อไฟล์ที่อัปโหลดสำเร็จ
+            } catch (error) {
+                console.error('Error uploading file:', error);
+                throw error;
+            }
+        }
+
+        // Input Gallery
+        async function inputGallery(addGalleryInput) {
+            const inputGalleryFiles = addGalleryInput.files;
+
+            removeDefaultImages(galleryStorage, buttonDeleteGallery);
+
+            for (const file of inputGalleryFiles) {
+                const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
+                if (!isFileTypeValid) return;
+
+                const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile, 'gallery');
+                if (!isMaxFileValid) return;
+
+                const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery');
+                if (!isMaxSizeValid) return;
+
+                // อัปโหลดไฟล์
+                try {
+                    const uploadedFilename = await fileUpload(file, 'upload_gallery');
+                    console.log('Gallery file uploaded successfully:', uploadedFilename);
+
+                    // Clone และแสดงผลใน Gallery
+                    const clonedItem = await cloneChildElement(galleryContainer, galleryAdd);
+                    const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
+                    await handleFilePreview(file, null, imagePreview);
+
+                    manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+                    buttonDeleteGallery.classList.remove('hidden');
+                } catch (error) {
+                    console.error('Error uploading gallery file:', error);
+                }
+            }
+        }
+        // async function inputGallery(addGalleryInput) {
+        //     const inputGalleryFiles = addGalleryInput.files;
+        //     const type = 'gallery';
+
+        //     removeDefaultImages(galleryStorage, buttonDeleteGallery);
+
+        //     for (const file of inputGalleryFiles) {
+        //         const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
+        //         if (!isFileTypeValid) return;
+
+        //         const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile, 'gallery');
+        //         if (!isMaxFileValid) return;
+
+        //         const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery'); // เช็คแต่ละไฟล์แยก
+        //         if (!isMaxSizeValid) return;
+
+        //         cloneChildElement(galleryContainer, galleryAdd)
+        //             .then(clonedItem => {
+        //                 // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
+        //                 const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
+
+        //                 // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
+        //                 const checkbox = clonedItem.querySelector('input[type="checkbox"]');
+        //                 if (checkbox) {
+        //                     checkbox.setAttribute('data-check-slide', 'gallery');
+        //                 } else {
+        //                     console.warn("Checkbox not found in cloned item");
+        //                 }
+
+        //                 return handleFilePreview(file, null, imagePreview);
+        //             })
+        //             .then(() => {
+        //                 // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
+        //                 const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
+        //                 const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+
+        //                 // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
+        //                 manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+
+        //                 buttonDeleteGallery.classList.remove('hidden');
+        //             })
+        //             .catch(error => {
+        //                 console.error("Error during gallery item clone or preview:", error);
+        //             });
+
+        //         //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
+        //         // Clone และเพิ่ม preview ลงใน Gallery Container
+
+
+        //     }
+        // }
+
+        // Main Image
+        async function inputMain() {
+            const inputFile = fileMainInput.files[0]; // รับไฟล์แรกจาก input
+            const type = 'main';
+
+            const isFileTypeValid = await checkFileTypeValid(inputFile, 'image');
+            if (!isFileTypeValid) return;
+
+            const isMaxFileValid = await checkMaxFileValid([inputFile], currentMainSizeFile, 'main');
+            if (!isMaxFileValid) return;
+
+            const isMaxSizeValid = await checkMaxSizeValid([inputFile], currentMainSizeFile, 'main');
+            if (!isMaxSizeValid) return;
+
+            // อัปโหลดไฟล์
+            try {
+                const uploadedFilename = await fileUpload(inputFile, 'upload_main');
+                console.log('Main file uploaded successfully:', uploadedFilename);
+
+                // ทำการแสดงผล Preview
+                await handleFilePreview(inputFile, mainContainer);
+            } catch (error) {
+                console.error('Error uploading main file:', error);
+            }
+        }
+        // async function inputMain() {
+        //     const inputFile = fileMainInput.files;
+        //     const file = inputFile[0];
+        //     const type = 'main';
+
+        //     const isFileTypeValid = await checkFileTypeValid(file, 'image');
+        //     if (!isFileTypeValid) return;
+
+        //     // ตรวจสอบจำนวนไฟล์
+        //     const isMaxFileValid = await checkMaxFileValid(inputFile, currentMainSizeFile, 'main');
+        //     if (!isMaxFileValid) return;
+
+        //     // ตรวจสอบขนาดไฟล์
+        //     const isMaxSizeValid = await checkMaxSizeValid(inputFile, currentMainSizeFile, 'main');
+        //     if (!isMaxSizeValid) return;
+
+
+        //     // ทำการแสดงผล Preview ภาพ
+        //     await handleFilePreview(file, mainContainer);
+        // }
+
+        // Main Submit
+        async function handleMainSubimt() {
+            const linkValue = linkInput.value.trim();
+            const formData = new FormData();
+
+            let uploadedFileName = '';
+            let isFileDeleted = false;
+            const setOldFile = fileMainInput.dataset.oldfile;
+            const newFile = fileMainInput.files[0];
+
+            if (isCheck || newFile) {
+                isFileDeleted = true;
+                mainContainer.src = placeholderImage;
+            }
+
+            formData.append('id', currentId);
+            formData.append('category', 'slide');
+            formData.append('action', 'updateItem');
+            formData.append('webName', webName);
+            formData.append('currentFile', currentFile);
+
+            try {
+                //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
+                if (newFile) {
+                    const fileExtension = newFile.name.split('.').pop().toLowerCase();
+
+                    // อนุญาตเฉพาะไฟล์นามสกุลที่กำหนด
+                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
+                    if (!allowedExtensions.includes(fileExtension)) {
+                        throw new Error(`นามสกุลไฟล์ ${fileExtension} ไม่ได้รับอนุญาต`);
+                    }
+
+                    // ถ้าเป็น .heic แปลงเป็น .jpg ก่อน
+                    if (fileExtension === 'heic') {
+                        const convertedFile = await convertHeicToJpg(newFile);
+                        if (convertedFile) {
+                            uploadedFileName = await inputMain();
+                            // uploadedFileName = await uploadNewFile(convertedFile, currentId);
+                        } else {
+                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
+                        }
+                    } else {
+                        // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
+                        uploadedFileName = await inputMain();
+                        // uploadedFileName = await uploadNewFile(newFile, currentId);
+                    }
+
+                    displayItemData({
+                        filename: uploadedFileName,
+                        filepath: `dnm_file/slide/${uploadedFileName}`,
+                        link: linkValue,
+                        dateAdd: new Date().toISOString()
+                    }, 'main');
+                }
+
+                //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
+                if (isFileDeleted && setOldFile) {
+                    await deleteOldFile(currentFile, setOldFile);
+                }
+
+                //  #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
+                await updateItemData(currentId, linkValue, uploadedFileName);
+            } catch (error) {
+                console.error('Error during the process:', error);
+            }
+        }
 
         // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
@@ -425,59 +665,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        // Gallery
-        async function addGalForm(addGalleryInput) {
-            const inputGalleryFiles = addGalleryInput.files;
-            const type = 'gallery';
-
-            removeDefaultImages(galleryStorage, buttonDeleteGallery);
-
-            for (const file of inputGalleryFiles) {
-                const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
-                if (!isFileTypeValid) return;
-
-                const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile, 'gallery');
-                if (!isMaxFileValid) return;
-
-                const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery'); // เช็คแต่ละไฟล์แยก
-                if (!isMaxSizeValid) return;
-
-                cloneChildElement(galleryContainer, galleryAdd)
-                    .then(clonedItem => {
-                        // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
-                        const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
-
-                        // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
-                        const checkbox = clonedItem.querySelector('input[type="checkbox"]');
-                        if (checkbox) {
-                            checkbox.setAttribute('data-check-slide', 'gallery');
-                        } else {
-                            console.warn("Checkbox not found in cloned item");
-                        }
-
-                        return handleFilePreview(file, null, imagePreview);
-                    })
-                    .then(() => {
-                        // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
-                        const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
-                        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-
-                        // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
-                        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
-
-                        buttonDeleteGallery.classList.remove('hidden');
-                    })
-                    .catch(error => {
-                        console.error("Error during gallery item clone or preview:", error);
-                    });
-
-                //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
-                // Clone และเพิ่ม preview ลงใน Gallery Container
-
-
-            }
-        }
-
         // Gallery Submit
         async function handleGallerySubmit() {
             const formData = new FormData();
@@ -514,12 +701,14 @@ require_once __DIR__ . "/../config/configuration.php";
                         if (file.name.toLowerCase().endsWith('.heic')) {
                             const convertedFile = await convertHeicToJpg(file);
                             if (convertedFile) {
-                                uploadedFileName = await uploadNewFile(convertedFile);
+                                uploadedFileName = await inputMain();
+                                // uploadedFileName = await uploadNewFile(convertedFile);
                             } else {
                                 console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
                             }
                         } else {
-                            uploadedFileName = await uploadNewFile(file);
+                            uploadedFileName = await inputMain();
+                            // uploadedFileName = await uploadNewFile(file);
                         }
                         uploadedGalFiles.push({
                             name: uploadedFileName,
@@ -881,98 +1070,11 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        // Main Image
-        async function mainImageForm() {
-            const inputFile = fileMainInput.files;
-            const file = inputFile[0];
-            const type = 'main';
-
-            const isFileTypeValid = await checkFileTypeValid(file, 'image');
-            if (!isFileTypeValid) return;
-
-            // ตรวจสอบจำนวนไฟล์
-            const isMaxFileValid = await checkMaxFileValid(inputFile, currentMainSizeFile, 'main');
-            if (!isMaxFileValid) return;
-
-            // ตรวจสอบขนาดไฟล์
-            const isMaxSizeValid = await checkMaxSizeValid(inputFile, currentMainSizeFile, 'main');
-            if (!isMaxSizeValid) return;
-
-
-            // ทำการแสดงผล Preview ภาพ
-            await handleFilePreview(file, mainContainer);
-        }
-
         // Gen Path URL
         function genUrlPath(filename, category) {
             const hostname = `../dnm_file`;
             const UrlPath = `${hostname}/${category}/${filename}`;
             return UrlPath;
-        }
-
-        // Main Submit
-        async function handleMainSubimt() {
-            const linkValue = linkInput.value.trim();
-            const formData = new FormData();
-
-            let uploadedFileName = '';
-            let isFileDeleted = false;
-            const setOldFile = fileMainInput.dataset.oldfile;
-            const newFile = fileMainInput.files[0];
-
-            if (isCheck || newFile) {
-                isFileDeleted = true;
-                mainContainer.src = placeholderImage;
-            }
-
-            formData.append('id', currentId);
-            formData.append('category', 'slide');
-            formData.append('action', 'updateItem');
-            formData.append('webName', webName);
-            formData.append('currentFile', currentFile);
-
-            try {
-                //  #1: อัพโหลดไฟล์ใหม่ (ถ้ามี)
-                if (newFile) {
-                    const fileExtension = newFile.name.split('.').pop().toLowerCase();
-
-                    // อนุญาตเฉพาะไฟล์นามสกุลที่กำหนด
-                    const allowedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'heic'];
-                    if (!allowedExtensions.includes(fileExtension)) {
-                        throw new Error(`นามสกุลไฟล์ ${fileExtension} ไม่ได้รับอนุญาต`);
-                    }
-
-                    // ถ้าเป็น .heic แปลงเป็น .jpg ก่อน
-                    if (fileExtension === 'heic') {
-                        const convertedFile = await convertHeicToJpg(newFile);
-                        if (convertedFile) {
-                            uploadedFileName = await uploadNewFile(convertedFile, currentId);
-                        } else {
-                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
-                        }
-                    } else {
-                        // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
-                        uploadedFileName = await uploadNewFile(newFile, currentId);
-                    }
-
-                    displayItemData({
-                        filename: uploadedFileName,
-                        filepath: `dnm_file/slide/${uploadedFileName}`,
-                        link: linkValue,
-                        dateAdd: new Date().toISOString()
-                    }, 'main');
-                }
-
-                //  #2: ลบไฟล์เดิม (ถ้ามีการลบ)
-                if (isFileDeleted && setOldFile) {
-                    await deleteOldFile(currentFile, setOldFile);
-                }
-
-                //  #3: อัพเดตข้อมูลหลังจากอัพโหลดและลบแล้ว
-                await updateItemData(currentId, linkValue, uploadedFileName);
-            } catch (error) {
-                console.error('Error during the process:', error);
-            }
         }
 
         // Upload Main Fetch API
@@ -1017,16 +1119,16 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('category', 'slide');
             formData.append('action', 'remove');
 
-            // const response = await fetch('../api/slide_api_removefile.php', {
-            //     method: 'POST',
-            //     credentials: 'include',
-            //     body: formData,
-            // });
-            // const result = await response.json();
+            const response = await fetch('../api/remove_file_main.json', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+            const result = await response.json();
 
-            // if (!result.result) {
-            //     throw new Error('Delete failed: ' + result.message);
-            // }
+            if (!result.result) {
+                throw new Error('Delete failed: ' + result.message);
+            }
         }
 
         // Update Main Fetch API
@@ -1040,21 +1142,21 @@ require_once __DIR__ . "/../config/configuration.php";
                 formData.append('filename', uploadedFileName);
             }
 
-            // const response = await fetch('../api/slide_api_updateitem.php', {
-            //     method: 'POST',
-            //     credentials: 'include',
-            //     body: formData,
-            // });
-            // const result = await response.json();
+            const response = await fetch('../api/update_main_api.json', {
+                method: 'POST',
+                credentials: 'include',
+                body: formData,
+            });
+            const result = await response.json();
 
-            // if (!result.result) {
-            //     throw new Error('Update failed: ' + result.message);
-            // }
+            if (!result.result) {
+                throw new Error('Update failed: ' + result.message);
+            }
 
-            // if (result.filename) {
-            //     pathUrlFile = genUrlPath(result.filename, category);
-            //     mainContainer.src = pathUrlFile;
-            // }
+            if (result.filename) {
+                pathUrlFile = genUrlPath(result.filename, category);
+                mainContainer.src = pathUrlFile;
+            }
 
 
         }
