@@ -1132,33 +1132,82 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Update Main Fetch API
-        async function updateItemData(currentId, linkValue, uploadedFileName) {
+        async function updateItemData(currentId, linkValue, file = null) {
             const formData = new FormData(slideForm);
             formData.append('id', currentId);
             formData.append('category', 'slide');
-            formData.append('action', 'updateItem');
+            formData.append('action', 'update_data');
 
-            if (uploadedFileName) {
-                formData.append('filename', uploadedFileName);
+            if (formData.has('link')) {
+                formData.delete('link');
             }
 
-            const response = await fetch('../api/update_main_api.json', {
-                method: 'POST',
-                credentials: 'include',
-                body: formData,
-            });
-            const result = await response.json();
-
-            if (!result.result) {
-                throw new Error('Update failed: ' + result.message);
+            if (linkValue) {
+                formData.append('link', linkValue);
             }
 
-            if (result.filename) {
-                pathUrlFile = genUrlPath(result.filename, category);
-                mainContainer.src = pathUrlFile;
+            if (file) {
+                try {
+                    const uploadedFileData = await fileUpload(file, 'upload_main');
+                    const uploadedFileName = uploadedFileData.filename;
+
+                    console.log('Uploaded file name:', uploadedFileName);
+
+                    if (uploadedFileName) {
+                        formData.append('filename', uploadedFileName);
+                    }
+                } catch (error) {
+                    console.error('File upload failed:', error);
+                    return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
+                }
             }
 
+            try {
+                const response = await fetch('../api/update_main_api.json', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                });
 
+                if (!response.ok) {
+                    throw new Error(`Failed to update item data: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+
+                if (!result.result) {
+                    throw new Error('Update failed: ' + result.message);
+                }
+
+                // อัปเดต UI ถ้ามีไฟล์ใหม่
+                if (result.filename) {
+                    const pathUrlFile = genUrlPath(result.filename, 'slide');
+                    mainContainer.src = pathUrlFile;
+                }
+            } catch (error) {
+                console.error('Error updating item data:', error);
+                throw error;
+            }
+
+            // if (uploadedFileName) {
+            //     formData.append('filename', uploadedFileName);
+            // }
+
+            // const response = await fetch('../api/update_main_api.json', {
+            //     method: 'POST',
+            //     credentials: 'include',
+            //     body: formData,
+            // });
+            // const result = await response.json();
+
+            // if (!result.result) {
+            //     throw new Error('Update failed: ' + result.message);
+            // }
+
+            // if (result.filename) {
+            //     pathUrlFile = genUrlPath(result.filename, category);
+            //     mainContainer.src = pathUrlFile;
+            // }
         }
 
         // fileupload('test', '/../api/slide_api_updateitem.php')
