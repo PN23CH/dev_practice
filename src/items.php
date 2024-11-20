@@ -338,7 +338,7 @@ require_once __DIR__ . "/../config/configuration.php";
         manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
 
         // Input Button
-        async function fileUpload(file, endpoint) {
+        async function fileUpload(file, endpointApi) {
             const formData = new FormData();
 
             // กำหนดข้อมูลที่ต้องส่งไปยัง API
@@ -350,11 +350,11 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('file', file);
 
             // ระบุ API URL
-            const apiUrl = endpoint === 'upload_main' ? '../api/upload_file_main.json' : '../api/upload_file_gallery.json';
+            const whichApi = endpointApi === 'upload_main' ? '../api/upload_file_main.json' : '../api/upload_file_gallery.json';
 
             try {
                 // เรียกใช้งาน API ด้วย Fetch
-                const response = await fetch(apiUrl, {
+                const response = await fetch(whichApi, {
                     method: 'POST',
                     credentials: 'include',
                     body: formData,
@@ -468,6 +468,8 @@ require_once __DIR__ . "/../config/configuration.php";
             const inputFile = fileMainInput.files[0]; // รับไฟล์แรกจาก input
             const type = 'main';
 
+            if (!inputFile) return null;
+
             const isFileTypeValid = await checkFileTypeValid(inputFile, 'image');
             if (!isFileTypeValid) return;
 
@@ -479,11 +481,13 @@ require_once __DIR__ . "/../config/configuration.php";
 
             // อัปโหลดไฟล์
             try {
-                const uploadedFilename = await fileUpload(inputFile, 'upload_main');
-                console.log('Main file uploaded successfully:', uploadedFilename);
+                const uploadedFileData = await fileUpload(inputFile, 'upload_main');
+                console.log('Main file uploaded successfully:', uploadedFileData.filename);
 
-                // ทำการแสดงผล Preview
+                // แสดง Preview
                 await handleFilePreview(inputFile, mainContainer);
+
+                return uploadedFileData.filename;
             } catch (error) {
                 console.error('Error uploading main file:', error);
             }
@@ -512,12 +516,12 @@ require_once __DIR__ . "/../config/configuration.php";
         // Main Submit
         async function handleMainSubimt() {
             const linkValue = linkInput.value.trim();
+            const newFile = fileMainInput.files[0];
             const formData = new FormData();
 
             let uploadedFileName = '';
             let isFileDeleted = false;
             const setOldFile = fileMainInput.dataset.oldfile;
-            const newFile = fileMainInput.files[0];
 
             if (isCheck || newFile) {
                 isFileDeleted = true;
@@ -544,16 +548,22 @@ require_once __DIR__ . "/../config/configuration.php";
                     // ถ้าเป็น .heic แปลงเป็น .jpg ก่อน
                     if (fileExtension === 'heic') {
                         const convertedFile = await convertHeicToJpg(newFile);
-                        if (convertedFile) {
-                            uploadedFileName = await inputMain();
-                            // uploadedFileName = await uploadNewFile(convertedFile, currentId);
-                        } else {
-                            throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
-                        }
+                        uploadedFileName = await inputMain(convertedFile);
+
+                        // if (convertedFile) {
+                        //     uploadedFileName = await inputMain();
+                        //     // uploadedFileName = await uploadNewFile(convertedFile, currentId);
+                        // } else {
+                        //     throw new Error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว');
+                        // }
                     } else {
                         // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
                         uploadedFileName = await inputMain();
                         // uploadedFileName = await uploadNewFile(newFile, currentId);
+                    }
+
+                    if (!uploadedFileName) {
+                        throw new Error('อัปโหลดไฟล์ล้มเหลว');
                     }
 
                     displayItemData({
@@ -1132,11 +1142,12 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // Update Main Fetch API
-        async function updateItemData(currentId, linkValue, file = null) {
+        async function updateItemData(currentId, linkValue, uploadedFileName) {
             const formData = new FormData(slideForm);
             formData.append('id', currentId);
             formData.append('category', 'slide');
             formData.append('action', 'update_data');
+            formData.append('currentFile', currentFile);
 
             if (formData.has('link')) {
                 formData.delete('link');
@@ -1146,21 +1157,21 @@ require_once __DIR__ . "/../config/configuration.php";
                 formData.append('link', linkValue);
             }
 
-            if (file) {
-                try {
-                    const uploadedFileData = await fileUpload(file, 'upload_main');
-                    const uploadedFileName = uploadedFileData.filename;
+            // if (uploadedFileName) {
+            //     try {
+            //         const uploadedFileData = await fileUpload(uploadedFileName, 'upload_main');
+            //         const uploadedFileName = uploadedFileData.filename;
 
-                    console.log('Uploaded file name:', uploadedFileName);
+            //         console.log('Uploaded file name:', uploadedFileName);
 
-                    if (uploadedFileName) {
-                        formData.append('filename', uploadedFileName);
-                    }
-                } catch (error) {
-                    console.error('File upload failed:', error);
-                    return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
-                }
-            }
+            //         if (uploadedFileName) {
+            //             formData.append('filename', uploadedFileName);
+            //         }
+            //     } catch (error) {
+            //         console.error('File upload failed:', error);
+            //         return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
+            //     }
+            // }
 
             try {
                 const response = await fetch('../api/update_main_api.json', {
@@ -1209,33 +1220,6 @@ require_once __DIR__ . "/../config/configuration.php";
             //     mainContainer.src = pathUrlFile;
             // }
         }
-
-        // fileupload('test', '/../api/slide_api_updateitem.php')
-
-        // async function fileupload(file, enpointApi) {
-        //     const formData = new FormData();
-        //     formData.append('id', currentId);
-        //     formData.append('category', 'slide');
-        //     formData.append('action', 'uploadFile');
-        //     formData.append('webName', webName);
-        //     formData.append('currentFile', currentFile);
-        //     formData.append('file', file);
-
-        //     const response = await fetch(enpointApi, {
-        //         method: 'POST',
-        //         credentials: 'include',
-        //         body: formData,
-        //     });
-
-        //     const result = await response.json();
-
-        //     if (!result.result) {
-        //         throw new Error('Upload failed: ' + result.message);
-        //     }
-
-        //     return result.data;
-
-        // }
 
         //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Gallery Data
