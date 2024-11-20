@@ -845,8 +845,8 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Display dataSet
         function displayItemData(item, type) {
-
             if (type === "main") {
+                console.log('display', item.filename);
                 if (item.filename) {
                     // จัดการสำหรับ fileMainInput
                     fileMainInput.dataset.oldfile = item.filename;
@@ -1189,10 +1189,10 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (!result.result) {
                     throw new Error('Update failed: ' + result.message);
                 }
-
+                console.log(result.data.info.filename);
                 // อัปเดต UI ถ้ามีไฟล์ใหม่
-                if (result.filename) {
-                    const pathUrlFile = genUrlPath(result.filename, 'slide');
+                if (result.data.info.filename) {
+                    const pathUrlFile = genUrlPath(result.data.info.filename, 'slide');
                     mainContainer.src = pathUrlFile;
                 }
             } catch (error) {
