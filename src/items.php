@@ -407,132 +407,40 @@ require_once __DIR__ . "/../config/configuration.php";
 
                 // อัปโหลดไฟล์
                 try {
+                    // อัปโหลดไฟล์
                     const uploadedFilename = await fileUpload(file, 'upload_gallery');
                     console.log('Gallery file uploaded successfully:', uploadedFilename);
 
                     // Clone และแสดงผลใน Gallery
-                    const clonedItem = await cloneChildElement(galleryContainer, galleryAdd);
-                    const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
-                    await handleFilePreview(file, null, imagePreview);
+                    const clonedItem = await cloneChildElement(galleryContainer, galleryAdd)
+                        .then((clonedItem) => {
+                            const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
+                            return handleFilePreview(file, null, imagePreview).then(() => clonedItem);
+                        })
+                        .catch((error) => {
+                            console.error('Error during cloning or previewing:', error);
+                            return null;
+                        });
 
-                    manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
-                    buttonDeleteGallery.classList.remove('hidden');
+                    if (clonedItem) {
+                        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+                        buttonDeleteGallery.classList.remove('hidden');
+                    }
                 } catch (error) {
                     console.error('Error uploading gallery file:', error);
                 }
+                //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
+                //TODO Clone และเพิ่ม preview ลงใน Gallery Container
             }
         }
-        // async function inputGallery(addGalleryInput) {
-        //     const inputGalleryFiles = addGalleryInput.files;
-        //     const type = 'gallery';
-
-        //     removeDefaultImages(galleryStorage, buttonDeleteGallery);
-
-        //     for (const file of inputGalleryFiles) {
-        //         const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
-        //         if (!isFileTypeValid) return;
-
-        //         const isMaxFileValid = await checkMaxFileValid(inputGalleryFiles, currentGalSizeFile, 'gallery');
-        //         if (!isMaxFileValid) return;
-
-        //         const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery'); // เช็คแต่ละไฟล์แยก
-        //         if (!isMaxSizeValid) return;
-
-        //         cloneChildElement(galleryContainer, galleryAdd)
-        //             .then(clonedItem => {
-        //                 // หลังจาก clone เสร็จ ให้แสดง preview ของรูปภาพ
-        //                 const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
-
-        //                 // ตรวจสอบว่าพบ checkbox ก่อนที่จะตั้งค่า attribute
-        //                 const checkbox = clonedItem.querySelector('input[type="checkbox"]');
-        //                 if (checkbox) {
-        //                     checkbox.setAttribute('data-check-slide', 'gallery');
-        //                 } else {
-        //                     console.warn("Checkbox not found in cloned item");
-        //                 }
-
-        //                 return handleFilePreview(file, null, imagePreview);
-        //             })
-        //             .then(() => {
-        //                 // ตรวจสอบและอัปเดตสถานะของ checkbox หลังจากเพิ่มไอเท็มใหม่
-        //                 const selectAllGalleryCheckbox = document.querySelector('[select-all-gal]');
-        //                 const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-
-        //                 // อัปเดตปุ่ม delete และ checkbox โดยตรงจาก manageCheckedDelete
-        //                 manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
-
-        //                 buttonDeleteGallery.classList.remove('hidden');
-        //             })
-        //             .catch(error => {
-        //                 console.error("Error during gallery item clone or preview:", error);
-        //             });
-
-        //         //TODO .then catch ตรงนี้ เพื่อ เรียกใช้ cloneChildElement ก่อน แล้วค่อยให้ทำงาน imagePreview ต่อ
-        //         // Clone และเพิ่ม preview ลงใน Gallery Container
-
-
-        //     }
-        // }
 
         // Submit Gallery
         async function handleGallerySubmit() {
             const inputGalleryFiles = addGalleryInput.files;
-            let uploadedGalFiles = [];
-            const imageGalleryElement = document.querySelector('[data-image-gallery]');
 
             try {
-                for (const file of inputGalleryFiles) {
-
-                    // ตรวจสอบนามสกุลไฟล์
-                    const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
-                    if (!isFileTypeValid) {
-                        console.warn(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
-                        continue;
-                    }
-
-                    // ตรวจสอบขนาดไฟล์
-                    const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery');
-                    if (!isMaxSizeValid) {
-                        console.warn(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
-                        continue;
-                    }
-
-                    try {
-                        if (isFileTypeValid && isMaxSizeValid) {
-
-                            let uploadedFileName = '';
-
-                            if (file.name.toLowerCase().endsWith('.heic')) {
-                                const convertedFile = await convertHeicToJpg(file);
-                                if (convertedFile) {
-                                    uploadedFileName = await inputMain();
-                                    // uploadedFileName = await uploadNewFile(convertedFile);
-                                } else {
-                                    console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
-                                }
-                            } else {
-                                uploadedFileName = await inputMain();
-                                // uploadedFileName = await uploadNewFile(file);
-                            }
-                            uploadedGalFiles.push({
-                                name: uploadedFileName,
-                                file,
-                                link: ''
-                            });
-
-                            // Clone และแสดง Preview
-                            const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
-                            await handleFilePreview(file, null, clonedElement.querySelector('[data-image-gallery]'));
-
-                        } else {
-                            console.warn(`ไฟล์ ${file.name} ไม่ผ่านการตรวจสอบ`);
-                        }
-
-                    } catch (error) {
-                        console.error(`Error uploading file ${file.name}:`, error);
-                    }
-
-                }
+                // วนลูปเก็บข้อมูลไฟล์ที่ผ่านการตรวจสอบ
+                const uploadedGalFiles = await galleryLoop(inputGalleryFiles);
 
                 if (uploadedGalFiles.length > 0) {
                     console.log('ไฟล์ทั้งหมดที่อัปโหลด:', uploadedGalFiles);
@@ -540,24 +448,29 @@ require_once __DIR__ . "/../config/configuration.php";
                     // ลบภาพ default
                     removeDefaultImages(galleryStorage, buttonDeleteGallery);
 
-                    // ลูปผ่าน result.data.info เพื่อแสดงผลใน storage
+                    // อัปเดตข้อมูลไฟล์ใน Gallery
                     for (const fileData of uploadedGalFiles) {
+                        const updatedLink = await updateGalleryItemData(currentId, fileData.link || '', fileData.name);
 
-                        // await updateGalleryItemData(fileData.id, fileData.link, fileData.name);
+                        // เพิ่มข้อมูล link ที่ได้จาก updateGalleryItemData
+                        fileData.link = updatedLink;
 
+                        // แสดงข้อมูลใน storage
                         displayItemData({
                             filename: fileData.name,
-                            filepath: fileData.path,
-                            link: fileData.link || '', // เพิ่ม link ถ้ามี
+                            filepath: updatedLink,
+                            link: fileData.link,
                         }, 'gallery');
 
-                        // อัปเดตข้อมูลใน Gallery
-                        await updateGalleryItemData(currentId, fileData.link || '', fileData.name);
+                        // แสดง Preview ของไฟล์
+                        const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
+                        await handleFilePreview(fileData.file, null, clonedElement.querySelector('[data-image-gallery]'));
                     }
 
                     // แสดงภาพแรกใน Gallery
                     if (uploadedGalFiles.length > 0) {
-                        imageGalleryElement.src = uploadedGalFiles[0].path;
+                        const imageGalleryElement = document.querySelector('[data-image-gallery]');
+                        imageGalleryElement.src = uploadedGalFiles[0].link;
                     }
 
                     // ปิด Modal
@@ -566,10 +479,55 @@ require_once __DIR__ . "/../config/configuration.php";
                     console.warn("ไม่มีไฟล์ที่ผ่านการตรวจสอบหรืออัปโหลดสำเร็จ");
                     alert("ไม่มีไฟล์ที่ผ่านเกณฑ์ กรุณาตรวจสอบไฟล์ของคุณ");
                 }
-
             } catch (error) {
                 console.error('Error during gallery submit:', error);
             }
+        }
+
+        // ฟังก์ชันสำหรับวนลูปไฟล์จาก inputGalleryFiles และเก็บข้อมูลไฟล์ที่ผ่านการตรวจสอบ
+        async function galleryLoop(inputGalleryFiles) {
+            const uploadedGalFiles = [];
+            for (const file of inputGalleryFiles) {
+                // ตรวจสอบประเภทไฟล์
+                const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
+                if (!isFileTypeValid) {
+                    console.warn(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
+                    continue;
+                }
+
+                // ตรวจสอบขนาดไฟล์
+                const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery');
+                if (!isMaxSizeValid) {
+                    console.warn(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
+                    continue;
+                }
+
+                // อัปโหลดไฟล์
+                try {
+                    let uploadedFileName = '';
+
+                    if (file.name.toLowerCase().endsWith('.heic')) {
+                        const convertedFile = await convertHeicToJpg(file);
+                        if (convertedFile) {
+                            uploadedFileName = await inputMain();
+                        } else {
+                            console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
+                            continue;
+                        }
+                    } else {
+                        uploadedFileName = await inputMain();
+                    }
+
+                    uploadedGalFiles.push({
+                        name: uploadedFileName,
+                        file,
+                        link: '' // จะอัปเดต link ภายหลัง
+                    });
+                } catch (error) {
+                    console.error(`Error uploading file ${file.name}:`, error);
+                }
+            }
+            return uploadedGalFiles;
         }
 
         // Input Main
@@ -1205,28 +1163,28 @@ require_once __DIR__ . "/../config/configuration.php";
                 formData.append('link', linkValue);
             }
 
-            // if (uploadedFileName instanceof File) {
-            //     try {
-            //         // อัปโหลดไฟล์และดึงข้อมูลไฟล์ที่อัปโหลดสำเร็จ
-            //         const uploadedFileData = await fileUpload(uploadedFileName, 'upload_gallery');
-            //         const newUploadedFileName = uploadedFileData.filename;
+            if (uploadedFileName instanceof File) {
+                try {
+                    // อัปโหลดไฟล์และดึงข้อมูลไฟล์ที่อัปโหลดสำเร็จ
+                    const uploadedFileData = await fileUpload(uploadedFileName, 'upload_gallery');
+                    const newUploadedFileName = uploadedFileData.filename;
 
-            //         console.log('Uploaded file name:', newUploadedFileName);
+                    console.log('Uploaded file name:', newUploadedFileName);
 
-            //         if (newUploadedFileName) {
-            //             formData.append('filename', newUploadedFileName);
-            //         }
-            //     } catch (error) {
-            //         console.error('File upload failed:', error);
-            //         return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
-            //     }
-            // } else if (uploadedFileName) {
-            //     // หากไฟล์เป็น string (ไม่ได้อัปโหลดใหม่) เพิ่มเข้า FormData
-            //     formData.append('filename', uploadedFileName);
-            // }
+                    if (newUploadedFileName) {
+                        formData.append('filename', newUploadedFileName);
+                    }
+                } catch (error) {
+                    console.error('File upload failed:', error);
+                    return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
+                }
+            } else if (uploadedFileName) {
+                // หากไฟล์เป็น string (ไม่ได้อัปโหลดใหม่) เพิ่มเข้า FormData
+                formData.append('filename', uploadedFileName);
+            }
 
             try {
-                const response = await fetch('../api/update_gallery_api.php', {
+                const response = await fetch('../api/update_gallery_api.json', {
                     method: 'POST',
                     credentials: 'include',
                     body: formData,
@@ -1242,26 +1200,32 @@ require_once __DIR__ . "/../config/configuration.php";
                     throw new Error('Update failed: ' + result.message);
                 }
 
+
                 // อัปเดต UI สำหรับภาพ Gallery
-                if (result.data && result.data.filename) {
-                    const newImagePath = genUrlPath(result.data.filename, 'gallery');
-                    const targetImage = document.querySelector(`[data-gallery-id="${currentId}"] [data-image-gallery]`);
+                if (result.data && result.data.gallery) {
+                    result.data.gallery.forEach((item) => {
+                        // สร้าง URL ของภาพใหม่
+                        const newImagePath = genUrlPath(item.filename, 'gallery');
 
-                    if (targetImage) {
-                        targetImage.src = newImagePath;
-                    } else {
-                        console.warn(`ไม่พบ targetImage สำหรับ ID: ${currentId}`);
-                    }
-                }
+                        // อัปเดต DOM ของ Gallery Item
+                        const targetImage = document.querySelector(`[data-gallery-id="${item.id}"] [data-image-gallery]`);
+                        console.log('targetImage', targetImage);
+                        if (targetImage) {
+                            targetImage.src = newImagePath;
+                        } else {
+                            console.warn(`ไม่พบ targetImage สำหรับ ID: ${item.id}`);
+                        }
 
-                // อัปเดต UI สำหรับลิงก์
-                if (linkValue) {
-                    const targetLink = document.querySelector(`[data-gallery-id="${currentId}"] [data-gallery-link]`);
-                    if (targetLink) {
-                        targetLink.href = linkValue;
-                    } else {
-                        console.warn(`ไม่พบ targetLink สำหรับ ID: ${currentId}`);
-                    }
+                        // อัปเดตลิงก์
+                        if (item.link) {
+                            const targetLink = document.querySelector(`[data-gallery-id="${item.id}"] [data-gallery-link]`);
+                            if (targetLink) {
+                                targetLink.href = item.link;
+                            } else {
+                                console.warn(`ไม่พบ targetLink สำหรับ ID: ${item.id}`);
+                            }
+                        }
+                    });
                 }
 
                 console.log(`Gallery item ${currentId} updated successfully`);
