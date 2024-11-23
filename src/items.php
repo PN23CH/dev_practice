@@ -339,7 +339,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Input Button
         async function fileUpload(file, endpointApi) {
-
+            // console.log('fileUpload called with:', { file, endpointApi });
             if (!file || !(file instanceof File)) {
                 throw new Error('Invalid file provided');
             }
@@ -347,6 +347,8 @@ require_once __DIR__ . "/../config/configuration.php";
             if (!endpointApi || (endpointApi !== 'upload_main' && endpointApi !== 'upload_gallery')) {
                 throw new Error('Invalid endpointApi specified');
             }
+
+            // console.log('endpointApi', endpointApi);
 
             const formData = new FormData();
             // กำหนดข้อมูลที่ต้องส่งไปยัง API
@@ -359,6 +361,8 @@ require_once __DIR__ . "/../config/configuration.php";
 
             // ระบุ API URL
             const whichApi = endpointApi === 'upload_main' ? '../api/upload_file_main.json' : '../api/upload_file_gallery.json';
+
+            // console.log('whichApi', whichApi);
 
             try {
                 // เรียกใช้งาน API ด้วย Fetch
@@ -381,6 +385,8 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (!result.data || !result.data.filename) {
                     throw new Error('Response missing file data');
                 }
+
+                console.log('WHAT IS result.data', result.data);
 
                 return result.data; // ส่งคืนชื่อไฟล์ที่อัปโหลดสำเร็จ
             } catch (error) {
@@ -409,7 +415,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 try {
                     // อัปโหลดไฟล์
                     const uploadedFilename = await fileUpload(file, 'upload_gallery');
-                    console.log('Gallery file uploaded successfully:', uploadedFilename);
+                    // console.log('Gallery file uploaded successfully:', uploadedFilename);
 
                     // Clone และแสดงผลใน Gallery
                     const clonedItem = await cloneChildElement(galleryContainer, galleryAdd)
@@ -437,40 +443,36 @@ require_once __DIR__ . "/../config/configuration.php";
         // Submit Gallery
         async function handleGallerySubmit() {
             const inputGalleryFiles = addGalleryInput.files;
+            console.log('inputGalleryFiles', inputGalleryFiles);
 
             try {
                 // วนลูปเก็บข้อมูลไฟล์ที่ผ่านการตรวจสอบ
                 const uploadedGalFiles = await galleryLoop(inputGalleryFiles);
-
+                console.log('uploadedGalFiles:', uploadedGalFiles);
                 if (uploadedGalFiles.length > 0) {
-                    console.log('ไฟล์ทั้งหมดที่อัปโหลด:', uploadedGalFiles);
+                    // console.log('ไฟล์ทั้งหมดที่อัปโหลด:', uploadedGalFiles);
 
                     // ลบภาพ default
                     removeDefaultImages(galleryStorage, buttonDeleteGallery);
-
+                    
                     // อัปเดตข้อมูลไฟล์ใน Gallery
                     for (const fileData of uploadedGalFiles) {
-                        const updatedLink = await updateGalleryItemData(currentId, fileData.link || '', fileData.name);
+                        console.log('fileData', fileData.file);
+                        const updatedLink = await updateGalleryItemData(currentId, fileData.file.link || '', fileData.file.name);
 
                         // เพิ่มข้อมูล link ที่ได้จาก updateGalleryItemData
-                        fileData.link = updatedLink;
+                        fileData.file.link = updatedLink;
 
                         // แสดงข้อมูลใน storage
                         displayItemData({
-                            filename: fileData.name,
+                            filename: fileData.file.name,
                             filepath: updatedLink,
-                            link: fileData.link,
+                            link: fileData.file.link,
                         }, 'gallery');
 
                         // แสดง Preview ของไฟล์
                         const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
                         await handleFilePreview(fileData.file, null, clonedElement.querySelector('[data-image-gallery]'));
-                    }
-
-                    // แสดงภาพแรกใน Gallery
-                    if (uploadedGalFiles.length > 0) {
-                        const imageGalleryElement = document.querySelector('[data-image-gallery]');
-                        imageGalleryElement.src = uploadedGalFiles[0].link;
                     }
 
                     // ปิด Modal
@@ -501,28 +503,30 @@ require_once __DIR__ . "/../config/configuration.php";
                     console.warn(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
                     continue;
                 }
-
+                // console.log('file', file);
                 // อัปโหลดไฟล์
                 try {
                     let uploadedFileName = '';
+                    let linkUpdate = '';
 
                     if (file.name.toLowerCase().endsWith('.heic')) {
                         const convertedFile = await convertHeicToJpg(file);
                         if (convertedFile) {
-                            uploadedFileName = await inputMain();
+                            uploadedFileName = await inputGallery(addGalleryInput);
                         } else {
                             console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
                             continue;
                         }
                     } else {
-                        uploadedFileName = await inputMain();
+                        uploadedFileName = await inputGallery(addGalleryInput);
                     }
 
                     uploadedGalFiles.push({
                         name: uploadedFileName,
                         file,
-                        link: '' // จะอัปเดต link ภายหลัง
+                        link: linkUpdate // จะอัปเดต link ภายหลัง
                     });
+                    // console.log('uploadedFileName', uploadedFileName);
                 } catch (error) {
                     console.error(`Error uploading file ${file.name}:`, error);
                 }
@@ -709,22 +713,33 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Preview Image
         async function handleFilePreview(file, mainContainer, galleryImagePreview) {
+
+            if (!file) {
+                console.error('Invalid file: File is null or undefined');
+                return; // ออกจากฟังก์ชันทันที
+            }
+
             let imgPreview = '';
-            if (file.name.toLowerCase().endsWith('.heic')) {
-                const convertedFile = await convertHeicToJpg(file);
-                if (convertedFile) {
-                    imgPreview = URL.createObjectURL(convertedFile);
+
+            try {
+                if (file.name.toLowerCase().endsWith('.heic')) {
+                    const convertedFile = await convertHeicToJpg(file);
+                    if (convertedFile) {
+                        imgPreview = URL.createObjectURL(convertedFile);
+                    }
+                } else {
+                    imgPreview = URL.createObjectURL(file);
                 }
-            } else {
-                imgPreview = URL.createObjectURL(file);
-            }
-            // แสดงผลใน Main Preview
-            if (mainContainer) {
-                mainContainer.src = imgPreview;
-            }
-            // แสดงผลใน Gallery Preview
-            if (galleryImagePreview) {
-                galleryImagePreview.src = imgPreview;
+                // แสดงผลใน Main Preview
+                if (mainContainer) {
+                    mainContainer.src = imgPreview;
+                }
+                // แสดงผลใน Gallery Preview
+                if (galleryImagePreview) {
+                    galleryImagePreview.src = imgPreview;
+                }
+            } catch (error) {
+                console.error('Error in handleFilePreview:', error);
             }
         }
 
@@ -807,6 +822,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Display dataSet
         function displayItemData(item, type) {
+
             if (type === "main") {
                 if (item.filename) {
                     // จัดการสำหรับ fileMainInput
@@ -834,18 +850,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     linkInputGallery.value = item.link || '';
                 }
             }
-            // if (item.filename) {
-            //     // dataset old file
-            //     fileMainInput.dataset.oldfile = item.filename;
-            //     pathUrlFile = genUrlPath(item.filename, category);
-            //     mainContainer.src = pathUrlFile;
-            // }
-
-            // const linkInput = document.querySelector('[data-link]');
-            // if (item.link && linkInput) {
-            //     linkInput.value = item.link || '';
-            //     updateCharacterCount();
-            // }
         }
 
         // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
@@ -1082,6 +1086,11 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Update Main Fetch API
         async function updateItemData(currentId, linkValue, uploadedFileName) {
+            console.log('updateItemData called with:', {
+                currentId,
+                linkValue,
+                uploadedFileName
+            });
             const formData = new FormData(slideForm);
             formData.append('id', currentId);
             formData.append('category', 'slide');
@@ -1149,38 +1158,37 @@ require_once __DIR__ . "/../config/configuration.php";
 
         //TODO ทำฟังก์ชั่น updateData ของ Gallery แยก ลักษณะคล้ายๆ กัน ส่ง data ที่ update เป็น json
         // Update Gallery Fetch API
-        async function updateGalleryItemData(currentId, linkValue, uploadedFileName) {
-            const formData = new FormData();
+        async function updateGalleryItemData(currentId, linkValue, uploadedGallFileName) {
+            console.log('updateGalleryItemData called with:', {
+                currentId,
+                linkValue,
+                uploadedGallFileName
+            });
+            const formData = new FormData(slideForm);
             formData.append('id', currentId);
             formData.append('dataType', 'gallery');
-            formData.append('action', 'updateItem');
-
-            if (uploadedFileName) {
-                formData.append('filename', uploadedFileName);
-            }
+            formData.append('action', 'update_data_gallery');
+            formData.append('uploadedFileName', uploadedGallFileName);
 
             if (linkValue) {
                 formData.append('link', linkValue);
             }
 
-            if (uploadedFileName instanceof File) {
+            if (uploadedGallFileName instanceof File) {
                 try {
                     // อัปโหลดไฟล์และดึงข้อมูลไฟล์ที่อัปโหลดสำเร็จ
-                    const uploadedFileData = await fileUpload(uploadedFileName, 'upload_gallery');
-                    const newUploadedFileName = uploadedFileData.filename;
+                    const uploadedGalFileData = await fileUpload(uploadedGallFileName, 'upload_gallery');
+                    const newUploadedGalFileName = uploadedGalFileData.filename;
 
-                    console.log('Uploaded file name:', newUploadedFileName);
+                    console.log('Uploaded file name:', newUploadedGalFileName);
 
-                    if (newUploadedFileName) {
-                        formData.append('filename', newUploadedFileName);
+                    if (newUploadedGalFileName) {
+                        formData.append('filename', newUploadedGalFileName);
                     }
                 } catch (error) {
                     console.error('File upload failed:', error);
                     return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
                 }
-            } else if (uploadedFileName) {
-                // หากไฟล์เป็น string (ไม่ได้อัปโหลดใหม่) เพิ่มเข้า FormData
-                formData.append('filename', uploadedFileName);
             }
 
             try {
@@ -1200,32 +1208,21 @@ require_once __DIR__ . "/../config/configuration.php";
                     throw new Error('Update failed: ' + result.message);
                 }
 
-
                 // อัปเดต UI สำหรับภาพ Gallery
                 if (result.data && result.data.gallery) {
-                    result.data.gallery.forEach((item) => {
-                        // สร้าง URL ของภาพใหม่
-                        const newImagePath = genUrlPath(item.filename, 'gallery');
+                    for (const item of result.data.gallery) {
 
-                        // อัปเดต DOM ของ Gallery Item
-                        const targetImage = document.querySelector(`[data-gallery-id="${item.id}"] [data-image-gallery]`);
-                        console.log('targetImage', targetImage);
-                        if (targetImage) {
-                            targetImage.src = newImagePath;
-                        } else {
-                            console.warn(`ไม่พบ targetImage สำหรับ ID: ${item.id}`);
-                        }
+                        // เพิ่มข้อมูลที่ได้จาก API ลงใน storage
+                        displayItemData({
+                                filename: item.filename,
+                                filepath: item.filepath,
+                                link: item.link,
+                                dateAdd: item.dateAdd,
+                            },
+                            'gallery'
+                        );
 
-                        // อัปเดตลิงก์
-                        if (item.link) {
-                            const targetLink = document.querySelector(`[data-gallery-id="${item.id}"] [data-gallery-link]`);
-                            if (targetLink) {
-                                targetLink.href = item.link;
-                            } else {
-                                console.warn(`ไม่พบ targetLink สำหรับ ID: ${item.id}`);
-                            }
-                        }
-                    });
+                    }
                 }
 
                 console.log(`Gallery item ${currentId} updated successfully`);
