@@ -817,6 +817,83 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error('Error updating gallery item:', error);
             }
         }
+
+        // Display dataSet
+        function displayItemData(item, type) {
+            // Main Image
+            if (type === "main") {
+                if (item.filename) {
+                    // จัดการสำหรับ fileMainInput
+                    fileMainInput.dataset.oldfile = item.filename;
+                    const pathUrlMainFile = genUrlPath(item.filename, 'slide');
+                    mainContainer.src = pathUrlMainFile;
+                }
+
+                const linkInput = document.querySelector('[data-link]');
+                if (item.link && linkInput) {
+                    linkInput.value = item.link || '';
+                    updateCharacterCount();
+                }
+
+                // Gallery Image
+            } else if (type === "gallery") {
+                if (item.filename) {
+                    // Clone gallery item from template
+                    const cloneItemGallery = galleryItem.cloneNode(true);
+                    cloneItemGallery.classList.remove('hidden'); // แสดงไอเทม
+
+                    // Update clone data
+                    const imgElement = cloneItemGallery.querySelector('[data-image-gallery]');
+                    if (imgElement) {
+                        imgElement.src = genUrlPath(item.filename, 'slide');
+                        imgElement.alt = `Image of ${item.filename}`;
+                    }
+
+                    const inputSequent = cloneItemGallery.querySelector('[data-item-sequent]');
+                    if (inputSequent) {
+                        inputSequent.value = item.id || ''; // ID ของ item
+                    }
+
+                    const inputLink = cloneItemGallery.querySelector('[data-link-gallery]');
+                    if (inputLink) {
+                        inputLink.value = item.link || '';
+                    }
+
+                    // Append clone to galleryStorage
+                    galleryStorage.appendChild(cloneItemGallery);
+                }
+
+                const linkInputGallery = document.querySelector('[data-link-gallery]');
+                if (item.link && linkInputGallery) {
+                    linkInputGallery.value = item.link || '';
+                }
+
+                const inputLastSequent = document.querySelector(`input[data-item-last-sequent]`);
+                // อัปเดตลำดับ
+                updateSequentValues();
+
+                // Sortable-gallery-items
+                const sortable = new Sortable(galleryStorage, {
+                    animation: 150,
+                    ghostClass: 'sortable-gallery',
+                    onEnd: function(evt) {
+                        const items = galleryStorage.querySelectorAll('div[data-image="item-gallery"]');
+
+                        items.forEach((item, index) => {
+                            const sequentInput = item.querySelector('input[data-item-last-sequent]');
+                            if (sequentInput) {
+                                sequentInput.value = index + 1; // ลำดับเริ่มต้นที่ 1
+                                // sequentLabel.textContent = index + 1;
+                                // sequentLabel.setAttribute('data-item-sequent', index + 1);
+                            }
+                        });
+                        console.log("Items reordered successfully!");
+                    }
+                });
+
+            }
+        }
+
         // Delete Main Fetch API
         async function deleteOldFile(currentFile, setOldFile) {
             const formData = new FormData();
@@ -994,82 +1071,6 @@ require_once __DIR__ . "/../config/configuration.php";
         function updateCharacterCount() {
             const characterCount = linkInput.value.length;
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
-        }
-
-        // Display dataSet
-        function displayItemData(item, type) {
-            // Main Image
-            if (type === "main") {
-                if (item.filename) {
-                    // จัดการสำหรับ fileMainInput
-                    fileMainInput.dataset.oldfile = item.filename;
-                    const pathUrlMainFile = genUrlPath(item.filename, 'slide');
-                    mainContainer.src = pathUrlMainFile;
-                }
-
-                const linkInput = document.querySelector('[data-link]');
-                if (item.link && linkInput) {
-                    linkInput.value = item.link || '';
-                    updateCharacterCount();
-                }
-
-                // Gallery Image
-            } else if (type === "gallery") {
-                if (item.filename) {
-                    // Clone gallery item from template
-                    const cloneItemGallery = galleryItem.cloneNode(true);
-                    cloneItemGallery.classList.remove('hidden'); // แสดงไอเทม
-
-                    // Update clone data
-                    const imgElement = cloneItemGallery.querySelector('[data-image-gallery]');
-                    if (imgElement) {
-                        imgElement.src = genUrlPath(item.filename, 'slide');
-                        imgElement.alt = `Image of ${item.filename}`;
-                    }
-
-                    const inputSequent = cloneItemGallery.querySelector('[data-item-sequent]');
-                    if (inputSequent) {
-                        inputSequent.value = item.id || ''; // ID ของ item
-                    }
-
-                    const inputLink = cloneItemGallery.querySelector('[data-link-gallery]');
-                    if (inputLink) {
-                        inputLink.value = item.link || '';
-                    }
-
-                    // Append clone to galleryStorage
-                    galleryStorage.appendChild(cloneItemGallery);
-                }
-
-                const linkInputGallery = document.querySelector('[data-link-gallery]');
-                if (item.link && linkInputGallery) {
-                    linkInputGallery.value = item.link || '';
-                }
-
-                const inputLastSequent = document.querySelector(`input[data-item-last-sequent]`);
-                // อัปเดตลำดับ
-                updateSequentValues();
-
-                // Sortable-gallery-items
-                const sortable = new Sortable(galleryStorage, {
-                    animation: 150,
-                    ghostClass: 'sortable-gallery',
-                    onEnd: function(evt) {
-                        const items = galleryStorage.querySelectorAll('div[data-image="item-gallery"]');
-
-                        items.forEach((item, index) => {
-                            const sequentInput = item.querySelector('input[data-item-last-sequent]');
-                            if (sequentInput) {
-                                sequentInput.value = index + 1; // ลำดับเริ่มต้นที่ 1
-                                // sequentLabel.textContent = index + 1;
-                                // sequentLabel.setAttribute('data-item-sequent', index + 1);
-                            }
-                        });
-                        console.log("Items reordered successfully!");
-                    }
-                });
-
-            }
         }
 
         function updateSequentValues() {
