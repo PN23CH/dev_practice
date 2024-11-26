@@ -29,6 +29,11 @@ require_once __DIR__ . "/../config/configuration.php";
     body {
         font-family: "Sarabun", sans-serif;
     }
+
+    .sortable-ghost {
+        opacity: 0.5;
+        border: 2px dashed #000;
+    }
 </style>
 
 <body class="bg-white w-full h-full flex flex-col">
@@ -278,7 +283,7 @@ require_once __DIR__ . "/../config/configuration.php";
             modalAddGal.classList.toggle('hidden', !isOpen);
             modalAddGal.classList.toggle('flex', isOpen);
         };
-        
+
         // Fetch refresh load
         fetchItemData(currentId);
 
@@ -1011,20 +1016,15 @@ require_once __DIR__ . "/../config/configuration.php";
                 // Gallery Image
             } else if (type === "gallery") {
                 if (item.filename) {
-                    console.log('item.filename', item.filename);
-                    // console.log('GALLERYITEM', galleryItem);
                     // Clone gallery item from template
                     const cloneItemGallery = galleryItem.cloneNode(true);
-                    // console.log('CLONE????????' , cloneItemGallery);
                     cloneItemGallery.classList.remove('hidden'); // แสดงไอเทม
 
                     // Update clone data
-                    const imgElement = cloneItemGallery.querySelector('[data-pre-image="gallery"]');
-                    console.log('imgElement', imgElement);
+                    const imgElement = cloneItemGallery.querySelector('[data-image-gallery]');
                     if (imgElement) {
                         imgElement.src = genUrlPath(item.filename, 'slide');
                         imgElement.alt = `Image of ${item.filename}`;
-                        console.log('SRCCCCCCCCCCCCCCCC' , imgElement.src);
                     }
 
                     const inputSequent = cloneItemGallery.querySelector('[data-item-sequent]');
@@ -1037,55 +1037,50 @@ require_once __DIR__ . "/../config/configuration.php";
                         inputLink.value = item.link || '';
                     }
 
-                    // console.log('CLONEEEEEEEEEEEE' , cloneItemGallery);
-
-                    // Append clone to galleryContainer
-                    galleryContainer.appendChild(cloneItemGallery);
-
-                    // console.log('APPENNNNNNNNNNNNNNN' , galleryContainer);
+                    // Append clone to galleryStorage
+                    galleryStorage.appendChild(cloneItemGallery);
                 }
-
-                // if (item.filename) {
-                //     // จัดการสำหรับ galleryContainer
-                //     const galleryImageElement = document.createElement("img");
-                //     galleryImageElement.src = genUrlPath(item.filename, 'slide');
-                //     galleryImageElement.dataset.imageGallery = true;
-                //     galleryImageElement.dataset.id = item.id; // เก็บ ID ของ galleryItem
-                //     galleryImageElement.dataset.filename = item.filename; // เก็บ filename
-                //     galleryImageElement.dataset.link = item.link; // เก็บ link text
-                //     // galleryContainer.appendChild(galleryImageElement);
-
-                //     if (galleryContainer) {
-                //         galleryContainer.appendChild(galleryImageElement);
-                //     } else {
-                //         console.error('galleryContainer not found');
-                //     }
-                // }
 
                 const linkInputGallery = document.querySelector('[data-link-gallery]');
                 if (item.link && linkInputGallery) {
                     linkInputGallery.value = item.link || '';
                 }
 
-                // const inputLastSequent = document.querySelector(`input[data-item-sequent]`);
+                const inputLastSequent = document.querySelector(`input[data-item-last-sequent]`);
+                // อัปเดตลำดับ
+                updateSequentValues();
 
                 // Sortable-gallery-items
-                // const sortable = new Sortable(containerElement, {
-                //     animation: 150,
-                //     ghostClass: 'sortable-gallery',
-                //     onEnd: function(evt) {
-                //         const items = galleryContainer.querySelectorAll('div[data-image="add-gallery"]');
-                //         items.forEach((item, index) => {
-                //             const sequentLabel = item.querySelector('input[data-item-sequent]');
-                //             if (sequentLabel) {
-                //                 sequentLabel.textContent = index + 1;
-                //                 sequentLabel.setAttribute('data-item-sequent', index + 1);
-                //             }
-                //         });
-                //     }
-                // });
+                const sortable = new Sortable(galleryStorage, {
+                    animation: 150,
+                    ghostClass: 'sortable-gallery',
+                    onEnd: function(evt) {
+                        const items = galleryStorage.querySelectorAll('div[data-image="item-gallery"]');
+
+                        items.forEach((item, index) => {
+                            const sequentInput = item.querySelector('input[data-item-last-sequent]');
+                            if (sequentInput) {
+                                sequentInput.value = index + 1; // ลำดับเริ่มต้นที่ 1
+                                // sequentLabel.textContent = index + 1;
+                                // sequentLabel.setAttribute('data-item-sequent', index + 1);
+                            }
+                        });
+                        console.log("Items reordered successfully!");
+                    }
+                });
 
             }
+        }
+
+        function updateSequentValues() {
+            // เลือก input ทั้งหมดที่เกี่ยวข้องกับ data-item-sequent ใน galleryStorage
+            const inputSequentElements = galleryStorage.querySelectorAll('input[data-item-last-sequent]');
+
+            // วน loop เพื่ออัปเดตค่า
+            inputSequentElements.forEach((input, index) => {
+                // อัปเดต value ด้วยลำดับที่ index + 1
+                input.value = index + 1;
+            });
         }
 
         // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
