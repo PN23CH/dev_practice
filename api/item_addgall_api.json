@@ -4,8 +4,8 @@
     "info": {
       "id": 113,
       "sequent": 1,
-      "filename": "37_201212201056321.jpg",
-      "filepath": "dnm_file/slide/37_201212201056321.jpg",
+      "filename": "sakura.jpg",
+      "filepath": "dnm_file/slide/sakura.jpg",
       "link": "55fgfdgdgdfg",
       "dateAdd": "2024-08-21 14:34:31"
     },
@@ -13,9 +13,9 @@
       {
         "id": 221,
         "sequent": 1,
-        "filename": "sample1.heic",
-        "filepath": "dnm_file/slide/sample1.heic",
-        "link": "aaaaaaaaa",
+        "filename": "37_201212201056321.jpg",
+        "filepath": "dnm_file/slide/37_201212201056321.jpg",
+        "text": "aaaaaaaaa",
         "filesize": "196",
         "category": "gallery"
       },
@@ -24,17 +24,17 @@
         "sequent": 2,
         "filename": "sakura.jpg",
         "filepath": "dnm_file/slide/sakura.jpg",
-        "link": "bbbbbbbbb",
+        "text": "bbbbbbbbb",
         "filesize": "196",
         "category": "gallery"
       },
       {
         "id": 223,
         "sequent": 3,
-        "filename": "sakura2.jpg",
-        "filepath": "dnm_file/slide/sakura2.jpg",
-        "link": "bbbbbbbbb",
-        "filesize": "196",
+        "filename": "gall_1.jpg",
+        "filepath": "dnm_file/slide/gall_1.jpg",
+        "text": "vvvvvvvvvvvv",
+        "filesize": "149",
         "category": "gallery"
       }
     ]

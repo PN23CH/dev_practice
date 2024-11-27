@@ -15,7 +15,7 @@
         "sequent": 1,
         "filename": "37_201212201056321.jpg",
         "filepath": "dnm_file/slide/37_201212201056321.jpg",
-        "link": "aaaaaaaaa",
+        "text": "aaaaaaaaa",
         "filesize": "196",
         "category": "gallery"
       },
@@ -24,16 +24,16 @@
         "sequent": 2,
         "filename": "sakura.jpg",
         "filepath": "dnm_file/slide/sakura.jpg",
-        "link": "bbbbbbbbb",
+        "text": "bbbbbbbbb",
         "filesize": "196",
         "category": "gallery"
       },
       {
-        "id": 222,
-        "sequent": 2,
+        "id": 223,
+        "sequent": 3,
         "filename": "gall_1.jpg",
         "filepath": "dnm_file/slide/gall_1.jpg",
-        "link": "vvvvvvvvvvvv",
+        "text": "vvvvvvvvvvvv",
         "filesize": "149",
         "category": "gallery"
       }

@@ -15,7 +15,7 @@
         "sequent": 1,
         "filename": "37_201212201056321.jpg",
         "filepath": "dnm_file/slide/37_201212201056321.jpg",
-        "link": "aaaaaaaaa",
+        "text": "aaaaaaaaa",
         "filesize": "196",
         "category": "gallery"
       },
@@ -24,7 +24,7 @@
         "sequent": 2,
         "filename": "sakura.jpg",
         "filepath": "dnm_file/slide/sakura.jpg",
-        "link": "bbbbbbbbb",
+        "text": "bbbbbbbbb",
         "filesize": "196",
         "category": "gallery"
       }
