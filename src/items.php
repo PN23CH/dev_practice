@@ -393,7 +393,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Input Main
         async function inputMain() {
-            const inputFile = fileMainInput.files[0]; // รับไฟล์แรกจาก input
+            const inputFile = fileMainInput.files[0];
             const type = 'main';
 
             if (!inputFile) return null;
@@ -461,7 +461,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     } else {
                         // อัปโหลดไฟล์ใหม่ที่ไม่ใช่ .heic
                         uploadedFileName = await inputMain(newFile);
-                        // uploadedFileName = await uploadNewFile(newFile, currentId);
                     }
 
                     if (!uploadedFileName) {
@@ -511,7 +510,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     }
                 } catch (error) {
                     console.error('File upload failed:', error);
-                    return; // หยุดการทำงานหากไฟล์อัปโหลดล้มเหลว
+                    return;
                 }
             } else {
                 console.warn('uploadedFileName is not a File object:', uploadedFileName);
@@ -547,7 +546,6 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // การ Upload ของ File
         async function fileUpload(file, endpointApi) {
-            // console.log('fileUpload called with:', { file, endpointApi });
             if (!file || !(file instanceof File)) {
                 throw new Error('Invalid file provided');
             }
@@ -556,10 +554,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 throw new Error('Invalid endpointApi specified');
             }
 
-            // console.log('endpointApi', endpointApi);
-
             const formData = new FormData();
-            // กำหนดข้อมูลที่ต้องส่งไปยัง API
             formData.append('id', currentId);
             formData.append('category', 'slide');
             formData.append('action', 'uploadFile');
@@ -567,13 +562,9 @@ require_once __DIR__ . "/../config/configuration.php";
             formData.append('currentFile', currentFile);
             formData.append('file', file);
 
-            // ระบุ API URL
             const whichApi = endpointApi === 'upload_main' ? '../api/upload_file_main.json' : '../api/upload_file_gallery.json';
 
-            // console.log('whichApi', whichApi);
-
             try {
-                // เรียกใช้งาน API ด้วย Fetch
                 const response = await fetch(whichApi, {
                     method: 'POST',
                     credentials: 'include',
@@ -594,9 +585,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     throw new Error('Response missing file data');
                 }
 
-                // console.log('WHAT IS result.data', result.data);
-
-                return result.data; // ส่งคืนชื่อไฟล์ที่อัปโหลดสำเร็จ
+                return result.data;
             } catch (error) {
                 console.error('Error uploading file:', error);
                 throw error;
@@ -605,7 +594,6 @@ require_once __DIR__ . "/../config/configuration.php";
 
         // Input Gallery
         async function inputGallery(addGalleryInput) {
-            // const inputGalleryFiles = addGalleryInput.files;
             const inputGalleryFiles = Array.from(addGalleryInput.files);
             const existingFiles = Array.from(galleryStorage.querySelectorAll('[data-image="item-gallery"]'));
 
@@ -649,8 +637,7 @@ require_once __DIR__ . "/../config/configuration.php";
                                 const inputSequent = clonedItem.querySelector('[data-add-sequent]');
                                 console.log('inputSequent', inputSequent);
                                 if (inputSequent) {
-
-                                    inputSequent.value = i; // ID ของ item
+                                    inputSequent.value = i;
                                     i++;
                                 }
 
@@ -665,9 +652,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     } catch (error) {
                         console.error(`Error uploading file ${file.name}:`, error);
                     }
-
-                    // Caption update for add gallery
-                    updateGalleryCaption();
 
                 }
 
@@ -727,7 +711,6 @@ require_once __DIR__ . "/../config/configuration.php";
         async function updateGalleryItemData(currentId, jsonData) {
 
             const formData = new FormData();
-
             formData.append('id', currentId);
             formData.append('dataType', 'gallery');
             formData.append('action', 'update_data_gallery');
@@ -747,7 +730,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (!result.result) {
                     throw new Error('Update failed: ' + result.message);
                 }
-                console.log('UPDATE', result.data);
 
                 return result.data || '';
 
@@ -780,38 +762,36 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.warn("Gallery storage element not found.");
                 return;
             }
-
-            // Apply sortable to the gallery container
+            // Sortable ของเก่า
             new Sortable(galleryStorage, {
                 animation: 150,
                 ghostClass: 'sortable-gallery',
                 filter: 'input, textarea, select, [contenteditable]',
                 preventOnFilter: false, // อนุญาตให้โต้ตอบ input ได้
                 onEnd: function(evt) {
-                    // Reorder sequent values after drag
                     const items = galleryStorage.querySelectorAll('div[data-image="item-gallery"]');
                     items.forEach((item, index) => {
                         const sequentInput = item.querySelector('input[data-sequent]');
                         if (sequentInput) {
-                            sequentInput.value = index + 1; // Update sequence based on the new order
+                            sequentInput.value = index + 1;
                         }
                     });
                     console.log("Items reordered successfully!");
                 }
             });
 
+            // Sortable ของ add
             new Sortable(galleryContainer, {
                 animation: 150,
                 ghostClass: 'sortable-gallery',
                 filter: 'input, textarea, select, [contenteditable]',
                 preventOnFilter: false, // อนุญาตให้โต้ตอบ input ได้
                 onEnd: function(evt) {
-                    // Reorder sequent values after drag
                     const itemsAdd = galleryContainer.querySelectorAll('div[data-image="add-gallery"]');
                     itemsAdd.forEach((item, index) => {
                         const sequentAddInput = item.querySelector('input[data-add-sequent]');
                         if (sequentAddInput) {
-                            sequentAddInput.value = index + 1; // Update sequence based on the new order
+                            sequentAddInput.value = index + 1;
                         }
                     });
                     console.log("Items reordered successfully!");
@@ -824,7 +804,6 @@ require_once __DIR__ . "/../config/configuration.php";
             // Main Image
             if (type === "main") {
                 if (item.filename) {
-                    // จัดการสำหรับ fileMainInput
                     fileMainInput.dataset.oldfile = item.filename;
                     const pathUrlMainFile = genUrlPath(item.filename, 'slide');
                     mainContainer.src = pathUrlMainFile;
@@ -839,7 +818,10 @@ require_once __DIR__ . "/../config/configuration.php";
                 // Gallery Image
             } else if (type === "gallery") {
                 if (item.filename) {
+                    // แปลงผลลัพธ์เป็น Array เพื่อให้ใช้กับ .some ได้
                     const existingItems = Array.from(galleryStorage.querySelectorAll('[data-image="item-gallery"]'));
+
+                    // ตรวจสอบว่ามีรายการซ้ำหรือไม่
                     const isDuplicate = existingItems.some((existingItem) => {
                         const imgElement = existingItem.querySelector('[data-image-gallery]');
                         return imgElement && imgElement.src.includes(item.filename);
@@ -861,6 +843,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         imgElement.alt = `Image of ${item.filename}`;
                     }
 
+                    // จุดแสดง Text Caption
                     const inputTextCaption = cloneItemGallery.querySelector('[data-item-caption]');
                     if (inputTextCaption) {
                         inputTextCaption.value = item.text || '';
@@ -880,6 +863,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // Gen Gallery
         function genGallery(info) {
 
             //UPDATE LAST SEQUENT
@@ -891,35 +875,25 @@ require_once __DIR__ . "/../config/configuration.php";
             });
         }
 
-        // Caption Update
-        function updateGalleryCaption() {
-            const textCaptionAddGallery = document.querySelector('input[data-addgal-caption]');
-            const textCaptionGallery = document.querySelector('input[data-item-caption]');
-            const galleryItems = document.querySelectorAll('input[data-item-caption]');
+        // loop Values ของ เลข Sequent
+        function sequentValues(inputs) {
+            inputs.forEach((input, index) => {
+                input.value = index + 1;
+            });
+        }
 
-            // ตรวจสอบว่ามี input ที่ต้องการใช้งานหรือไม่
-            if (!textCaptionAddGallery || !textCaptionGallery) {
-                console.warn("ไม่พบ input สำหรับ caption");
-                return;
+        // Sequent Loop ทั้ง Item เดิม และ Add
+        function updateSequentValues() {
+            const inputLastSequent = galleryStorage.querySelectorAll('input[data-sequent]');
+            const inputAddGalSequent = galleryContainer.querySelectorAll('input[data-add-sequent]');
+
+            if (galleryItem) {
+                // Sequent lopp for old gallery
+                sequentValues(inputLastSequent);
+
             }
-
-            // ดึงค่าจาก textCaptionAddGallery
-            const newCaptionValue = textCaptionAddGallery.value;
-
-            if (newCaptionValue) {
-                // อัปเดตค่าใน textCaptionGallery
-                textCaptionGallery.value = newCaptionValue;
-
-                // galleryItems.forEach(item => {
-                //     item.value = newCaptionValue;
-                // });
-
-                // Reset ค่าใน textCaptionAddGallery
-                // textCaptionAddGallery.value = '';
-                // console.log("อัปเดตค่า caption สำเร็จ:", newCaptionValue);
-            } else {
-                console.warn("ไม่มีค่าที่จะอัปเดตใน caption");
-            }
+            // Sequent lopp for add gallery
+            sequentValues(inputAddGalSequent);
         }
 
         // Delete Main Fetch API
@@ -1006,7 +980,7 @@ require_once __DIR__ . "/../config/configuration.php";
         async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
             for (let i = 0; i < 3; i++) {
                 const clone = galleryItem.cloneNode(true);
-                clone.classList.remove('hidden'); // แสดงไอเทมที่ซ่อนอยู่
+                clone.classList.remove('hidden');
 
                 const imgElement = clone.querySelector('[data-pre-image="gallery"]');
                 if (imgElement) {
@@ -1016,14 +990,6 @@ require_once __DIR__ . "/../config/configuration.php";
 
                 galleryStorage.appendChild(clone);
             }
-            // for (let i = 0; i < 3; i++) {
-            //     const clonedElement = await cloneChildElement(galleryStorage, galleryItem);
-            //     const imageElement = clonedElement.querySelector('[data-image-gallery]');
-            //     if (imageElement) {
-            //         imageElement.src = placeholderImage;
-            //         imageElement.dataset.imageGalleryDefault = "demo";
-            //     }
-            // }
         }
 
         // Preview Image
@@ -1031,7 +997,7 @@ require_once __DIR__ . "/../config/configuration.php";
 
             if (!file) {
                 console.error('Invalid file: File is null or undefined');
-                return; // ออกจากฟังก์ชันทันที
+                return;
             }
 
             let imgGalleryPreview = '';
@@ -1049,11 +1015,10 @@ require_once __DIR__ . "/../config/configuration.php";
                 if (mainContainer) {
                     mainContainer.src = imgGalleryPreview;
                 }
-                // แสดงผลใน Gallery Preview
+                // แสดงผลใน Gallery Preview Input
                 if (galleryImagePreview) {
                     galleryImagePreview.src = imgGalleryPreview;
                 }
-                updateGalleryCaption();
 
             } catch (error) {
                 console.error('Error in handleFilePreview:', error);
@@ -1066,14 +1031,9 @@ require_once __DIR__ . "/../config/configuration.php";
 
             defaultImages.forEach((img) => {
                 const parentElement = img.closest('[data-image="item-gallery"]');
-                if (parentElement) parentElement.remove(); // ลบ default image
+                if (parentElement) parentElement.remove();
             });
 
-            // ตรวจสอบหลังจากลบภาพ default หากมีรูปอื่นๆ แสดงให้ปุ่ม delete ปรากฏ
-            const remainingImages = galleryStorage.querySelectorAll('[data-image-gallery]');
-            if (remainingImages.length > 0) {
-                buttonDeleteGallery.classList.remove('hidden'); // แสดงปุ่ม delete
-            }
         }
 
         // clone Element สำหรับ Gallery
@@ -1102,41 +1062,17 @@ require_once __DIR__ . "/../config/configuration.php";
             textLengthDisplay.textContent = `${characterCount}/${maxLength} ตัวอักษร`;
         }
 
-        // loop Values ของ เลข Sequent
-        function sequentValues(inputs) {
-            inputs.forEach((input, index) => {
-                input.value = index + 1;
-            });
-        }
-
-        // Sequent Loop ทั้ง Item เดิม และ Add
-        function updateSequentValues() {
-            const inputLastSequent = galleryStorage.querySelectorAll('input[data-sequent]');
-            const inputAddGalSequent = galleryContainer.querySelectorAll('input[data-add-sequent]');
-
-            if (galleryItem) {
-                // Sequent lopp for old gallery
-                sequentValues(inputLastSequent);
-
-            }
-            // Sequent lopp for add gallery
-            sequentValues(inputAddGalSequent);
-        }
-
         // ตรวจสอบจำนวนไฟล์ว่ามีมากกว่า 20 ไฟล์หรือไม่
         function maxFileValid(files) {
 
             if (files.length > maxFiles) {
                 return false;
             }
-
-            // console.log('maxfile' , fileInfo)
             return true;
         }
 
         // ตรวจขนาดของไฟล์
         function maxSizeValid(files) {
-            // console.log('maxSizeFunc');
             const fileInfo = {
                 isvalid: true,
                 totalsize: 0,
@@ -1149,7 +1085,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 const sizeIn = file.size; // หน่วยเป็น ไบต์
                 const sizeInMB = file.size / (1024 * 1024); // หน่วยเป็น MB
                 const isValidFile = sizeIn <= maxSizeMB * 1024 * 1024;
-                // console.log('isValidFile', isValidFile)
 
                 fileInfo.info.push({
                     size: sizeInMB.toFixed(2), // เก็บขนาดไฟล์ในรูปแบบทศนิยม 2 ตำแหน่ง
@@ -1164,8 +1099,6 @@ require_once __DIR__ . "/../config/configuration.php";
                 }
             }
             fileInfo.totalsize = (fileInfo.totalsize / (1024 * 1024)).toFixed(2);
-
-            // console.log('maxsize', fileInfo)
 
             return fileInfo;
         }
@@ -1187,17 +1120,13 @@ require_once __DIR__ . "/../config/configuration.php";
         function isValidFileType(file, type) {
             const fileExtension = file.name.split('.').pop().toLowerCase();
             let category = null;
-            // console.log(file);
 
             // วนลูปเช็คทุกประเภทใน allowedExtensions
             for (const type in allowedExtensions) {
                 const targetType = allowedExtensions[type];
 
-                // console.log('targetType1', targetType.includes(fileExtension));
-
                 if (targetType.includes(fileExtension)) {
-                    // console.log('targetType2', targetType.includes(fileExtension));
-                    category = type; // เก็บประเภทที่ตรงกับไฟล์นี้
+                    category = type;
                     return {
                         isValid: true,
                         category: category
@@ -1215,12 +1144,10 @@ require_once __DIR__ . "/../config/configuration.php";
         // ฟังก์ชันแปลงไฟล์ .heic เป็น .jpg
         async function convertHeicToJpg(file) {
             try {
-                // console.log('convertFunc');
                 const convertedFile = await heic2any({
                     blob: file,
                     toType: 'image/jpeg',
                 });
-                // console.log('convertedFileFucn', convertedFile)
                 return convertedFile;
             } catch (error) {
                 console.error('การแปลงไฟล์ .heic เป็น .jpg ล้มเหลว:', error);
@@ -1240,7 +1167,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     sizeElement.classList.remove('hidden');
                     return false;
                 } else {
-                    sizeElement.classList.add('hidden'); // ซ่อนข้อความหากไม่มี error
+                    sizeElement.classList.add('hidden');
                 }
                 return true;
             } catch (error) {
@@ -1278,20 +1205,12 @@ require_once __DIR__ . "/../config/configuration.php";
                 category
             } = isValidFileType(file);
 
-            // console.log(isValid);
-
             // หากไฟล์ไม่ผ่านการตรวจสอบ
             if (!isValid) {
                 return false;
             }
 
             return true;
-
-            // if (!isValidFileType(file)) {
-            //     console.warn(`ไฟล์ ${file.name} มีนามสกุลไม่ถูกต้อง`);
-            //     return false;
-            // }
-            // return true;
         }
 
         // Gen Path URL
