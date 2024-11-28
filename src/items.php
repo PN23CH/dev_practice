@@ -322,7 +322,7 @@ require_once __DIR__ . "/../config/configuration.php";
         mainSubmit.addEventListener('click', handleMainSubimt);
 
         // Gallery Submit
-        addGallerySubmit.addEventListener('click', async function(){
+        addGallerySubmit.addEventListener('click', async function() {
 
             //TODO load display ระหว่างรอรูป upload preview
             const resultSubmit = await handleGallerySubmit();
@@ -332,7 +332,7 @@ require_once __DIR__ . "/../config/configuration.php";
             } else {
                 alert('ไฟล์ไม่ถูกอัพโหลด');
             }
-        } )
+        })
 
         // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
         openGalModal.addEventListener('click', (event) => {
@@ -377,9 +377,6 @@ require_once __DIR__ . "/../config/configuration.php";
                         const lastSequent = document.querySelector('[name="last-sequent"]')
                         lastSequent.value = data.gallery.length;
                         if (data.gallery && data.gallery.length > 0) {
-                            // data.gallery.forEach(galleryItem => {
-                            //     displayItemData(galleryItem, 'gallery');
-                            // });
                             genGallery(data.gallery);
                         } else {
                             // ถ้าไม่มีภาพใน gallery ให้แสดงภาพ placeholder
@@ -393,20 +390,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     console.error('Error fetching item data:', error);
                 });
         }
-
-        //TODO edit GALLERY 
-        // (Submit [redOK] ฟังก์ชั่นใช้ชื่อว่า editGallerySubmit)()
-        // 1. สำหรับ edit sequent , text ยิง api 1 สาย "edit_gallery_api"
-        // 2. เดียวกัน remove + edit api "remove_gallery_api" 
-
-        // 3. Gen Gallery ใหม่อีกครั้ง ตาม api "edit_gallery_api" หรือ "remove_gallery_api" 
-
-
-        //TODO handle trash for Delete Auto Check
-        // ปุ่ม trash แสดงตลอด เมื่อมี item
-        // เมื่อกด ปุ่ม trash จะ checkbox
-        // ถ้า check = remove (ทำข้อ 2. กับ 3.)
-
 
         // Input Main
         async function inputMain() {
@@ -740,61 +723,6 @@ require_once __DIR__ . "/../config/configuration.php";
             return resultInfo;
         }
 
-        // Loop Input Gallery
-        async function galleryLoop(inputGalleryFiles) {
-            const uploadedGalFiles = [];
-            for (const file of inputGalleryFiles) {
-                // ตรวจสอบประเภทไฟล์
-                const isFileTypeValid = await checkFileTypeValid(file, 'gallery');
-                if (!isFileTypeValid) {
-                    console.warn(`ไฟล์ ${file.name} มีประเภทไฟล์ไม่ถูกต้อง`);
-                    continue;
-                }
-
-                // ตรวจสอบขนาดไฟล์
-                const isMaxSizeValid = await checkMaxSizeValid([file], currentGalSizeFile, 'gallery');
-                if (!isMaxSizeValid) {
-                    alert(`ไฟล์ ${file.name} มีขนาดใหญ่เกินไป`);
-                    continue;
-                }
-                // console.log('file', file);
-                // อัปโหลดไฟล์
-                try {
-                    let uploadedFileName = '';
-                    let linkUpdate = '';
-
-                    if (file.name.toLowerCase().endsWith('.heic')) {
-                        const convertedFile = await convertHeicToJpg(file);
-                        // if (convertedFile) {                    
-                        //     uploadedFileName = await inputGallery(addGalleryInput);
-                        // } else {
-                        //     console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
-                        //     continue;
-                        // }
-                        if (!convertedFile) {
-                            console.warn(`การแปลงไฟล์ ${file.name} ล้มเหลว`);
-                            continue;
-                        }
-                    }
-                    // else {
-                    //     uploadedFileName = await inputGallery(addGalleryInput);
-                    // }
-                    console.log('Uploading file:', file.name);
-                    uploadedFileName = await inputGallery(addGalleryInput);
-
-                    uploadedGalFiles.push({
-                        name: uploadedFileName,
-                        file,
-                        link: linkUpdate // จะอัปเดต link ภายหลัง
-                    });
-                    // console.log('uploadedFileName', uploadedFileName);
-                } catch (error) {
-                    console.error(`Error uploading file ${file.name}:`, error);
-                }
-            }
-            return uploadedGalFiles;
-        }
-
         // Update Gallery Fetch API
         async function updateGalleryItemData(currentId, jsonData) {
 
@@ -829,6 +757,21 @@ require_once __DIR__ . "/../config/configuration.php";
                 console.error('Error updating gallery item:', error);
             }
         }
+
+
+        //TODO edit GALLERY 
+        // (Submit [redOK] ฟังก์ชั่นใช้ชื่อว่า editGallerySubmit)()
+        // 1. สำหรับ edit sequent , text ยิง api 1 สาย "edit_gallery_api"
+        // 2. เดียวกัน remove + edit api "remove_gallery_api" 
+
+        // 3. Gen Gallery ใหม่อีกครั้ง ตาม api "edit_gallery_api" หรือ "remove_gallery_api" 
+
+
+        //TODO handle trash for Delete Auto Check
+        // ปุ่ม trash แสดงตลอด เมื่อมี item
+        // เมื่อกด ปุ่ม trash จะ checkbox
+        // ถ้า check = remove (ทำข้อ 2. กับ 3.)
+
 
         // Sortable
         function initSortableGallery(containerSelector) {
