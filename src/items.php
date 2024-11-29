@@ -175,47 +175,49 @@ require_once __DIR__ . "/../config/configuration.php";
                         <button type="button" data-button-submit="gallery" class="w-10 h-10 bg-red-700 ring-4 ring-red-200 rounded-full text-white hover:bg-red-600">OK</button>
                     </div>
                 </div>
-            </form>
 
-            <!-- item from gallery -->
-            <div data-image="item-gallery" class="hidden min-w-[220px] sm:w-1/3 md:w-1/4 lg:w-1/6">
-                <div class="flex flex-col bg-sky-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
-                    <div class="flex justify-between items-center w-full px-3">
-                        <input type="checkbox" data-check-gallery>
-                        <label>ลำดับ</label>
-                    </div>
-                    <input data-sequent type="text" value="0" readonly>
-                    <div class="flex justify-center items-center relative w-[160px] h-[120px]">
-                        <img data-image-gallery src="../dnm_file/slide/default-image.jpg" class="absolute image-cover max-w-[160px] max-h-[120px] rounded-xl z-10">
-                    </div>
-                    <div class="flex flex-col gap-y-2">
-                        <input type="text" data-item-caption maxlength="50" value="" name="caption" class="w-full border border-gray-400 rounded-lg p-1">
-                        <div class="flex justify-between items-center">
-                            <p>0/50 ตัวอักษร</p>
-                            <button type="button" data-delete-item="gallery" class="flex items-center gap-x-3 hover:bg-sky-800">
-                                <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g filter="url(#filter0_d_1016_6844)">
-                                        <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
-                                        <rect x="2.4808" y="1.4808" width="29.0384" height="29.0384" rx="9.5192" stroke="#FF0000" stroke-width="0.961594" />
-                                        <path d="M20.2063 11.1936V10.5525C20.2063 9.65496 20.2063 9.20617 20.0317 8.86335C19.878 8.56179 19.6328 8.31661 19.3313 8.16296C18.9884 7.98828 18.5397 7.98828 17.6421 7.98828H16.36C15.4624 7.98828 15.0136 7.98828 14.6708 8.16296C14.3692 8.31661 14.124 8.56179 13.9704 8.86335C13.7957 9.20617 13.7957 9.65496 13.7957 10.5525V11.1936M15.3984 15.6009V19.6075M18.6037 15.6009V19.6075M9.78906 11.1936H24.213M22.6103 11.1936V20.1685C22.6103 21.5148 22.6103 22.188 22.3483 22.7023C22.1178 23.1546 21.7501 23.5224 21.2977 23.7528C20.7835 24.0149 20.1103 24.0149 18.7639 24.0149H15.2381C13.8917 24.0149 13.2186 24.0149 12.7043 23.7528C12.252 23.5224 11.8842 23.1546 11.6537 22.7023C11.3917 22.188 11.3917 21.5148 11.3917 20.1685V11.1936" stroke="white" stroke-width="1.60266" stroke-linecap="round" stroke-linejoin="round" />
-                                    </g>
-                                    <defs>
-                                        <filter id="filter0_d_1016_6844" x="0.0768117" y="0.0384058" width="33.8464" height="33.8464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-                                            <feFlood flood-opacity="0" result="BackgroundImageFix" />
-                                            <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
-                                            <feOffset dy="0.961594" />
-                                            <feGaussianBlur stdDeviation="0.961594" />
-                                            <feColorMatrix type="matrix" values="0 0 0 0 0.0627451 0 0 0 0 0.0941176 0 0 0 0 0.156863 0 0 0 0.05 0" />
-                                            <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1016_6844" />
-                                            <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1016_6844" result="shape" />
-                                        </filter>
-                                    </defs>
-                                </svg>
-                            </button>
+                <!-- item from gallery -->
+                <div data-image="item-gallery" class="hidden min-w-[220px] sm:w-1/3 md:w-1/4 lg:w-1/6">
+                    <div class="flex flex-col bg-sky-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
+                        <div class="flex justify-between items-center w-full px-3">
+                            <input type="checkbox" data-check-gallery>
+                            <label>ลำดับ</label>
+                        </div>
+                        <input data-sequent type="text" value="0" readonly>
+                        <div class="flex justify-center items-center relative w-[160px] h-[120px]">
+                            <img data-image-gallery src="../dnm_file/slide/default-image.jpg" class="absolute image-cover max-w-[160px] max-h-[120px] rounded-xl z-10">
+                        </div>
+                        <div class="flex flex-col gap-y-2">
+                            <input type="text" data-item-caption maxlength="50" value="" name="caption" class="w-full border border-gray-400 rounded-lg p-1">
+                            <div class="flex justify-between items-center">
+                                <p>0/50 ตัวอักษร</p>
+                                <button type="button" data-delete-item="gallery" class="flex items-center gap-x-3 hover:bg-sky-800">
+                                    <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g filter="url(#filter0_d_1016_6844)">
+                                            <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
+                                            <rect x="2.4808" y="1.4808" width="29.0384" height="29.0384" rx="9.5192" stroke="#FF0000" stroke-width="0.961594" />
+                                            <path d="M20.2063 11.1936V10.5525C20.2063 9.65496 20.2063 9.20617 20.0317 8.86335C19.878 8.56179 19.6328 8.31661 19.3313 8.16296C18.9884 7.98828 18.5397 7.98828 17.6421 7.98828H16.36C15.4624 7.98828 15.0136 7.98828 14.6708 8.16296C14.3692 8.31661 14.124 8.56179 13.9704 8.86335C13.7957 9.20617 13.7957 9.65496 13.7957 10.5525V11.1936M15.3984 15.6009V19.6075M18.6037 15.6009V19.6075M9.78906 11.1936H24.213M22.6103 11.1936V20.1685C22.6103 21.5148 22.6103 22.188 22.3483 22.7023C22.1178 23.1546 21.7501 23.5224 21.2977 23.7528C20.7835 24.0149 20.1103 24.0149 18.7639 24.0149H15.2381C13.8917 24.0149 13.2186 24.0149 12.7043 23.7528C12.252 23.5224 11.8842 23.1546 11.6537 22.7023C11.3917 22.188 11.3917 21.5148 11.3917 20.1685V11.1936" stroke="white" stroke-width="1.60266" stroke-linecap="round" stroke-linejoin="round" />
+                                        </g>
+                                        <defs>
+                                            <filter id="filter0_d_1016_6844" x="0.0768117" y="0.0384058" width="33.8464" height="33.8464" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                                <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                                <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                                <feOffset dy="0.961594" />
+                                                <feGaussianBlur stdDeviation="0.961594" />
+                                                <feColorMatrix type="matrix" values="0 0 0 0 0.0627451 0 0 0 0 0.0941176 0 0 0 0 0.156863 0 0 0 0.05 0" />
+                                                <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_1016_6844" />
+                                                <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_1016_6844" result="shape" />
+                                            </filter>
+                                        </defs>
+                                    </svg>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </form>
+
+
         </div>
     </div>
 
@@ -307,7 +309,7 @@ require_once __DIR__ . "/../config/configuration.php";
         const galleryContainer = document.querySelector('[data-container="gallery"]');
         const galleryAdd = document.querySelector('[data-image="add-gallery"]');
         const galleryImagePreview = document.querySelector('[data-pre-image="gallery"]')
-        const galleryStorage = document.querySelector('[data-storage-gallery]');
+        const galleryStorage = formGallery.querySelector('[data-storage-gallery]');
         const galleryItem = document.querySelector('[data-image="item-gallery"]');
 
         const gallerySubmit = document.querySelector('[data-button-submit="gallery"]');
@@ -315,7 +317,6 @@ require_once __DIR__ . "/../config/configuration.php";
         const selectAllGalleryCheckbox = formGallery.querySelector('[select-all-gal]');
         const buttonDeleteGallery = document.querySelectorAll('button[data-delete-item="gallery"]');
 
-        console.log('WHEREEEEEEEEEEE' , buttonDeleteGallery);
         // const checkboxGallery = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
 
         const toggleModal = (isOpen) => {
@@ -354,7 +355,7 @@ require_once __DIR__ . "/../config/configuration.php";
             isCheck = checkDelete.checked;
         });
 
-         // Main Submit
+        // Main Submit
         mainSubmit.addEventListener('click', handleMainSubimt);
 
         // Gallery Add Submit
@@ -409,7 +410,7 @@ require_once __DIR__ . "/../config/configuration.php";
             if (event.key === 'Escape') toggleModal(false);
         });
 
-        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox, buttonDeleteGallery);
+        manageCheckedDelete('data-check-gallery', selectAllGalleryCheckbox);
 
         // Fetch First/Refresh Load
         function fetchItemData(currentId) {
@@ -660,7 +661,7 @@ require_once __DIR__ . "/../config/configuration.php";
                     return;
                 }
 
-                removeDefaultImages(galleryStorage, buttonDeleteGallery);
+                removeDefaultImages(galleryStorage);
 
                 // ตรวจสอบจำนวนไฟล์รวม (เดิม + ใหม่)
                 const totalFiles = inputGalleryFiles.length + existingFiles.length;
@@ -853,8 +854,6 @@ require_once __DIR__ . "/../config/configuration.php";
                         if (data.gallery) {
                             // รีเฟรช gallery
                             genGallery(data.gallery);
-
-                            console.log('API SUCCESSSSSSSSSSSSSSSSSSSS');
                         }
                     } else {
                         console.error('Error Edit item data:', result.message);
@@ -946,8 +945,8 @@ require_once __DIR__ . "/../config/configuration.php";
                     const existingItems = Array.from(galleryStorage.querySelectorAll('[data-image="item-gallery"]'));
 
                     // ตรวจสอบว่ามีรายการซ้ำหรือไม่
-                    const isDuplicate = existingItems.some((existingItem) => {
-                        const imgElement = existingItem.querySelector('[data-image-gallery]');
+                    const isDuplicate = existingItems.some((existingItems) => {
+                        const imgElement = existingItems.querySelector('[data-image-gallery]');
                         return imgElement && imgElement.src.includes(item.filename);
                     });
 
@@ -959,6 +958,27 @@ require_once __DIR__ . "/../config/configuration.php";
                     // Clone gallery item from template
                     const cloneItemGallery = galleryItem.cloneNode(true);
                     cloneItemGallery.classList.remove('hidden');
+
+                    const deleteGalItem = cloneItemGallery.querySelector('button[data-delete-item="gallery"]');
+                    if (deleteGalItem) {
+
+                        deleteGalItem.dataset.itemDeleteGal = item.id || '';
+                        deleteGalItem.addEventListener('click', () => {
+                            console.log(`Delete button clicked for item: ${item.id}`);
+                            const galleryCheckbox = cloneItemGallery.querySelector('input[type="checkbox"][data-check-gallery]');
+
+                            if (galleryCheckbox) {
+                                galleryCheckbox.checked = true;
+
+                                const selectAllCheckbox = document.getElementById('select-all');
+                                if (selectAllCheckbox) {
+                                    selectAllCheckbox.checked = true;
+                                }
+                            } else {
+                                console.error('Checkbox for this gallery item not found.');
+                            }
+                        });
+                    }
 
                     // Update clone data
                     const imgElement = cloneItemGallery.querySelector('[data-image-gallery]');
@@ -1039,37 +1059,36 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        function toggleDeleteCheck(checkAllElement, buttonDeleteGallery) {
+        // function toggleDeleteCheck(checkAllElement, buttonDeleteGallery) {
 
-            console.log('buttonDeleteGallery', buttonDeleteGallery);
 
-            buttonDeleteGallery.forEach((button) => {
-                button.addEventListener('click', () => {
-                    const checkboxes = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
-                    console.log('checkboxes', checkboxes);
+        //     buttonDeleteGallery.forEach((button) => {
+        //         button.addEventListener('click', () => {
+        //             const checkboxes = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
+        //             console.log('checkboxes', checkboxes);
 
-                    if (checkboxes.length === 0) {
-                        console.error('No checkboxes found for [data-check-gallery]');
-                        return;
-                    }
+        //             if (checkboxes.length === 0) {
+        //                 console.error('No checkboxes found for [data-check-gallery]');
+        //                 return;
+        //             }
 
-                    checkboxes.forEach((checkbox) => {
-                        checkbox.checked ||= true;
-                    });
+        //             checkboxes.forEach((checkbox) => {
+        //                 checkbox.checked ||= true;
+        //             });
 
-                    const checkAllElement = document.getElementById("select-all");
-                    if (checkAllElement) {
-                        checkAllElement.checked = true;
-                    }
+        //             const checkAllElement = document.getElementById("select-all");
+        //             if (checkAllElement) {
+        //                 checkAllElement.checked = true;
+        //             }
 
-                });
-            });
-        }
+        //         });
+        //     });
+        // }
 
         // ฟังก์ชั่น check for Delete ของ Gallery
-        function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
+        function manageCheckedDelete(datatype, checkAllElement) {
             document.addEventListener("change", function(event) {
-                if (!checkAllElement || !buttonDeleteGallery) return;
+                if (!checkAllElement) return;
 
                 if (
                     event.target.matches(`input[type="checkbox"][${datatype}]`) ||
@@ -1093,7 +1112,6 @@ require_once __DIR__ . "/../config/configuration.php";
                     }
                 }
             });
-            toggleDeleteCheck(checkAllElement, buttonDeleteGallery);
 
         }
 
@@ -1161,7 +1179,7 @@ require_once __DIR__ . "/../config/configuration.php";
         }
 
         // ฟังก์ชันเพื่อลบหรือซ่อนภาพ default
-        function removeDefaultImages(galleryStorage, buttonDeleteGallery) {
+        function removeDefaultImages(galleryStorage) {
             const defaultImages = galleryStorage.querySelectorAll('[data-image-gallery-default="demo"]');
 
             defaultImages.forEach((img) => {
