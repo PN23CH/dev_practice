@@ -831,37 +831,82 @@ require_once __DIR__ . "/../config/configuration.php";
             console.log('editSqText', editSqText);
             console.log('removedItems', removedItems);
 
-            const formData = new FormData();
-            formData.append('editSqText', JSON.stringify(editSqText));
-            formData.append('removedData', JSON.stringify(removedItems));
+            const fetchRequests = [];
 
-            // // เลือก API ตามกรณี
-            const whatEditItem = removedItems.length > 0 ? '../api/remove_gallery_api.json' : '../api/edit_gallery_api.json';
+            // กรณีลบรายการ
+            if (removedItems.length > 0) {
+                const formData = new FormData();
+                formData.append('removedData', JSON.stringify(removedItems));
 
-            console.log('whatEditItem', whatEditItem);
-
-            const response = fetch(whatEditItem, {
+                fetchRequests.push(fetch('../api/remove_gallery_api.json', {
                     method: 'POST',
                     credentials: 'include',
                     body: formData,
-                })
+                }));
+            }
 
-                .then((response) => response.json())
+            // กรณีแก้ไขรายการ
+            if (editSqText.length > 0) {
+                const formData = new FormData();
+                formData.append('editSqText', JSON.stringify(editSqText));
 
-                .then(result => {
-                    if (result.result) {
-                        const data = result.data;
-                        if (data.gallery) {
-                            // รีเฟรช gallery
-                            genGallery(data.gallery);
+                fetchRequests.push(fetch('../api/edit_gallery_api.json', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData,
+                }));
+            }
+
+            // รอให้ fetch ทุกคำร้องเสร็จสิ้น
+            Promise.all(fetchRequests)
+                .then(responses => Promise.all(responses.map(response => response.json())))
+                .then(results => {
+                    results.forEach((result, index) => {
+                        if (result.result) {
+                            const data = result.data;
+                            if (data.gallery) {
+                                genGallery(data.gallery); // รีเฟรช gallery
+                            }
+                        } else {
+                            console.error(`Error API ${index + 1}:`, result.message);
                         }
-                    } else {
-                        console.error('Error Edit item data:', result.message);
-                    }
+                    });
                 })
                 .catch(error => {
                     console.error('Error Edit item data:', error);
                 });
+
+            // const formData = new FormData();
+            // formData.append('editSqText', JSON.stringify(editSqText));
+            // formData.append('removedData', JSON.stringify(removedItems));
+
+            // // // เลือก API ตามกรณี
+            // const whatEditItem = removedItems.length > 0 ? '../api/remove_gallery_api.json' : '../api/edit_gallery_api.json';
+
+            // console.log('whatEditItem', whatEditItem);
+
+            // const response = fetch(whatEditItem, {
+            //         method: 'POST',
+            //         credentials: 'include',
+            //         body: formData,
+            //     })
+
+            //     .then((response) => response.json())
+
+            //     .then(result => {
+            //         if (result.result) {
+            //             const data = result.data;
+            //             if (data.gallery) {
+            //                 // รีเฟรช gallery
+            //                 genGallery(data.gallery);
+            //             }
+            //         } else {
+            //             console.error('Error Edit item data:', result.message);
+            //         }
+            //     })
+            //     .catch(error => {
+            //         console.error('Error Edit item data:', error);
+            //     });
         }
 
         //TODO SUCCESS!!! ================ edit GALLERY 
