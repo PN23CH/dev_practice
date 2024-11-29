@@ -39,7 +39,7 @@ require_once __DIR__ . "/../config/configuration.php";
         width: 50px;
         aspect-ratio: 1;
         border-radius: 50%;
-        border: 8px solid #0000;
+        border: 4px solid #0000;
         border-right-color: #ffa50097;
         position: relative;
         animation: l24 1s infinite linear;
@@ -49,7 +49,7 @@ require_once __DIR__ . "/../config/configuration.php";
     .loader:after {
         content: "";
         position: absolute;
-        inset: -8px;
+        inset: -10px;
         border-radius: 50%;
         border: inherit;
         animation: inherit;
@@ -237,6 +237,8 @@ require_once __DIR__ . "/../config/configuration.php";
             <!-- Add Gallery -->
             <div data-container="gallery" class="flex flex-wrap justify-center w-full gap-3 mb-3"></div>
 
+            <div loader-gallery class="hidden loader"></div>
+
             <div class="flex justify-end">
                 <button data-submit-gallery class="bg-sky-500 text-white px-4 py-2 mr-2 rounded">ตกลง</button>
                 <button gallery-cancle class="bg-slate-100 text-black px-4 py-2 mr-2 rounded">ยกเลิก</button>
@@ -248,7 +250,6 @@ require_once __DIR__ . "/../config/configuration.php";
     <div data-image="add-gallery" class="hidden flex flex-col jus bg-rose-200 min-w-fit h-full justify-start items-center justify-self-center rounded-2xl gap-y-2 m-2 p-2">
         <input data-add-sequent type="text" value="0" name="add-sequent" readonly>
         <div class="flex justify-center items-center relative w-[160px] h-[120px]">
-            <div loader-gallery class="loader"></div>
             <img data-pre-image="gallery" src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="max-w-[160px] max-h-[120px] rounded-xl bg-cover" />
         </div>
         <div class="flex flex-col w-full gap-3">
@@ -353,13 +354,28 @@ require_once __DIR__ . "/../config/configuration.php";
         // Main Submit
         mainSubmit.addEventListener('click', handleMainSubimt);
 
-        // Gallery Submit
+        // Gallery Add Submit
         addGallerySubmit.addEventListener('click', async function() {
 
-            //TODO load display ระหว่างรอรูป upload preview
-            const loaderGallery = document.querySelector('[loader-gallery]')
-
+            //TODO DONE!!!!===== load display ระหว่างรอรูป upload preview
+            const loaderGallery = modalAddGal.querySelector('[loader-gallery]')
             const resultSubmit = await handleGallerySubmit();
+
+            if (addGalleryInput.files && addGalleryInput.files.length > 0) {
+
+                loaderGallery.classList.remove('hidden');
+                galleryContainer.classList.add('hidden');
+
+                await new Promise((resolve) => setTimeout(resolve, 2000));
+               
+                if (resultSubmit) {
+                    loaderGallery.classList.add('hidden');
+                } else {
+                    console.error('Failed to load image preview.');
+                    loaderGallery.classList.add('hidden');
+                }
+
+            }
 
             if (resultSubmit.info) {
                 toggleModal(false);
@@ -368,10 +384,12 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         })
 
+        // Gallery Edit Submit
         gallerySubmit.addEventListener('click', editGallerySubmit);
 
         // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
         openGalModal.addEventListener('click', (event) => {
+            addGalleryInput.value = '';
             event.preventDefault();
             toggleModal(true);
         });
@@ -671,7 +689,6 @@ require_once __DIR__ . "/../config/configuration.php";
                                 const imagePreview = clonedItem.querySelector('[data-pre-image="gallery"]');
 
                                 const inputSequent = clonedItem.querySelector('[data-add-sequent]');
-                                console.log('inputSequent', inputSequent);
                                 if (inputSequent) {
                                     inputSequent.value = i;
                                     i++;
@@ -696,7 +713,7 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        // Submit Gallery
+        // Gallery Add Submit
         async function handleGallerySubmit() {
             let resultInfo = '';
 
@@ -776,75 +793,79 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        // Gallery Edit Submit
         function editGallerySubmit() {
-            // รวบรวมข้อมูลจากฟอร์ม
-            const formData = new FormData();
-
-            // เก็บรายการที่ต้องการลบ
-            const removedItems = [];
             const galleryItems = galleryStorage.querySelectorAll('[data-image="item-gallery"]');
 
-            galleryItems.forEach((item) => {
-                const checkbox = item.querySelector('[data-item-delete-checkbox]');
-                if (checkbox && checkbox.checked) {
-                    const imgElement = item.querySelector('[data-image-gallery]');
-                    if (imgElement && imgElement.src) {
-                        removedItems.push(imgElement.src.split('/').pop()); // ดึงชื่อไฟล์
-                    }
-                }
-            });
+            const editSqText = []; // เก็บข้อมูลลำดับและข้อความ            
+            const removedItems = []; // เก็บรายการที่ต้องการลบ
 
-            if (removedItems.length > 0) {
-                formData.append('removedItems', JSON.stringify(removedItems));
-            }
-
-            // เก็บข้อมูลลำดับและข้อความ
-            const sequenceData = [];
             galleryItems.forEach((item, index) => {
                 const imgElement = item.querySelector('[data-image-gallery]');
                 const captionElement = item.querySelector('[data-item-caption]');
-                if (imgElement) {
-                    sequenceData.push({
-                        filename: imgElement.src.split('/').pop(), // ดึงชื่อไฟล์
-                        sequent: index + 1,
-                        text: captionElement ? captionElement.value : '',
-                    });
+                const checkboxElement = item.querySelector('input[type="checkbox"][data-check-gallery]');
+
+                // หากมีการ check เพื่อส่งลบ item
+                if (checkboxElement && checkboxElement.checked) {
+                    if (imgElement) {
+                        removedItems.push({
+                            filename: imgElement.src.split('/').pop(),
+                            sequent: index + 1,
+                        });
+                    }
+                    // หากไม่ได้มีการ check ก็จะส่งเพียง sequent และ text caption
+                } else {
+                    if (imgElement) {
+                        editSqText.push({
+                            filename: imgElement.src.split('/').pop(),
+                            sequent: index + 1,
+                            text: captionElement ? captionElement.value : '',
+                        });
+                    }
                 }
             });
 
-            formData.append('sequenceData', JSON.stringify(sequenceData));
+            console.log('editSqText', editSqText);
+            console.log('removedItems', removedItems);
 
-            // เลือก API ตามกรณี
-            const apiUrl = removedItems.length > 0 ? './api/remove_gallery_api.json' : './api/edit_gallery_api.json';
+            const formData = new FormData();
+            formData.append('editSqText', JSON.stringify(editSqText));
+            formData.append('removedData', JSON.stringify(removedItems));
 
-            // ยิง API
-            fetch(apiUrl, {
+            // // เลือก API ตามกรณี
+            const whatEditItem = removedItems.length > 0 ? '../api/remove_gallery_api.json' : '../api/edit_gallery_api.json';
+
+            console.log('whatEditItem', whatEditItem);
+
+            const response = fetch(whatEditItem, {
                     method: 'POST',
+                    credentials: 'include',
                     body: formData,
                 })
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.success) {
-                        console.log('Update Successful:', data);
 
-                        // สร้างแกลเลอรีใหม่
-                        if (data.info) {
-                            galleryStorage.innerHTML = ''; // ล้างข้อมูลเก่า
-                            genGallery(data.info);
+                .then((response) => response.json())
+
+                .then(result => {
+                    if (result.result) {
+                        const data = result.data;
+                        if (data.gallery) {
+                            // รีเฟรช gallery
+                            genGallery(data.gallery);
+
+                            console.log('API SUCCESSSSSSSSSSSSSSSSSSSS');
                         }
                     } else {
-                        console.error('Error:', data.message);
+                        console.error('Error Edit item data:', result.message);
                     }
                 })
-                .catch((error) => {
-                    console.error('Fetch Error:', error);
+                .catch(error => {
+                    console.error('Error Edit item data:', error);
                 });
-
         }
 
-        //TODO edit GALLERY 
+        //TODO SUCCESS!!! ================ edit GALLERY 
         // (Submit [redOK] ฟังก์ชั่นใช้ชื่อว่า editGallerySubmit)()
-        // 1. สำหรับ การ edit sequent , การ edittext ยิง api 1 สาย คือ "./api/edit_gallery_api.json"
+        // 1. สำหรับ การ edit sequent , การ edit text ยิง api 1 สาย คือ "./api/edit_gallery_api.json"
         // 2. การ remove + การ edit ของ gallery api ยิง api อีก 1 สาย คือ"./api/remove_gallery_api.json" 
 
         // 3. Gen Gallery ใหม่อีกครั้ง ตาม api "edit_gallery_api" หรือ "remove_gallery_api" 
@@ -1015,6 +1036,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 throw new Error('Delete failed: ' + result.message);
             }
         }
+
         // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
             document.addEventListener("change", function(event) {
