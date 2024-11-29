@@ -192,7 +192,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         <input type="text" data-item-caption maxlength="50" value="" name="caption" class="w-full border border-gray-400 rounded-lg p-1">
                         <div class="flex justify-between items-center">
                             <p>0/50 ตัวอักษร</p>
-                            <button type="button" data-delete-item="gallery" class="hidden flex items-center gap-x-3">
+                            <button type="button" data-delete-item="gallery" class="flex items-center gap-x-3 hover:bg-sky-800">
                                 <svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <g filter="url(#filter0_d_1016_6844)">
                                         <rect x="2" y="1" width="30" height="30" rx="10" fill="#FF0000" />
@@ -313,7 +313,10 @@ require_once __DIR__ . "/../config/configuration.php";
         const gallerySubmit = document.querySelector('[data-button-submit="gallery"]');
 
         const selectAllGalleryCheckbox = formGallery.querySelector('[select-all-gal]');
-        const buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+        const buttonDeleteGallery = document.querySelectorAll('button[data-delete-item="gallery"]');
+
+        console.log('WHEREEEEEEEEEEE' , buttonDeleteGallery);
+        // const checkboxGallery = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
 
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
@@ -351,7 +354,7 @@ require_once __DIR__ . "/../config/configuration.php";
             isCheck = checkDelete.checked;
         });
 
-        // Main Submit
+         // Main Submit
         mainSubmit.addEventListener('click', handleMainSubimt);
 
         // Gallery Add Submit
@@ -367,14 +370,13 @@ require_once __DIR__ . "/../config/configuration.php";
                 galleryContainer.classList.add('hidden');
 
                 await new Promise((resolve) => setTimeout(resolve, 2000));
-               
+
                 if (resultSubmit) {
                     loaderGallery.classList.add('hidden');
                 } else {
                     console.error('Failed to load image preview.');
                     loaderGallery.classList.add('hidden');
                 }
-
             }
 
             if (resultSubmit.info) {
@@ -888,7 +890,7 @@ require_once __DIR__ . "/../config/configuration.php";
             new Sortable(galleryStorage, {
                 animation: 150,
                 ghostClass: 'sortable-gallery',
-                filter: 'input, textarea, select, [contenteditable]',
+                filter: 'input, button, textarea, select, [contenteditable]',
                 preventOnFilter: false, // อนุญาตให้โต้ตอบ input ได้
                 onEnd: function(evt) {
                     const items = galleryStorage.querySelectorAll('div[data-image="item-gallery"]');
@@ -906,7 +908,7 @@ require_once __DIR__ . "/../config/configuration.php";
             new Sortable(galleryContainer, {
                 animation: 150,
                 ghostClass: 'sortable-gallery',
-                filter: 'input, textarea, select, [contenteditable]',
+                filter: 'input, button, textarea, select, [contenteditable]',
                 preventOnFilter: false, // อนุญาตให้โต้ตอบ input ได้
                 onEnd: function(evt) {
                     const itemsAdd = galleryContainer.querySelectorAll('div[data-image="add-gallery"]');
@@ -1037,6 +1039,33 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
+        function toggleDeleteCheck(checkAllElement, buttonDeleteGallery) {
+
+            console.log('buttonDeleteGallery', buttonDeleteGallery);
+
+            buttonDeleteGallery.forEach((button) => {
+                button.addEventListener('click', () => {
+                    const checkboxes = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
+                    console.log('checkboxes', checkboxes);
+
+                    if (checkboxes.length === 0) {
+                        console.error('No checkboxes found for [data-check-gallery]');
+                        return;
+                    }
+
+                    checkboxes.forEach((checkbox) => {
+                        checkbox.checked ||= true;
+                    });
+
+                    const checkAllElement = document.getElementById("select-all");
+                    if (checkAllElement) {
+                        checkAllElement.checked = true;
+                    }
+
+                });
+            });
+        }
+
         // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement, buttonDeleteGallery) {
             document.addEventListener("change", function(event) {
@@ -1062,42 +1091,25 @@ require_once __DIR__ . "/../config/configuration.php";
                         );
                         checkAllElement.checked = allChecked;
                     }
-                    toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery);
                 }
             });
+            toggleDeleteCheck(checkAllElement, buttonDeleteGallery);
+
         }
 
         // reset All Check
-        function resetChecked(checkAllElement = null, buttonDeleteGallery = null) {
-            if (!checkAllElement) {
-                checkAllElement = document.getElementById("select-all");
-            }
-            if (checkAllElement) {
-                checkAllElement.checked = false;
-            }
+        // function resetChecked(checkAllElement = null, buttonDeleteGallery = null) {
+        //     if (!checkAllElement) {
+        //         checkAllElement = document.getElementById("select-all");
+        //     }
+        //     if (checkAllElement) {
+        //         checkAllElement.checked = false;
+        //     }
 
-            if (!buttonDeleteGallery) {
-                buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-            }
-        }
-
-        // Toggle Delete ของ Gallery
-        function toggleDeleteButton(datatype, checkAllElement, buttonDeleteGallery) {
-
-            if (!checkAllElement || !buttonDeleteGallery) return;
-
-            const checkboxes = document.querySelectorAll(
-                `input[type="checkbox"][${datatype}]`
-            );
-
-            const anyChecked = Array.from(checkboxes).some(
-                (checkbox) => checkbox.checked
-            );
-
-            if (anyChecked || checkAllElement.checked) {
-                buttonDeleteGallery.classList.remove("hidden");
-            }
-        }
+        //     if (!buttonDeleteGallery) {
+        //         buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
+        //     }
+        // }
 
         // แสดง Default Images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
