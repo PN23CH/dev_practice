@@ -84,25 +84,11 @@ require_once __DIR__ . "/../config/configuration.php";
                             <div data-image-slide class="w-fit bg-rose-200 rounded-xl overflow-hidden">
                                 <img data-main-preview src="../dnm_file/slide/default-image.jpg" alt="Image Preview" class="w-auto" />
                             </div>
-                            <!-- <div
-                                class="mt-5 bg-gray-50 text-gray-600 text-base rounded w-full h-48 flex flex-col items-center justify-center border-2 border-gray-300 border-dashed">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 mb-2 fill-gray-400" viewBox="0 0 32 32">
-                                    <path
-                                        d="M23.75 11.044a7.99 7.99 0 0 0-15.5-.009A8 8 0 0 0 9 27h3a1 1 0 0 0 0-2H9a6 6 0 0 1-.035-12 1.038 1.038 0 0 0 1.1-.854 5.991 5.991 0 0 1 11.862 0A1.08 1.08 0 0 0 23 13a6 6 0 0 1 0 12h-3a1 1 0 0 0 0 2h3a8 8 0 0 0 .75-15.956z"
-                                        data-original="#000000" />
-                                    <path
-                                        d="M20.293 19.707a1 1 0 0 0 1.414-1.414l-5-5a1 1 0 0 0-1.414 0l-5 5a1 1 0 0 0 1.414 1.414L15 16.414V29a1 1 0 0 0 2 0V16.414z"
-                                        data-original="#000000" />
-                                </svg>
-                                <p class="text-base font-semibold text-gray-600">Drag & Drop files here</p>
-                            </div> -->
                         </div>
                     </div>
-                    <!-- <div data-date-time></div> -->
                     <div class="flex">
                         <div class="pb-5">
                             <div class="relative inline-block">
-                                <!-- TODO ใช้เป็น <label> ในการ config css -->
 
                                 <input data-main-input type="file" id="fileMainInput" multiple class="block text-sm text-slate-500 file:mr-4 file:py-2 file:px-10 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-300 file:text-sky-900 hover:file:bg-sky-200" />
                                 <svg class="absolute left-2 top-1/2 transform -translate-y-1/2" width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -136,9 +122,6 @@ require_once __DIR__ . "/../config/configuration.php";
                             </button>
                         </div>
                     </div>
-                    <!-- <div>
-                        <button open-gal-modal class="bg-slate-300 hover:bg-slate-600 rounded-xl text-black hover:text-white px-3 py-2">Add Gallery</button>
-                    </div> -->
                     <div class="flex justify-between">
                         <div class="flex flex-col">
                             <div class="mr-2">LINK</div>
@@ -167,11 +150,6 @@ require_once __DIR__ . "/../config/configuration.php";
 
                     <div class="flex justify-between items-center mt-5">
                         <button open-gal-modal class="bg-slate-300 hover:bg-slate-600 rounded-xl text-black hover:text-white px-3 py-2">Add Gallery</button>
-                        <!-- <button type="button" class="flex items-center bg-sky-400 hover:bg-sky-500 rounded-xl text-white py-1 px-4 gap-1">
-                            <svg class="size-5 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
-                            </svg>Add Image
-                        </button> -->
                         <button type="button" data-button-submit="gallery" class="w-10 h-10 bg-red-700 ring-4 ring-red-200 rounded-full text-white hover:bg-red-600">OK</button>
                     </div>
                 </div>
@@ -359,7 +337,6 @@ require_once __DIR__ . "/../config/configuration.php";
         // Gallery Add Submit
         addGallerySubmit.addEventListener('click', async function() {
 
-            //TODO DONE!!!!===== load display ระหว่างรอรูป upload preview
             const loaderGallery = modalAddGal.querySelector('[loader-gallery]')
             const resultSubmit = await handleGallerySubmit();
 
@@ -1092,13 +1069,7 @@ require_once __DIR__ . "/../config/configuration.php";
                         );
 
                         const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
-                        console.log('checkedCount', checkedCount);
-
-                        if (checkedCount === checkboxes.length - 1) {
-                            checkAllElement.checked = true;
-                        } else {
-                            checkAllElement.checked = false;
-                        }
+                        checkAllElement.checked = (checkedCount === checkboxes.length - 1) ? true : false;
                     }
 
                 }
