@@ -317,8 +317,6 @@ require_once __DIR__ . "/../config/configuration.php";
         const selectAllGalleryCheckbox = formGallery.querySelector('[select-all-gal]');
         const buttonDeleteGallery = document.querySelectorAll('button[data-delete-item="gallery"]');
 
-        // const checkboxGallery = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
-
         const toggleModal = (isOpen) => {
             modalAddGal.classList.toggle('hidden', !isOpen);
             modalAddGal.classList.toggle('flex', isOpen);
@@ -393,6 +391,7 @@ require_once __DIR__ . "/../config/configuration.php";
         // เปิด modal เมื่อคลิกปุ่ม 'Add Gallery'
         openGalModal.addEventListener('click', (event) => {
             addGalleryInput.value = '';
+            galleryContainer.innerHTML = ''
             event.preventDefault();
             toggleModal(true);
         });
@@ -431,10 +430,12 @@ require_once __DIR__ . "/../config/configuration.php";
                         displayItemData(data.info, 'main');
 
                         // Gallery
+                        const dataGal = data.gallery;
+
                         const lastSequent = document.querySelector('[name="last-sequent"]')
-                        lastSequent.value = data.gallery.length;
-                        if (data.gallery && data.gallery.length > 0) {
-                            genGallery(data.gallery);
+                        lastSequent.value = dataGal.length;
+                        if (dataGal && dataGal.length > 0) {
+                            genGallery(dataGal);
                         } else {
                             // ถ้าไม่มีภาพใน gallery ให้แสดงภาพ placeholder
                             displayDefaultImages(galleryStorage, galleryItem, placeholderImage);
@@ -816,6 +817,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             sequent: index + 1,
                         });
                     }
+                    item.remove();
                     // หากไม่ได้มีการ check ก็จะส่งเพียง sequent และ text caption
                 } else {
                     if (imgElement) {
@@ -828,14 +830,15 @@ require_once __DIR__ . "/../config/configuration.php";
                 }
             });
 
-            console.log('editSqText', editSqText);
-            console.log('removedItems', removedItems);
-
             const fetchRequests = [];
 
             // กรณีลบรายการ
             if (removedItems.length > 0) {
+
                 const formData = new FormData();
+                formData.append('id', currentId);
+                formData.append('action', 'editGallery')
+                formData.append('dataType', 'gallery')
                 formData.append('removedData', JSON.stringify(removedItems));
 
                 fetchRequests.push(fetch('../api/remove_gallery_api.json', {
@@ -848,6 +851,9 @@ require_once __DIR__ . "/../config/configuration.php";
             // กรณีแก้ไขรายการ
             if (editSqText.length > 0) {
                 const formData = new FormData();
+                formData.append('id', currentId);
+                formData.append('action', 'editGallery')
+                formData.append('dataType', 'gallery')
                 formData.append('editSqText', JSON.stringify(editSqText));
 
                 fetchRequests.push(fetch('../api/edit_gallery_api.json', {
@@ -864,9 +870,12 @@ require_once __DIR__ . "/../config/configuration.php";
                     results.forEach((result, index) => {
                         if (result.result) {
                             const data = result.data;
+
                             if (data.gallery) {
-                                genGallery(data.gallery); // รีเฟรช gallery
+                                genGallery(data.gallery);
+                                resetChecked();
                             }
+
                         } else {
                             console.error(`Error API ${index + 1}:`, result.message);
                         }
@@ -875,53 +884,7 @@ require_once __DIR__ . "/../config/configuration.php";
                 .catch(error => {
                     console.error('Error Edit item data:', error);
                 });
-
-            // const formData = new FormData();
-            // formData.append('editSqText', JSON.stringify(editSqText));
-            // formData.append('removedData', JSON.stringify(removedItems));
-
-            // // // เลือก API ตามกรณี
-            // const whatEditItem = removedItems.length > 0 ? '../api/remove_gallery_api.json' : '../api/edit_gallery_api.json';
-
-            // console.log('whatEditItem', whatEditItem);
-
-            // const response = fetch(whatEditItem, {
-            //         method: 'POST',
-            //         credentials: 'include',
-            //         body: formData,
-            //     })
-
-            //     .then((response) => response.json())
-
-            //     .then(result => {
-            //         if (result.result) {
-            //             const data = result.data;
-            //             if (data.gallery) {
-            //                 // รีเฟรช gallery
-            //                 genGallery(data.gallery);
-            //             }
-            //         } else {
-            //             console.error('Error Edit item data:', result.message);
-            //         }
-            //     })
-            //     .catch(error => {
-            //         console.error('Error Edit item data:', error);
-            //     });
         }
-
-        //TODO SUCCESS!!! ================ edit GALLERY 
-        // (Submit [redOK] ฟังก์ชั่นใช้ชื่อว่า editGallerySubmit)()
-        // 1. สำหรับ การ edit sequent , การ edit text ยิง api 1 สาย คือ "./api/edit_gallery_api.json"
-        // 2. การ remove + การ edit ของ gallery api ยิง api อีก 1 สาย คือ"./api/remove_gallery_api.json" 
-
-        // 3. Gen Gallery ใหม่อีกครั้ง ตาม api "edit_gallery_api" หรือ "remove_gallery_api" 
-
-
-        //TODO handle trash for Delete Auto Check
-        // ปุ่ม trash แสดงตลอด เมื่อมี item
-        // เมื่อกด ปุ่ม trash จะ checkbox
-        // ถ้า check = remove (ทำข้อ 2. กับ 3.)
-
 
         // Sortable
         function initSortableGallery(containerSelector) {
@@ -1015,7 +978,7 @@ require_once __DIR__ . "/../config/configuration.php";
                             if (galleryCheckbox) {
                                 galleryCheckbox.checked = true;
 
-                                const selectAllCheckbox = document.getElementById('select-all');
+                                const selectAllCheckbox = document.querySelector('[select-all-gal]');
                                 if (selectAllCheckbox) {
                                     selectAllCheckbox.checked = true;
                                 }
@@ -1104,32 +1067,6 @@ require_once __DIR__ . "/../config/configuration.php";
             }
         }
 
-        // function toggleDeleteCheck(checkAllElement, buttonDeleteGallery) {
-
-
-        //     buttonDeleteGallery.forEach((button) => {
-        //         button.addEventListener('click', () => {
-        //             const checkboxes = galleryItem.querySelectorAll('input[type="checkbox"][data-check-gallery]');
-        //             console.log('checkboxes', checkboxes);
-
-        //             if (checkboxes.length === 0) {
-        //                 console.error('No checkboxes found for [data-check-gallery]');
-        //                 return;
-        //             }
-
-        //             checkboxes.forEach((checkbox) => {
-        //                 checkbox.checked ||= true;
-        //             });
-
-        //             const checkAllElement = document.getElementById("select-all");
-        //             if (checkAllElement) {
-        //                 checkAllElement.checked = true;
-        //             }
-
-        //         });
-        //     });
-        // }
-
         // ฟังก์ชั่น check for Delete ของ Gallery
         function manageCheckedDelete(datatype, checkAllElement) {
             document.addEventListener("change", function(event) {
@@ -1153,26 +1090,38 @@ require_once __DIR__ . "/../config/configuration.php";
                         const allChecked = Array.from(checkboxes).every(
                             (checkbox) => checkbox.checked
                         );
-                        checkAllElement.checked = allChecked;
+
+                        const checkedCount = Array.from(checkboxes).filter(checkbox => checkbox.checked).length;
+                        console.log('checkedCount', checkedCount);
+
+                        if (checkedCount === checkboxes.length - 1) {
+                            checkAllElement.checked = true;
+                        } else {
+                            checkAllElement.checked = false;
+                        }
                     }
+
                 }
             });
 
         }
 
         // reset All Check
-        // function resetChecked(checkAllElement = null, buttonDeleteGallery = null) {
-        //     if (!checkAllElement) {
-        //         checkAllElement = document.getElementById("select-all");
-        //     }
-        //     if (checkAllElement) {
-        //         checkAllElement.checked = false;
-        //     }
+        function resetChecked(checkAllElement = null) {
+            if (!checkAllElement) {
+                checkAllElement = document.querySelector('[select-all-gal]');
+            }
 
-        //     if (!buttonDeleteGallery) {
-        //         buttonDeleteGallery = document.querySelector('[data-delete-item="gallery"]');
-        //     }
-        // }
+            if (checkAllElement) {
+                checkAllElement.checked = false;
+            }
+
+            const galleryCheckboxes = galleryStorage.querySelectorAll('input[type="checkbox"][data-check-gallery]');
+            galleryCheckboxes.forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+        }
 
         // แสดง Default Images ใน Gallery Storage
         async function displayDefaultImages(galleryStorage, galleryItem, placeholderImage) {
